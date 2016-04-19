@@ -16,7 +16,7 @@ def generateHash():
 trainNumberstoDurationMap ={}
 
 def parseTrainBetweenStationsAndReturnTrainNumber(jsonData):
-    returnedData = json.loads(jsonData.content)
+    returnedData = json.loads(jsonData)
     trainNumbers = []
     global trainNumberstoDurationMap
     for train in returnedData["train"]  :
@@ -35,7 +35,7 @@ def parseAndReturnFare(jsonData,trainCounter):
     route={}
     try:
 
-        returnedFareData = json.loads(jsonData.content)
+        returnedFareData = json.loads(jsonData)
 
 
         if len(returnedFareData["fare"])!=0:
@@ -68,7 +68,7 @@ class PlaceToStationCodesCache:
 
 
     def parseStationNameToStationCodes(self,jsonData):
-        returnedData = json.loads(jsonData.content)
+        returnedData = json.loads(jsonData)
         stationList=[]
         if returnedData["response_code"]==200:
             for station in returnedData["stations"]:
@@ -80,7 +80,7 @@ class PlaceToStationCodesCache:
         if stationName in PlaceToStationCodesCache.cityToStationsMap:
             return self.cityToStationsMap[stationName]
         else:
-            jsonResponseNameToCode = urllib.urlopen("http://api.railwayapi.com/name_to_code/station/"+ stationName + "/apikey/" + trainConstants.ERAILWAYAPI_APIKEY + "/")
+            jsonResponseNameToCode = urllib.urlopen("http://api.railwayapi.com/name_to_code/station/"+ stationName + "/apikey/" + trainConstants.ERAILWAYAPI_APIKEY + "/").read()
             stationList = self.parseStationNameToStationCodes(jsonResponseNameToCode)
             if stationList:
                 PlaceToStationCodesCache.cityToStationsMap[stationName]=stationList
@@ -92,13 +92,13 @@ class TrainController:
     placetoStationCodesCache = PlaceToStationCodesCache()
 
     def getTrainBetweenStations(self,sourceStation,destinationStation,journeyDate):
-        jsonResponseTrainBetweenStations = urllib.urlopen("http://api.railwayapi.com/between/source/"+ sourceStation + "/dest/" + destinationStation+ "/date/" + journeyDate +"/apikey/"+ trainConstants.ERAILWAYAPI_APIKEY +"/")
+        jsonResponseTrainBetweenStations = urllib.urlopen("http://api.railwayapi.com/between/source/"+ sourceStation + "/dest/" + destinationStation+ "/date/" + journeyDate +"/apikey/"+ trainConstants.ERAILWAYAPI_APIKEY +"/").read()
         availableTrainNumbers = parseTrainBetweenStationsAndReturnTrainNumber(jsonResponseTrainBetweenStations)
         return availableTrainNumbers
 
 
     def getTrainFare(self,sourceStation,destinationStation,journeyDate,trainNumber,trainCounter,resultJsonData):
-        jsonResponseTrainFare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainNumber + "/source/"+ sourceStation+ "/dest/"+ destinationStation+ "/age/18/quota/GN/doj/"+ journeyDate+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/")
+        jsonResponseTrainFare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainNumber + "/source/"+ sourceStation+ "/dest/"+ destinationStation+ "/age/18/quota/GN/doj/"+ journeyDate+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
         fareData=parseAndReturnFare(jsonResponseTrainFare,trainCounter)
         if not fareData:
             pass

@@ -24,8 +24,8 @@ def trainapi(request):
     source = request.GET['source']
     destination = request.GET['destination']
     journeyDate = request.GET['journeyDate']
-    request.session['source']=source
-    request.session['destination']=destination
+    #request.session['source']=source
+    #request.session['destination']=destination
     resultJsonData = trainController.getRoutes(source,destination,journeyDate)
     return HttpResponse(json.dumps(resultJsonData), content_type='application/json')
 
