@@ -1,0 +1,24 @@
+<div class="panel panel-default">
+						 <div class="panel-body">
+							<div class="row-eq-height">
+								 <div class="col-sm-2 col-height col-middle">
+									 <img src="/images/travelyaari.png" class="img-responsive"></img>
+								 </div>
+								 <div class="col-sm-8 col-height col-middle">
+								 <table width = "100%" style ="text-align:center"><tr><td width="20%"><table width = "100%" style ="text-align:center"><tr><td>Delhi</td></tr><tr><td>13:45</td></tr></table></td><td width="20%" style ="text-align:center">&#8594;</td><td width="20%"><table width = "100%" style ="text-align:center"><tr><td>Mumbai</td></tr><tr><td>21:45</td></tr></table></td><td width="40%">(+)1 change</td></tr></table>
+								 </div>
+								 <div class="col-sm-2 col-height col-middle">
+								 <table width = "100%" style ="text-align:left"><tr><td><b style ="white-space: nowrap">Rs 1000/-</b> <b style ="white-space: nowrap">24:50 Hrs</b></td></tr></table>
+								 </div>
+						 </div>
+						</div>
+
+<div class="col-sm-3 col-height col-middle">
+								 <table width = "100%" style ="text-align:left"><tr><td><input type="submit" class= "btn btn-info" value="Rs 1000/-">&nbsp;&nbsp;change.org</td></tr></table>
+								 </div>
+								 
+								 
+								 <div class=\"panel panel-default\"><div class=\"panel-body\"><div class=\"row-eq-height\"><table width = \"100%\"><tr><td width = \"25%\" style =\"text-align:left\"><img src=\"/images/"+busDetails.site+".png\" ></img></td><td width = \"50%\" style =\"text-align:center\"><b><font color=\"#808080\">"+busDetails.duration+"</font></b></td><td width = \"25%\" style =\"text-align:right\"><button type=\"button\" class=\"btn btn-success btn-arrow-right\" id = \""+busDetails.id+"\">Book</button></td></tr></table></div><hr><div class=\"row-eq-height\"><div class=\"col-sm-9 col-height col-middle\"><font color = \"grey\"><table width = \"100%\" style =\"text-align:center\"><tr><td width=\"34%\" style =\"text-align:left\"><b>"+busDetails.carrierName+"</b></td><td width=\"22%\"><table class=\"journeySpecifics\" width = \"100%\" style =\"text-align:center\"><tr><td>"+busDetails.source+"</td></tr><tr><td>"+busDetails.departure+"</td></tr></table></td><td width=\"22%\" style =\"text-align:center\">&#8594;</td><td width=\"22%\"><table class=\"journeySpecifics\" width = \"100%\" style =\"text-align:center\"><tr><td>"+busDetails.destination+"</td></tr><tr><td>"+busDetails.arrival+"</td></tr></table></td></tr></table></font></div><div class=\"col-sm-3 col-height col-middle\"><table width = \"100%\" style =\"text-align:right\"><tr><td><h4><font color=\"green\">"+busDetails.price+"/-</font><h4></td></tr></table></div></div></div>
+								 
+								 
+								 <div class=\"panel panel-default\"><div class=\"panel-body\"><div class=\"row-eq-height\"><table width = \"100%\"><tr><td width = \"25%\" style =\"text-align:left\"><img src=\"/images/"+busDetails.site+".png\" ></img></td><td width = \"50%\" style =\"text-align:center\"><b><font color=\"#808080\">"+busDetails.duration+"</font></b></td><td width = \"25%\" style =\"text-align:right\"><button type=\"button\" class=\"btn btn-success btn-arrow-right\" id = \""+busDetails.id+"\">Book</button></td></tr></table></div><hr><div class=\"row-eq-height\"><div class=\"col-sm-9 col-height col-middle\"><font color = \"grey\"><table width = \"100%\" style =\"text-align:center\"><tr><td width=\"34%\" style =\"text-align:left\"><b>"+busDetails.carrierName+"</b></td><td width=\"66%\"><table class=\"journeySpecifics\" width = \"100%\" style =\"text-align:center\"><tr><td width=\"33%\">"+busDetails.source+"</td><td class = \"journeySpecificsDuration\" width=\"34%\">"+busDetails.duration+"</td><td width=\"33%\">"+busDetails.destination+"</td></tr><tr><td width=\"33%\">"+busDetails.departure+"</td><td class = \"journeySpecificsArrow\" width=\"34%\" style =\"text-align:center\">&#8594;</td><td width=\"34%\">"+busDetails.arrival+"</td></tr></table></td></tr></table></font></div><div class=\"col-sm-3 col-height col-middle\"><table width = \"100%\" style =\"text-align:right\"><tr><td><h4><font color=\"green\">"+busDetails.price+"/-</font><h4></td></tr></table></div></div></div>

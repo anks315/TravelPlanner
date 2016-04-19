@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Eazzer - Ultimate solution for your travel problems in india - Bus,Train,Flights,Cabs search and compare in one go</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta property="og:image" content="https://scontent-a-lhr.xx.fbcdn.net/hphotos-frc3/t1.0-9/1554338_777391778945455_8375523107621198135_n.jpg"/>
+    <meta property="og:description" content="Start your Indian journey with one click. Eazzer makes it easy to compare and combine flight, air, rail,train, bus and car for better pricing and easier booking."/>
+    <meta property="og:title" content="Search &amp; Compare Cheap Buses, Trains &amp; Flights"/>
+    <meta property="og:url" content="www.eazzer.com"/>
+	<meta name="keywords" content="eazzer.com, eazzer, Online tickets, online travel india, india tracel online, eazzer india, easer, buy online tickets, buy tickets online, plan journey online, buy flight tickets online, flight, train, buses, bus ticket online,book bus tickets"/>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="/static/css/city/jquery.typeahead.css">
+  <link rel="stylesheet" href="/static/css/slider.css">
+  <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+  <!--script src="../dist/jquery.typeahead.min.js"></script-->
+  <script src="/static/js/city/jquery.typeahead.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <!--Load Script and Stylesheet -->
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<link type="text/css" href="/static/css/customButton.css" rel="stylesheet" />
+</head>
+<body>
+
+
+<div id ="allContent" class="container-fluid" >
+	
+  <div class="row">
+	   <div class="row-eq-height">
+		  <div class="col-sm-1 col-height col-middle">
+		  </div>
+		  <div class="col-sm-10 col-height col-middle">
+		  	
+				   <div class="row-eq-height">
+						<div class="col-sm-2 col-height col-middle">
+						</div>
+						<div class="col-sm-8 col-height col-middle">
+							<br/>
+							<div id="planner"></div>
+						</div>
+						<div class="col-sm-2 col-height col-middle">
+						</div>
+					</div>
+			</div>
+		  <div class="col-sm-1 col-height col-middle">
+		  </div>
+	   </div>
+  </div>
+ </div> 
+<script type="text/javascript" src="/static/js/plannerMain.js"></script>
+<script 
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrNn_0wQEMpN0Kykjhffa4972v3Xbw0pw&libraries=places&language=gb">
+    </script>
+
+
+
+
+
+</body>
+</html>
