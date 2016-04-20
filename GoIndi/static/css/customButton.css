@@ -1,39 +1,4 @@
 
-
-@media screen and (max-width: 728px) {
-  #map {
-    visibility: hidden;
-    clear: both;
-    float: left;
-    margin: 10px auto 5px 20px;
-    width: 28%;
-    display: none;
-  }
-  #flightFilters {
-    visibility: hidden;
-    clear: both;
-    float: left;
-    margin: 0px auto 0px 0px;
-    width: 0%;
-    display: none;
-  }
-  #trainFilters {
-    visibility: hidden;
-    clear: both;
-    float: left;
-    margin: 0px auto 0px 0px;
-    width: 0%;
-    display: none;
-  }
-  #busFilters {
-    visibility: hidden;
-    clear: both;
-    float: left;
-    margin: 0px auto 0px 0px;
-    width: 0%;
-    display: none;
-  }
-}
 table {
 	border : 0;
     padding: 0;

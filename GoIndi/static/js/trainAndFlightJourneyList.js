@@ -14,7 +14,7 @@ function showtransportJourneyList(transportList, mode){
 			}
 			if(first == 1 && transportDetails.mode == mode){
 				if(mode == "flight"){
-					transportTotaljourney = transportTotaljourney + "<img src='/images/"+transportDetails.carrierName+".png'></img>"
+					transportTotaljourney = transportTotaljourney + "<img src='/static/images/"+transportDetails.carrierName+".png'></img>"
 				}
 				else {
 					transportTotaljourney = transportDetails.carrierName;
@@ -22,7 +22,7 @@ function showtransportJourneyList(transportList, mode){
 				first = 0;
 			} else if (transportDetails.mode == mode){
 				if(mode == "flight"){
-					transportTotaljourney = transportTotaljourney + "&nbsp;&#8594;&nbsp" + "<img src='/images/"+transportDetails.carrierName+".png'></img>";
+					transportTotaljourney = transportTotaljourney + "&nbsp;&#8594;&nbsp" + "<img src='/static/images/"+transportDetails.carrierName+".png'></img>";
 				} else {
 					transportTotaljourney = transportTotaljourney + "&nbsp;&#8594;&nbsp" + transportDetails.carrierName;
 				}
@@ -33,12 +33,12 @@ function showtransportJourneyList(transportList, mode){
 			}
 			
 			if(transportDetails.mode == "flight"){
-					transportCarrier = "<img src='/images/"+transportDetails.carrierName+".png'></img><br/>";
+					transportCarrier = "<img src='/static/images/"+transportDetails.carrierName+".png'></img><br/>";
 				} else {
 					transportCarrier = transportDetails.carrierName;
 				}
 			//details of the transportation mode
-			details = details + "<tr><td><table width='100%'><tr><td width='5%'><table><tr><td style='white-space: nowrap;'><img src='/images/"+transportDetails.mode+"2.png'>&nbsp;&nbsp;</td><td><div style='border-left:1px solid #808080;border-left-style:dotted;height:150px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;<b class='detailsMode'>"+transportCarrier+"</b><br/><div class='detailsPrice'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Price : </b>&#8377 "+transportDetails.price+"/-</div><div class='detailsDuration'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Duration : </b>"+transportDetails.duration+" hrs</div></td></tr></table></td><td width='95%' style='text-align:right'>"+siteName+"&nbsp;&nbsp;<button type='button' class='btn btn-success btn-arrow-right' id = 'hello'>Book</button>&nbsp;&nbsp;&nbsp;</td></tr></table></td></tr>";
+			details = details + "<tr><td><table width='100%'><tr><td width='5%'><table><tr><td style='white-space: nowrap;'><img src='/static/images/"+transportDetails.mode+"2.png'>&nbsp;&nbsp;</td><td><div style='border-left:1px solid #808080;border-left-style:dotted;height:150px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;<b class='detailsMode'>"+transportCarrier+"</b><br/><div class='detailsPrice'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Price : </b>&#8377 "+transportDetails.price+"/-</div><div class='detailsDuration'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Duration : </b>"+transportDetails.duration+" hrs</div></td></tr></table></td><td width='95%' style='text-align:right'>"+siteName+"&nbsp;&nbsp;<button type='button' class='btn btn-success btn-arrow-right' id = 'hello'>Book</button>&nbsp;&nbsp;&nbsp;</td></tr></table></td></tr>";
 			
 			if(j==transportList[i].parts.length-1){
 				//details of last station
@@ -50,7 +50,7 @@ function showtransportJourneyList(transportList, mode){
 			}
 			
 			//bar displaying journey division on the main widget
-			var journeyDividerContent = journeyDividerContent + "<td style ='padding: 1px'><img src='/images/"+transportDetails.mode+"2.png'/></td>";
+			var journeyDividerContent = journeyDividerContent + "<td style ='padding: 1px'><img src='/static/images/"+transportDetails.mode+"2.png'/></td>";
 		}
 			var travelSpecificWid = travelSpecificsWidget(transportTotalDetails.source,transportTotalDetails.destination,transportTotalDetails.arrival,transportTotalDetails.departure,transportTotalDetails.duration);
 			
