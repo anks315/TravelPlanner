@@ -5,6 +5,9 @@ import hmac
 import json
 import trainConstants
 import urllib
+import concurrent.futures
+import time
+import  logging
 
 
 def generateHash():
@@ -78,7 +81,7 @@ class PlaceToStationCodesCache:
 
     def getStationsByCode(self,stationName):
         if stationName in PlaceToStationCodesCache.cityToStationsMap:
-            return self.cityToStationsMap[stationName]
+            return PlaceToStationCodesCache.cityToStationsMap[stationName]
         else:
             jsonResponseNameToCode = urllib.urlopen("http://api.railwayapi.com/name_to_code/station/"+ stationName + "/apikey/" + trainConstants.ERAILWAYAPI_APIKEY + "/").read()
             stationList = self.parseStationNameToStationCodes(jsonResponseNameToCode)
@@ -97,33 +100,46 @@ class TrainController:
         return availableTrainNumbers
 
 
-    def getTrainFare(self,sourceStation,destinationStation,journeyDate,trainNumber,trainCounter,resultJsonData):
+    def getTrainFare(self,sourceStation,destinationStation,journeyDate,trainNumber,trainCounter):
         jsonResponseTrainFare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainNumber + "/source/"+ sourceStation+ "/dest/"+ destinationStation+ "/age/18/quota/GN/doj/"+ journeyDate+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
         fareData=parseAndReturnFare(jsonResponseTrainFare,trainCounter)
         if not fareData:
-            pass
+            return
         else:
-            resultJsonData["train"].append(fareData)
+            return fareData
+
 
 
     def findTrainsBetweenStations(self,sourceStationList,destinationStationList,journeyDate):
         resultJsonData = {}
         resultJsonData["train"]=[]
         availableTrainNumbers=set([])
-        hack =0
-        for sourceStation in sourceStationList:
-            if hack==0:
-                for destinationStation in destinationStationList:
-                    availableTrainNumbersList = self.getTrainBetweenStations(sourceStation,destinationStation,journeyDate)
-                    availableTrainNumbers = availableTrainNumbers.union(availableTrainNumbersList)
-            hack=1
+        futures =[]
+        start_time = time.time()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            hack =0
+            for sourceStation in sourceStationList:
+                if hack==0:
+                    for destinationStation in destinationStationList:
+                        futures.append(executor.submit(self.getTrainBetweenStations,sourceStation,destinationStation,journeyDate))
+                        #availableTrainNumbersList = self.getTrainBetweenStations(sourceStation,destinationStation,journeyDate)
+                        #availableTrainNumbers = availableTrainNumbers.union(availableTrainNumbersList)
+                hack=1
         trainCounter=0
+        for future in futures:
+            availableTrainNumbers = availableTrainNumbers.union(future.result())
 
-        for trainNumber in availableTrainNumbers:
-            trainCounter=trainCounter+1
-            if trainCounter<10:
-                self.getTrainFare(trainNumberstoDurationMap[trainNumber]["srcStation"],trainNumberstoDurationMap[trainNumber]["destStation"],journeyDate,trainNumber,trainCounter,resultJsonData)
+        farefutures=[]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            for trainNumber in availableTrainNumbers:
+                trainCounter=trainCounter+1
+                if trainCounter<10:
+                    farefutures.append(executor.submit(self.getTrainFare,trainNumberstoDurationMap[trainNumber]["srcStation"],trainNumberstoDurationMap[trainNumber]["destStation"],journeyDate,trainNumber,trainCounter))
 
+        for future in farefutures:
+            resultJsonData["train"].append(future.result())
+        print("--- %s seconds ---" % (time.time() - start_time))
+        logging.error(time.time() - start_time)
         return resultJsonData
 
 
