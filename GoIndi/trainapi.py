@@ -137,7 +137,11 @@ class TrainController:
                     farefutures.append(executor.submit(self.getTrainFare,trainNumberstoDurationMap[trainNumber]["srcStation"],trainNumberstoDurationMap[trainNumber]["destStation"],journeyDate,trainNumber,trainCounter))
 
         for future in farefutures:
-            resultJsonData["train"].append(future.result())
+            fareData = future.result()
+            if not fareData:
+                pass
+            else:
+                resultJsonData["train"].append(future.result())
         print("--- %s seconds ---" % (time.time() - start_time))
         logging.error(time.time() - start_time)
         return resultJsonData
