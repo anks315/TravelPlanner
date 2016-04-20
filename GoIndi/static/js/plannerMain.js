@@ -39,11 +39,11 @@ function showPlanner(plannerContainer){
 		$( "#search" ).click(function() {
 				var failure = "FALSE";
 			    if(placeFrom == "EMPTY" || IsFromChange==false){
-					document.getElementById("from").value="From:";
+					document.getElementById("from").value="";
 					failure = "TRUE"
 				}
 				if(placeTo == "EMPTY" || IsToChange==false){
-					document.getElementById("to").value="To:";
+					document.getElementById("to").value="";
 					failure = "TRUE"
 				}
 				var depDate = document.getElementById("departureBox").value;

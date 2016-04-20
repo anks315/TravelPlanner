@@ -43,7 +43,7 @@ function showSummary(){
 		var wid = "";
 		var division = 100/options[i].parts.length;
 		for(j=0; j < options[i].parts.length; j++){
-			wid = wid+"<td width = \""+division+"%\"><table width = \"100%\"><tr><td width = \"10%\"><img src=\"/images/"+options[i].parts[j].mode+".png\"/></td><td width = \"90%\">&nbsp<hr width=\"100%\" style='margin-top:0em;margin-bottom:0em'/>&nbsp</td><tr></table></td>"
+			wid = wid+"<td width = \""+division+"%\"><table width = \"100%\"><tr><td width = \"10%\"><img src=\"/static/images/"+options[i].parts[j].mode+".png\"/></td><td width = \"90%\">&nbsp<hr width=\"100%\" style='margin-top:0em;margin-bottom:0em'/>&nbsp</td><tr></table></td>"
 		}
 		if(options[i].full[0].price == leastPrice){
 			var priceColor = "green";
