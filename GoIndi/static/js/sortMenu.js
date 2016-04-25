@@ -17,9 +17,9 @@ function showSortMenuMain(){
 	
 	showBusJourneyList(busList);
 	//showtransportJourneyList(trainList,"train");
-	showtransportJourneyList(flightList,"flight");
+	//showtransportJourneyList(flightList,"flight");
 	//trainFilters();
-	flightFilters();
+	//flightFilters();
 	busFilters();
 	
 	$( "#busDataHead" ).click(function() {
