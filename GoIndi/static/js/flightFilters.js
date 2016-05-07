@@ -5,13 +5,14 @@ var maxPrice = 0;
 var filterflightPrice;
 var filterflightDuration;
 var filterflightMinDeparture;
+
 var filterflightMaxDeparture;
 var filterflightMinArrival;
 var filterflightMaxArrival;
 
 function flightFilters(){
 	var output = "<div class='panel panel-default'><div class='panel-body'><p><label for='flightAmount'>Price range:</label><div id='flightAmount' style='border:0; color:#f6931f; font-weight:bold;'></div></p><div id='flightPriceRange'></div><br/><p><label for='flightTime'>Travel time range:</label><div id='flightTime' style='border:0; color:#f6931f; font-weight:bold;'></div></p><div id='flightDurationRange'></div><br/><p><label for='flightDeparture'>Departure time range:</label><div id='flightDeparture' style='border:0; color:#f6931f; font-weight:bold;'></div></p><div id='flightDepartureTimeRange'></div><br/><p><label for='flightArrival'>Arrival time range:</label><div id='flightArrival' style='border:0; color:#f6931f; font-weight:bold;'></div></p><div id='flightArrivalTimeRange'></div><br/></div></div></div>"
-	
+
 	document.getElementById("flightFilters").innerHTML = output;
 	if($("#flightDataHead").hasClass("active")){
 		$("#flightFilters").show();
@@ -22,21 +23,21 @@ function flightFilters(){
 	flightLeastDuration = leastDurArr[1]*1+leastDurArr[0]*60;
 	maxPrice = flightLeastPrice;
 	var maxDuration = flightLeastDuration;
-	for (i = 1; i < flightList.length; i++) { 
+	for (i = 1; i < flightList.length; i++) {
 		var price = flightList[i].full[0].price;
 		var duration = flightList[i].full[0].duration;
 		var durArr = duration.split(":");
 		duration = durArr[1]*1+durArr[0]*60;
-		
-		if((price*1) < (trainLeastPrice*1)){
-			trainLeastPrice = price;
+
+		if((price*1) < (flightLeastPrice*1)){
+			flightLeastPrice = price;
 		}
 		if((price*1) > (maxPrice*1)){
 			maxPrice = price;
 		}
-		
-		if((duration*1) < (trainLeastDuration*1)){
-			trainLeastDuration = duration;
+
+		if((duration*1) < (flightLeastDuration*1)){
+			flightLeastDuration = duration;
 		}
 		if((duration*1) > (maxDuration*1)){
 			maxDuration = duration;

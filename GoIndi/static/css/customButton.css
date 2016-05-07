@@ -41,13 +41,14 @@ table {
 	color : blue;
 }
 .journeySpecifics{
-	font-size : 90%;
+	font-size : 85%;
+	color:#2C3539;
 }
 .journeySpecificsArrow{
 	font-size : 250%;
 }
 .journeySpecificsDuration{
-	font-size : 80%;
+	font-size : 100%;
 }
 
 .detailsCity{

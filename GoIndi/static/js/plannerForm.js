@@ -81,6 +81,14 @@ function showPlanner(plannerContainer){
 					flightFilters();
 				  }
 				});
+			$.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
+				  if (err != "success") {
+				  } else {
+					  busList = data.bus
+					showBusJourneyList(busList);
+					busFilters();
+				  }
+				});
 				$("#mainPanel").show();
 				showSummary();
 				showSortMenuMain();
@@ -199,6 +207,14 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 					  flightList = data.flight
 					showtransportJourneyList(flightList,"flight");
 					flightFilters();
+				  }
+				});
+	 $.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
+				  if (err != "success") {
+				  } else {
+					  busList = data.bus
+					showBusJourneyList(busList);
+					busFilters();
 				  }
 				});
 	initAutocomplete();
