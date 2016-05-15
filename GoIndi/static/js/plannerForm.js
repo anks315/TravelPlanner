@@ -64,7 +64,17 @@ function showPlanner(plannerContainer){
 				var fromStation = document.getElementById('from').value.split(",")[0];
 				var toStation = document.getElementById('to').value.split(",")[0];
 				var depDateArr = document.getElementById('departureBox').value.split("/");
-				var depDate = depDateArr[1]+"-"+depDateArr[0]+"-"+depDateArr[2]
+				var depDate = depDateArr[1]+"-"+depDateArr[0]+"-"+depDateArr[2];
+					var loadingBus = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Loading best bus options<br/></td></tr><tr><td><br/><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></td></tr></table></div>'
+					document.getElementById("busData").innerHTML = loadingBus;
+					document.getElementById("busFilters").innerHTML = '';
+					var loadingTrain = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Loading best train options<br/></td></tr><tr><td><br/><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></td></tr></table></div>'
+					document.getElementById("trainData").innerHTML = loadingTrain;
+					document.getElementById("trainFilters").innerHTML = '';
+					var loadingFlight = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Loading best flight options<br/></td></tr><tr><td><br/><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></td></tr></table></div>'
+					document.getElementById("flightData").innerHTML = loadingFlight;
+					document.getElementById("flightFilters").innerHTML = '';
+				// change in documeent ready as well, if changed here
 				$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+'', function(data, err) {
 				  if (err != "success") {
 				  } else {
@@ -81,7 +91,7 @@ function showPlanner(plannerContainer){
 					flightFilters();
 				  }
 				});
-			$.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
+				$.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
 				  if (err != "success") {
 				  } else {
 					  busList = data.bus
@@ -191,6 +201,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 	var toStation = document.getElementById('to').value.split(",")[0];
 	var depDateArr = document.getElementById('departureBox').value.split("/");
 	var depDate = depDateArr[1]+"-"+depDateArr[0]+"-"+depDateArr[2]
+	//change in the search click as well if changed here
 	$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
 					
 				  if (err != "success") {

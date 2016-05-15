@@ -2,16 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cb7e313e-c351-4cb2-b57d-9abfd7ef307d" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/GoIndi/busapi.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/images/flight.png" afterPath="$PROJECT_DIR$/GoIndi/static/images/flight.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/images/flight2.png" afterPath="$PROJECT_DIR$/GoIndi/static/images/flight2.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/images/train.png" afterPath="$PROJECT_DIR$/GoIndi/static/images/train.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/images/train2.png" afterPath="$PROJECT_DIR$/GoIndi/static/images/train2.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/flightapi.py" afterPath="$PROJECT_DIR$/GoIndi/flightapi.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/busapi.py" afterPath="$PROJECT_DIR$/GoIndi/busapi.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/css/customButton.css" afterPath="$PROJECT_DIR$/GoIndi/static/css/customButton.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/js/busFilters.js" afterPath="$PROJECT_DIR$/GoIndi/static/js/busFilters.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/js/busJourneyList.js" afterPath="$PROJECT_DIR$/GoIndi/static/js/busJourneyList.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/js/flightFilters.js" afterPath="$PROJECT_DIR$/GoIndi/static/js/flightFilters.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/js/plannerForm.js" afterPath="$PROJECT_DIR$/GoIndi/static/js/plannerForm.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/js/sortMenu.js" afterPath="$PROJECT_DIR$/GoIndi/static/js/sortMenu.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/views.py" afterPath="$PROJECT_DIR$/GoIndi/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TravelPlanner/urls.py" afterPath="$PROJECT_DIR$/TravelPlanner/urls.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/js/sortUtility.js" afterPath="$PROJECT_DIR$/GoIndi/static/js/sortUtility.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/js/trainAndFlightJourneyList.js" afterPath="$PROJECT_DIR$/GoIndi/static/js/trainAndFlightJourneyList.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/js/trainFilters.js" afterPath="$PROJECT_DIR$/GoIndi/static/js/trainFilters.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GoIndi/static/js/utils.js" afterPath="$PROJECT_DIR$/GoIndi/static/js/utils.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/main.html" afterPath="$PROJECT_DIR$/templates/main.html" />
     </list>
     <ignored path="TravelPlanner.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -86,15 +92,9 @@
       <file leaf-file-name="plannerForm.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/GoIndi/static/js/plannerForm.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1887">
-              <caret line="111" column="70" selection-start-line="111" selection-start-column="61" selection-end-line="111" selection-end-column="70" />
-              <folding>
-                <marker date="1462378315787" expanded="true" signature="654:734" placeholder="..." />
-                <marker date="1462378315787" expanded="true" signature="886:966" placeholder="..." />
-                <marker date="1462378315787" expanded="true" signature="1105:1185" placeholder="..." />
-                <marker date="1462378315787" expanded="true" signature="1330:1410" placeholder="..." />
-                <marker date="1462378315787" expanded="true" signature="1726:1818" placeholder="..." />
-              </folding>
+            <state relative-caret-position="2057">
+              <caret line="121" column="70" selection-start-line="121" selection-start-column="70" selection-end-line="121" selection-end-column="70" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -122,8 +122,8 @@
       <file leaf-file-name="busapi.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/GoIndi/busapi.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="63" column="63" selection-start-line="63" selection-start-column="63" selection-end-line="63" selection-end-column="63" />
+            <state relative-caret-position="255">
+              <caret line="15" column="27" selection-start-line="15" selection-start-column="27" selection-end-line="15" selection-end-column="27" />
               <folding>
                 <element signature="e#22#33#0" expanded="true" />
               </folding>
@@ -137,12 +137,12 @@
             <state relative-caret-position="0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding>
-                <marker date="1462609119182" expanded="true" signature="667:682" placeholder="..." />
-                <marker date="1462609119182" expanded="true" signature="784:800" placeholder="..." />
-                <marker date="1462609119182" expanded="true" signature="1138:1153" placeholder="..." />
-                <marker date="1462609119182" expanded="true" signature="1276:1293" placeholder="..." />
-                <marker date="1462609119182" expanded="true" signature="1403:1419" placeholder="..." />
-                <marker date="1462609119182" expanded="true" signature="1491:1511" placeholder="..." />
+                <marker date="1463196570015" expanded="true" signature="667:682" placeholder="..." />
+                <marker date="1463196570015" expanded="true" signature="784:800" placeholder="..." />
+                <marker date="1463196570015" expanded="true" signature="1153:1168" placeholder="..." />
+                <marker date="1463196570015" expanded="true" signature="1291:1308" placeholder="..." />
+                <marker date="1463196570015" expanded="true" signature="1418:1434" placeholder="..." />
+                <marker date="1463196570015" expanded="true" signature="1506:1526" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -166,6 +166,7 @@
     </FindUsagesManager>
   </component>
   <component name="Git.Settings">
+    <option name="UPDATE_TYPE" value="MERGE" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
@@ -654,10 +655,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="0" width="1370" height="735" extended-state="1" />
-    <editor active="false" />
+    <frame x="-7" y="0" width="1370" height="735" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19793205" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1957164" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2416" sideWeight="0.3982366" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -667,7 +668,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3488" sideWeight="0.6017634" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3424" sideWeight="0.6017634" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1005,7 +1006,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2419">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1048,22 +1048,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/GoIndi/static/js/plannerForm.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1887">
-          <caret line="111" column="70" selection-start-line="111" selection-start-column="61" selection-end-line="111" selection-end-column="70" />
-          <folding>
-            <marker date="1462378315787" expanded="true" signature="654:734" placeholder="..." />
-            <marker date="1462378315787" expanded="true" signature="886:966" placeholder="..." />
-            <marker date="1462378315787" expanded="true" signature="1105:1185" placeholder="..." />
-            <marker date="1462378315787" expanded="true" signature="1330:1410" placeholder="..." />
-            <marker date="1462378315787" expanded="true" signature="1726:1818" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python27/Lib/site-packages/requests/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13073">
-          <caret line="794" column="0" selection-start-line="794" selection-start-column="0" selection-end-line="794" selection-end-column="0" />
+        <state relative-caret-position="2057">
+          <caret line="121" column="70" selection-start-line="121" selection-start-column="70" selection-end-line="121" selection-end-column="70" />
           <folding />
         </state>
       </provider>
@@ -1086,6 +1072,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/GoIndi/flightapi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1190">
+          <caret line="72" column="24" selection-start-line="72" selection-start-column="8" selection-end-line="72" selection-end-column="24" />
+          <folding>
+            <element signature="e#22#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/GoIndi/trainapi.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2261">
@@ -1094,10 +1090,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/GoIndi/flightapi.py">
+    <entry file="file://$PROJECT_DIR$/GoIndi/busapi.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1190">
-          <caret line="72" column="24" selection-start-line="72" selection-start-column="8" selection-end-line="72" selection-end-column="24" />
+        <state relative-caret-position="255">
+          <caret line="15" column="27" selection-start-line="15" selection-start-column="27" selection-end-line="15" selection-end-column="27" />
           <folding>
             <element signature="e#22#33#0" expanded="true" />
           </folding>
@@ -1109,23 +1105,21 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1462609119182" expanded="true" signature="667:682" placeholder="..." />
-            <marker date="1462609119182" expanded="true" signature="784:800" placeholder="..." />
-            <marker date="1462609119182" expanded="true" signature="1138:1153" placeholder="..." />
-            <marker date="1462609119182" expanded="true" signature="1276:1293" placeholder="..." />
-            <marker date="1462609119182" expanded="true" signature="1403:1419" placeholder="..." />
-            <marker date="1462609119182" expanded="true" signature="1491:1511" placeholder="..." />
+            <marker date="1463196570015" expanded="true" signature="667:682" placeholder="..." />
+            <marker date="1463196570015" expanded="true" signature="784:800" placeholder="..." />
+            <marker date="1463196570015" expanded="true" signature="1153:1168" placeholder="..." />
+            <marker date="1463196570015" expanded="true" signature="1291:1308" placeholder="..." />
+            <marker date="1463196570015" expanded="true" signature="1418:1434" placeholder="..." />
+            <marker date="1463196570015" expanded="true" signature="1506:1526" placeholder="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/GoIndi/busapi.py">
+    <entry file="file://C:/Python27/Lib/site-packages/requests/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="63" column="63" selection-start-line="63" selection-start-column="63" selection-end-line="63" selection-end-column="63" />
-          <folding>
-            <element signature="e#22#33#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="13073">
+          <caret line="794" column="0" selection-start-line="794" selection-start-column="0" selection-end-line="794" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

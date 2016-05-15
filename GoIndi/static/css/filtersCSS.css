@@ -1,0 +1,33 @@
+.filterValue { 
+	border:0; 
+	color:#f6931f; 
+	font-size:90%;
+}
+.filterLabel { 
+	border:0; 
+	font-weight:bold;
+	color:#056273; 
+}
+.checkboxLabel { 
+	border:0; 
+	color:gray; 
+	font-size:80%; 
+}
+
+.divisionHover{
+	border-bottom-color:white !important;
+	background-color:#067084;
+	
+}
+.divisionSelected{
+	background-color:#0099ff;
+}
+.divisionEnabled{
+}
+
+td a {
+    display:block;
+    width:100%;
+}
+
+

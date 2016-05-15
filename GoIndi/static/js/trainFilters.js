@@ -10,7 +10,7 @@ var filterTrainMinArrival;
 var filterTrainMaxArrival;
 
 function trainFilters(){
-	var output = "<div class='panel panel-default'><div class='panel-body'><p><label for='trainAmount'>Price range:</label><div id='trainAmount' style='border:0; color:#f6931f; font-weight:bold;'></div></p><div id='trainPriceRange'></div><br/><p><label for='trainTime'>Travel time range:</label><div id='trainTime' style='border:0; color:#f6931f; font-weight:bold;'></div></p><div id='trainDurationRange'></div><br/><p><label for='trainDeparture'>Departure time range:</label><div id='trainDeparture' style='border:0; color:#f6931f; font-weight:bold;'></div></p><div id='trainDepartureTimeRange'></div><br/><p><label for='trainArrival'>Arrival time range:</label><div id='trainArrival' style='border:0; color:#f6931f; font-weight:bold;'></div></p><div id='trainArrivalTimeRange'></div><br/></div></div></div>"
+	var output = "<div class='panel panel-default'><div class='panel-body'><p><label for='trainAmount' class='filterLabel'>Price range:</label><div id='trainAmount' class='filterValue'></div></p><div id='trainPriceRange'></div><br/><p><label for='trainTime' class='filterLabel'>Travel time range:</label><div id='trainTime' class='filterValue'></div></p><div id='trainDurationRange'></div><br/><p><label for='trainDeparture' class='filterLabel'>Departure time range:</label><div id='trainDeparture' class='filterValue'></div></p><div id='trainDepartureTimeRange'></div><br/><p><label for='trainArrival' class='filterLabel'>Arrival time range:</label><div id='trainArrival' class='filterValue'></div></p><div id='trainArrivalTimeRange'></div><br/></div></div></div>"
 	
 	document.getElementById("trainFilters").innerHTML = output;
 	if($("#trainDataHead").hasClass("active")){
@@ -84,7 +84,7 @@ function trainFilters(){
       min: 0,
       max: 1440,
       slide: function( event, ui ) {
-        document.getElementById("trainDeparture").innerHTML = ((ui.values[0]-(ui.values[0]%60))/60)+":"+minutes((ui.values[0]%60)/100)+ " hrs - " + (((ui.values[1])-((ui.values[1])%60))/60)+":"+minutes(((ui.values[1])%60)/100) + " hrs";
+        document.getElementById("trainDeparture").innerHTML = getIn12HrFormat(((ui.values[0]-(ui.values[0]%60))/60)+":"+minutes((ui.values[0]%60)/100))+ " - " + getIn12HrFormat((((ui.values[1])-((ui.values[1])%60))/60)+":"+minutes(((ui.values[1])%60)/100));
       },
 	  change: function( event, ui ) {
         filterTrainMinDeparture=ui.values[0];
@@ -94,7 +94,7 @@ function trainFilters(){
     });
 	filterTrainMinDeparture=0;
 	filterTrainMaxDeparture=1440;
-    document.getElementById("trainDeparture").innerHTML = "0:00 hrs - 24:00 hrs";
+    document.getElementById("trainDeparture").innerHTML = "12:00 AM - 12:00 PM";
 	
 	$( "#trainArrivalTimeRange" ).slider({
       range: true,
@@ -102,7 +102,7 @@ function trainFilters(){
       min: 0,
       max: 1440,
       slide: function( event, ui ) {
-        document.getElementById("trainArrival").innerHTML = ((ui.values[0]-(ui.values[0]%60))/60)+":"+minutes((ui.values[0]%60)/100)+ " hrs - " + (((ui.values[1])-((ui.values[1])%60))/60)+":"+minutes(((ui.values[1])%60)/100) + " hrs";
+        document.getElementById("trainArrival").innerHTML = getIn12HrFormat(((ui.values[0]-(ui.values[0]%60))/60)+":"+minutes((ui.values[0]%60)/100))+ " - " + getIn12HrFormat((((ui.values[1])-((ui.values[1])%60))/60)+":"+minutes(((ui.values[1])%60)/100));
       },
 	  change: function( event, ui ) {
         filterTrainMinArrival=ui.values[0];
@@ -112,7 +112,7 @@ function trainFilters(){
     });
 	filterTrainMinArrival=0;
 	filterTrainMaxArrival=1440;
-    document.getElementById("trainArrival").innerHTML = "0:00 hrs - 24:00 hrs";
+    document.getElementById("trainArrival").innerHTML = "12:00 AM - 12:00 PM";
 						
 }
 function trainFilter(){
@@ -131,15 +131,4 @@ function trainFilter(){
 		}
 		}
 		showtransportJourneyList(newTrainList,"train");
-}
-function minutes(num){
-	if(num == 0) {
-		return "00";
-	}
-	var str = num.toString();
-	var newStr = str.split(".")[1];
-	if(newStr.length==1){
-		newStr=newStr+'0';
-	}
-	return newStr;
 }

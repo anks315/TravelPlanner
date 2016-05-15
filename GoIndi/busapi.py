@@ -28,8 +28,12 @@ class BusController:
                 route["parts"] = []
                 part = {}
                 part["carrierName"] = option["operatorName"]
+                priceList = option["fare"].split(',')
+                prices = ''
+                for price in priceList:
+                    prices = prices + str(price.split('.')[0])+','
                 part["busType"]=option["busType"]
-                part["price"]=option["fare"]
+                part["price"]=prices
                 part["mode"]="bus"
                 arrival = option["arrivalTime"]
                 departure = option["departureTime"]
@@ -59,14 +63,15 @@ class BusController:
                 part["duration"] = str(durHr)+":"+str(durMin)
                 part["source"] = source
                 part["destination"] = destination
-                part["arrival"] = option["arrivalTime"]
-                part["departure"] = option["departureTime"]
+                part["arrival"] = str(arrHr)+':'+str(arrMin)
+                part["departure"] = str(depHr)+':'+str(depMin)
                 part["availableSeats"] = option["availableSeats"]
                 part["id"] = "bus"+str(counter)+str("1")
+                part["inventoryType"] = option["inventoryType"]
+                part["routeScheduleId"]= option["routeScheduleId"]
                 route["parts"].append(part)
                 full=part
                 full["id"]="bus"+str(counter)
-                full["site"]="travelyaari"
 
                 route["full"].append(full)
 
