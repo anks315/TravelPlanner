@@ -15,12 +15,12 @@ function showSortMenuMain(){
 	var loadingFlight = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Loading best flight options<br/></td></tr><tr><td><br/><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></td></tr></table></div>'
 	document.getElementById("flightData").innerHTML = loadingFlight;
 	
-	showBusJourneyList(busList);
+	//showBusJourneyList(busList);
 	//showtransportJourneyList(trainList,"train");
 	//showtransportJourneyList(flightList,"flight");
 	//trainFilters();
 	//flightFilters();
-	busFilters();
+	//busFilters();
 	
 	$( "#busDataHead" ).click(function() {
 				$("#flightFilters").hide();

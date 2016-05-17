@@ -5,13 +5,14 @@ var maxPrice = 0;
 var filterflightPrice;
 var filterflightDuration;
 var filterflightMinDeparture;
+
 var filterflightMaxDeparture;
 var filterflightMinArrival;
 var filterflightMaxArrival;
 
 function flightFilters(){
-	var output = "<div class='panel panel-default'><div class='panel-body'><p><label for='flightAmount'>Price range:</label><div id='flightAmount' style='border:0; color:#f6931f; font-weight:bold;'></div></p><div id='flightPriceRange'></div><br/><p><label for='flightTime'>Travel time range:</label><div id='flightTime' style='border:0; color:#f6931f; font-weight:bold;'></div></p><div id='flightDurationRange'></div><br/><p><label for='flightDeparture'>Departure time range:</label><div id='flightDeparture' style='border:0; color:#f6931f; font-weight:bold;'></div></p><div id='flightDepartureTimeRange'></div><br/><p><label for='flightArrival'>Arrival time range:</label><div id='flightArrival' style='border:0; color:#f6931f; font-weight:bold;'></div></p><div id='flightArrivalTimeRange'></div><br/></div></div></div>"
-	
+	var output = "<div class='panel panel-default'><div class='panel-body'><p><label for='flightAmount' class='filterLabel'>Price range:</label><div id='flightAmount' class='filterValue'></div></p><div id='flightPriceRange'></div><br/><p><label for='flightTime' class='filterLabel'>Travel time range:</label><div id='flightTime' class='filterValue'></div></p><div id='flightDurationRange'></div><br/><p><label for='flightDeparture' class='filterLabel'>Departure time range:</label><div id='flightDeparture' class='filterValue'></div></p><div id='flightDepartureTimeRange'></div><br/><p><label for='flightArrival' class='filterLabel'>Arrival time range:</label><div id='flightArrival' class='filterValue'></div></p><div id='flightArrivalTimeRange'></div><br/></div></div></div>"
+
 	document.getElementById("flightFilters").innerHTML = output;
 	if($("#flightDataHead").hasClass("active")){
 		$("#flightFilters").show();
@@ -22,21 +23,21 @@ function flightFilters(){
 	flightLeastDuration = leastDurArr[1]*1+leastDurArr[0]*60;
 	maxPrice = flightLeastPrice;
 	var maxDuration = flightLeastDuration;
-	for (i = 1; i < flightList.length; i++) { 
+	for (i = 1; i < flightList.length; i++) {
 		var price = flightList[i].full[0].price;
 		var duration = flightList[i].full[0].duration;
 		var durArr = duration.split(":");
 		duration = durArr[1]*1+durArr[0]*60;
-		
-		if((price*1) < (trainLeastPrice*1)){
-			trainLeastPrice = price;
+
+		if((price*1) < (flightLeastPrice*1)){
+			flightLeastPrice = price;
 		}
 		if((price*1) > (maxPrice*1)){
 			maxPrice = price;
 		}
-		
-		if((duration*1) < (trainLeastDuration*1)){
-			trainLeastDuration = duration;
+
+		if((duration*1) < (flightLeastDuration*1)){
+			flightLeastDuration = duration;
 		}
 		if((duration*1) > (maxDuration*1)){
 			maxDuration = duration;
@@ -84,7 +85,7 @@ function flightFilters(){
       min: 0,
       max: 1440,
       slide: function( event, ui ) {
-        document.getElementById("flightDeparture").innerHTML = ((ui.values[0]-(ui.values[0]%60))/60)+":"+minutes((ui.values[0]%60)/100)+ " hrs - " + (((ui.values[1])-((ui.values[1])%60))/60)+":"+minutes(((ui.values[1])%60)/100) + " hrs";
+        document.getElementById("flightDeparture").innerHTML = getIn12HrFormat(((ui.values[0]-(ui.values[0]%60))/60)+":"+minutes((ui.values[0]%60)/100))+ " - " + getIn12HrFormat((((ui.values[1])-((ui.values[1])%60))/60)+":"+minutes(((ui.values[1])%60)/100));
       },
 	  change: function( event, ui ) {
         filterflightMinDeparture=ui.values[0];
@@ -94,7 +95,7 @@ function flightFilters(){
     });
 	filterflightMinDeparture=0;
 	filterflightMaxDeparture=1440;
-    document.getElementById("flightDeparture").innerHTML = "0:00 hrs - 24:00 hrs";
+    document.getElementById("flightDeparture").innerHTML = "12:00 AM - 12:00 PM";
 	
 	$( "#flightArrivalTimeRange" ).slider({
       range: true,
@@ -102,7 +103,7 @@ function flightFilters(){
       min: 0,
       max: 1440,
       slide: function( event, ui ) {
-        document.getElementById("flightArrival").innerHTML = ((ui.values[0]-(ui.values[0]%60))/60)+":"+minutes((ui.values[0]%60)/100)+ " hrs - " + (((ui.values[1])-((ui.values[1])%60))/60)+":"+minutes(((ui.values[1])%60)/100) + " hrs";
+        document.getElementById("flightArrival").innerHTML = getIn12HrFormat(((ui.values[0]-(ui.values[0]%60))/60)+":"+minutes((ui.values[0]%60)/100))+ " - " + getIn12HrFormat((((ui.values[1])-((ui.values[1])%60))/60)+":"+minutes(((ui.values[1])%60)/100));
       },
 	  change: function( event, ui ) {
         filterflightMinArrival=ui.values[0];
@@ -112,7 +113,7 @@ function flightFilters(){
     });
 	filterflightMinArrival=0;
 	filterflightMaxArrival=1440;
-    document.getElementById("flightArrival").innerHTML = "0:00 hrs - 24:00 hrs";
+    document.getElementById("flightArrival").innerHTML = "12:00 AM - 12:00 PM";
 						
 }
 function flightFilter(){
@@ -131,15 +132,4 @@ function flightFilter(){
 		}
 		}
 		showtransportJourneyList(newflightList,"flight");
-}
-function minutes(num){
-	if(num == 0) {
-		return "00";
-	}
-	var str = num.toString();
-	var newStr = str.split(".")[1];
-	if(newStr.length==1){
-		newStr=newStr+'0';
-	}
-	return newStr;
 }

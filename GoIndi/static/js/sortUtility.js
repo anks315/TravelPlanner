@@ -1,7 +1,7 @@
 function SortListByPrice(list){
 				function SortByPrice(a,b){
-					var aPrice = a.full[0].price;
-					var bPrice = b.full[0].price;
+					var aPrice = a.full[0].price.split(",")[0];
+					var bPrice = b.full[0].price.split(",")[0];
 					return (((aPrice*1)<(bPrice*1))?-1:(((aPrice*1)>(bPrice*1))?1:0));
 				}
 				list.sort(SortByPrice);

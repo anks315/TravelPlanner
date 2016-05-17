@@ -41,13 +41,15 @@ table {
 	color : blue;
 }
 .journeySpecifics{
-	font-size : 90%;
+	font-size : 85%;
+	color:grey;
+	font-weight:bold;
 }
 .journeySpecificsArrow{
 	font-size : 250%;
 }
 .journeySpecificsDuration{
-	font-size : 80%;
+	font-size : 100%;
 }
 
 .detailsCity{
@@ -73,9 +75,35 @@ table {
 	font-size : 80%;
 	color:grey;
 }
-#ex1Slider .slider-selection {
-	background-color: #BABABA;
+.slider-selection {
+	background-color: #f6931f;
 }
+.ui-slider-horizontal {
+
+  position: relative;
+  height: 6px;
+
+}
+
+.ui-slider-handle {
+
+  position: absolute;
+
+  margin: -3px 0 0 -9px;
+
+  -webkit-border-radius: 100%;
+  border-radius: 100%;
+  background: #fff;
+
+  border: 0;
+
+  height: 18px;
+
+  width: 18px;
+
+  outline: none;
+}
+  
 .barView {
 	line-height : 40% ;
 }
