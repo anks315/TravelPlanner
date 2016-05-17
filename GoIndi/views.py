@@ -9,20 +9,31 @@ import json
 from django.core.context_processors import csrf
 import trainapi
 import flightapi
+
 import busapi
 
-trainController = trainapi.TrainController()
+import models
+import trainapiNeo4j
+import trainDBscript
 
+
+trainController = trainapi.TrainController()
+trainControllerneo = trainapiNeo4j.TrainController()
 flightController = flightapi.FlightController()
 
+
 busController = busapi.BusController()
+
 def home(request):
+     trainDBscript.main()
      return render_to_response('eazzer.html',{},context_instance = RequestContext(request))
 
 def main(request):
+
      return render_to_response('main.html',{},context_instance = RequestContext(request))
 
 def test(request):
+
      return render_to_response('index.html',{},context_instance = RequestContext(request))
 
 def trainapi(request):
@@ -31,7 +42,7 @@ def trainapi(request):
     journeyDate = request.GET['journeyDate']
     #request.session['source']=source
     #request.session['destination']=destination
-    resultJsonData = trainController.getRoutes(source,destination,journeyDate)
+    resultJsonData = trainControllerneo.getRoutes(source,destination,journeyDate)
     return HttpResponse(json.dumps(resultJsonData), content_type='application/json')
 
 def busapi(request):

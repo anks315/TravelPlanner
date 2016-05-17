@@ -10,11 +10,6 @@ import time
 import  logging
 
 
-def generateHash():
-
-    digest_maker = hmac.new('f707f95d07aa0f270d07bf71c74dc915')
-    digest_maker.update('NDLSCnB10-03-20161Atimejson14c98f7aca50827374ab773844a9ca1b')
-    return digest_maker.hexdigest();
 
 trainNumberstoDurationMap ={}
 
@@ -95,14 +90,16 @@ class TrainController:
     placetoStationCodesCache = PlaceToStationCodesCache()
 
     def getTrainBetweenStations(self,sourceStation,destinationStation,journeyDate):
-        jsonResponseTrainBetweenStations = urllib.urlopen("http://api.railwayapi.com/between/source/"+ sourceStation + "/dest/" + destinationStation+ "/date/" + journeyDate +"/apikey/"+ trainConstants.ERAILWAYAPI_APIKEY +"/").read()
+        jsonResponseTrainBetweenStations = urllib.urlopen("http://api.railwayapi.com/between/source/"+ sourceStation + "/dest/" + destinationStation+ "/date/" + '05-05' +"/apikey/"+ trainConstants.ERAILWAYAPI_APIKEY +"/").read()
         availableTrainNumbers = parseTrainBetweenStationsAndReturnTrainNumber(jsonResponseTrainBetweenStations)
         return availableTrainNumbers
 
 
     def getTrainFare(self,sourceStation,destinationStation,journeyDate,trainNumber,trainCounter):
-        jsonResponseTrainFare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainNumber + "/source/"+ sourceStation+ "/dest/"+ destinationStation+ "/age/18/quota/GN/doj/"+ journeyDate+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
+        start = time.time()
+        jsonResponseTrainFare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainNumber + "/source/"+ sourceStation+ "/dest/"+ destinationStation+ "/age/18/quota/GN/doj/"+ '05-05'+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
         fareData=parseAndReturnFare(jsonResponseTrainFare,trainCounter)
+        print("--- %s api---" % (time.time() - start))
         if not fareData:
             return
         else:
@@ -117,20 +114,23 @@ class TrainController:
         futures =[]
         start_time = time.time()
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-            hack =0
+            hack=0
+
             for sourceStation in sourceStationList:
                 if hack==0:
                     for destinationStation in destinationStationList:
+                        hack=1
                         futures.append(executor.submit(self.getTrainBetweenStations,sourceStation,destinationStation,journeyDate))
                         #availableTrainNumbersList = self.getTrainBetweenStations(sourceStation,destinationStation,journeyDate)
                         #availableTrainNumbers = availableTrainNumbers.union(availableTrainNumbersList)
-                hack=1
+
         trainCounter=0
         for future in futures:
             availableTrainNumbers = availableTrainNumbers.union(future.result())
 
         farefutures=[]
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        print("--- %s seconds kjbnkj---" % (time.time() - start_time))
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             for trainNumber in availableTrainNumbers:
                 trainCounter=trainCounter+1
                 if trainCounter<10:

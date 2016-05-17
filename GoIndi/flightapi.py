@@ -3,6 +3,7 @@ __author__ = 'ankur'
 import json
 import urllib2
 from django.http import HttpResponse
+import time
 
 class FlightController:
     """Class returns all stations corresponding to a city"""
@@ -62,6 +63,7 @@ class FlightController:
         }
 
         jsonreq = json.dumps(params, encoding='utf-8')
+
         req = urllib2.Request(url, jsonreq, {'Content-Type': 'application/json'})
         flight = urllib2.urlopen(req)
         response = flight.read()
