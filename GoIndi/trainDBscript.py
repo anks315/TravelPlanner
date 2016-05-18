@@ -5,14 +5,12 @@ __author__ = 'ankur'
 
 import urllib
 import json
-import time
 import trainConstants
 import logging
 from entity import StationToTrainRelation
 import models
 import datetime
 import concurrent.futures
-import urllib.request
 """
 
 For all combinations of stations :
@@ -65,8 +63,7 @@ def parseAndReturnFare(jsonData):
 
 
 
-def getTrainFare(sourceStation,destinationStation,journeyDate,trainNumber):
-    start = time.time()
+def getTrainFare(sourceStation,destinationStation,trainNumber,srcStationInformation,destStationInformation):
     jsonResponseTrainFare=""
     try:
         jsonResponseTrainFare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainNumber + "/source/"+ sourceStation+ "/dest/"+ destinationStation+ "/age/20/quota/GN/doj/"+ '11-06'+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
@@ -79,7 +76,13 @@ def getTrainFare(sourceStation,destinationStation,journeyDate,trainNumber):
         return
     else:
         logger.info("Fare Data Fetch Success for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]",trainNumber,sourceStation,destinationStation)
-        return fareData
+    finalInformationToCommit=consolidateRelationDatatoUpdate(srcStationInformation,destStationInformation,fareData,trainNumber)
+    """call database to create relation between src station to train with relation as trainNumber """
+    try:
+        models.addStationToTrainMapping(finalInformationToCommit)
+    except:
+        logger.info("DB Error for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]",trainNumber,sourceStation,destinationStation)
+
 
 
 def parseTrainRoute(jsonData):
@@ -97,6 +100,7 @@ def parseTrainRoute(jsonData):
                 stationInformation["arrivalTime"]=route["scharr"]
                 stationInformation["departureTime"]=route["schdep"]
                 stationInformation["day"]=route["day"]
+                stationInformation["name"]=route["fullname"]
                 trainStations.append(stationInformation)
 
     return  trainStations
@@ -183,30 +187,18 @@ def main():
             logger.error("Response Error Getting Train Route  for TrainNumber[%s]",trainNumber)
         else:
             logger.info("Route Data Fetch Success for TrainNumber[%s] having train Route",trainNumber)
+        models.checkRouteStationExists(routeStations)
         index=0
-        futures =[]
         # We can use a with statement to ensure threads are cleaned up promptly
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
             # Start the load operations and mark each future with its URL
             numberOfStations=len(routeStations)
             while index < numberOfStations-1:
                 iterator=index+1
                 while iterator <= numberOfStations -1:
-                    futures.append(executor.submit(getTrainFare(routeStations[index]["code"],routeStations[iterator]["code"],'11-06-2016',trainNumber)))
-                    iterator=iterator+1
-                index=index+1
-
-        for future in concurrent.futures.as_completed(futures):
-            result = future.result
-            if result:
-                finalInformationToCommit=consolidateRelationDatatoUpdate(routeStations[index],routeStations[iterator],result,trainNumber)
-                """call database to create relation between src station to train with relation as trainNumber """
-                try:
-                    models.addStationToTrainMapping(finalInformationToCommit)
-                except:
-                    logger.info("DB Error for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]",trainNumber,routeStations[index]["code"],routeStations[iterator]["code"])
-
-
+                    executor.submit(getTrainFare(routeStations[index]["code"],routeStations[iterator]["code"],trainNumber, routeStations[index],routeStations[iterator]))
+                    iterator += 1
+                index += 1
 
 
 def read():

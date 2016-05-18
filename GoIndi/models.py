@@ -49,8 +49,7 @@ def addStationToTrainMapping(relationInformation):
     q=q+""" ,FARE_FC:"""+str(relationInformation.fare_FC)
     q=q+""" ,FARE_3E:"""+str(relationInformation.fare_3E)
     q=q+""" ,FARE_GN:"""+str(relationInformation.fare_GN) + """}]->(b) RETURN r"""
-    results = DATABASE_CONNECTION.query(q)
-    print results
+    DATABASE_CONNECTION.query(q)
     pass
 
 
@@ -62,4 +61,14 @@ def addRunningDaysToTrain(runningDays, trainNumber):
     results = DATABASE_CONNECTION.query(q)
     print results
     pass
+
+
+def checkRouteStationExists(routeStations):
+    for route in routeStations:
+        code = str(route["code"]).upper()
+        name = str(route["name"]).upper()
+        q = """ MERGE (a:TRAINSTATION {CODE : '""" + code + """'}) ON CREATE SET a.NAME = '""" + name + """', a.CITY = '""" + name + """'"""
+        DATABASE_CONNECTION.query(q)
+    pass
+
 
