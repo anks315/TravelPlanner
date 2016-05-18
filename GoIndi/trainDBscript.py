@@ -10,6 +10,9 @@ import trainConstants
 import logging
 from entity import StationToTrainRelation
 import models
+import datetime
+import concurrent.futures
+import urllib.request
 """
 
 For all combinations of stations :
@@ -24,16 +27,17 @@ For all combinations of stations :
 """
 
 filename = "C:/Users/Ankit Kumar/Downloads/tmp.txt"
+today = datetime.date.today().strftime("%Y-%m-%d")
 
 logger = logging.getLogger("TravelPlanner.Train.DBSCRIPT")
-fileHandler = logging.FileHandler('C:/Users/Ankit Kumar/Downloads/DBSCRIPT.log')
+fileHandler = logging.FileHandler('C:/Users/Ankit Kumar/Downloads/DBSCRIPT_' + today +'.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 fileHandler.setFormatter(formatter)
 logger.addHandler(fileHandler)
 logger.setLevel(logging.INFO)
 
 jsonLogger = logging.getLogger("DBSCRIPTJSON")
-jsonfileHandler = logging.FileHandler('C:/Users/Ankit Kumar/Downloads/DBSCRIPTJSON.log')
+jsonfileHandler = logging.FileHandler('C:/Users/Ankit Kumar/Downloads/DBSCRIPTJSON_'+today+'.log')
 jsonformatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 jsonfileHandler.setFormatter(jsonformatter)
 jsonLogger.addHandler(jsonfileHandler)
@@ -47,7 +51,7 @@ def parseAndReturnFare(jsonData):
             return route
     try:
         returnedFareData = json.loads(jsonData)
-        jsonLogger.info("Fare Data *** ", returnedFareData)
+        jsonLogger.info("Fare Data *** [%s]", returnedFareData)
         if returnedFareData["response_code"]==200:
             if len(returnedFareData["fare"])!=0:
                 return returnedFareData["fare"]
@@ -180,21 +184,28 @@ def main():
         else:
             logger.info("Route Data Fetch Success for TrainNumber[%s] having train Route",trainNumber)
         index=0
-        numberOfStations=len(routeStations)
-        while index < numberOfStations-1:
-            iterator=index+1
-            while iterator <= numberOfStations -1:
-                fareData = getTrainFare(routeStations[index]["code"],routeStations[iterator]["code"],'11-06-2016',trainNumber)
-                if fareData:
-                    finalInformationToCommit=consolidateRelationDatatoUpdate(routeStations[index],routeStations[iterator],fareData,trainNumber)
-                    """call database to create relation between src station to train with relation as trainNumber """
-                    try:
-                        models.addStationToTrainMapping(finalInformationToCommit)
-                    except:
-                        logger.info("DB Error for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]",trainNumber,routeStations[index]["code"],routeStations[iterator]["code"])
+        futures =[]
+        # We can use a with statement to ensure threads are cleaned up promptly
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            # Start the load operations and mark each future with its URL
+            numberOfStations=len(routeStations)
+            while index < numberOfStations-1:
+                iterator=index+1
+                while iterator <= numberOfStations -1:
+                    futures.append(executor.submit(getTrainFare(routeStations[index]["code"],routeStations[iterator]["code"],'11-06-2016',trainNumber)))
+                    iterator=iterator+1
+                index=index+1
 
-                iterator=iterator+1
-            index=index+1
+        for future in concurrent.futures.as_completed(futures):
+            result = future.result
+            if result:
+                finalInformationToCommit=consolidateRelationDatatoUpdate(routeStations[index],routeStations[iterator],result,trainNumber)
+                """call database to create relation between src station to train with relation as trainNumber """
+                try:
+                    models.addStationToTrainMapping(finalInformationToCommit)
+                except:
+                    logger.info("DB Error for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]",trainNumber,routeStations[index]["code"],routeStations[iterator]["code"])
+
 
 
 
