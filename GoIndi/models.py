@@ -8,7 +8,7 @@ def demo():
    pass
 
 
-DATABASE_CONNECTION = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="ankurjain")
+DATABASE_CONNECTION = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
 
 def getTrainsBetweenStation(srcStationCode,destinationStationCode,journeyDate):
     start = time.time()
@@ -52,3 +52,14 @@ def addStationToTrainMapping(relationInformation):
     results = DATABASE_CONNECTION.query(q)
     print results
     pass
+
+
+def addRunningDaysToTrain(runningDays, trainNumber):
+    q = """match (a:TRAIN) where a.NUMBER = '""" + trainNumber + """' set a.SUNDAY = '""" + runningDays["SUN"] + """', a.MONDAY = '""" + runningDays["MON"]
+    q=q+"""', a.TUESDAY = '""" + runningDays["TUE"] + """', a.WEDNESDAY = '""" + runningDays["WED"] + """', a.THRUSDAY = '""" + runningDays["THU"]
+    q=q+"""', a.FRIDAY = '""" + runningDays["FRI"] + """', a.SATURDAY = '""" + runningDays["SAT"] + """'"""
+
+    results = DATABASE_CONNECTION.query(q)
+    print results
+    pass
+
