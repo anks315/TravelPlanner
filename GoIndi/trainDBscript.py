@@ -174,7 +174,7 @@ def consolidateRelationDatatoUpdate(srcStationInformation,destStationInformation
 def main():
     lines = read();
     for line in lines:
-        trainNumber, trainName, station =line.split(",",2)
+        trainNumber, trainName =line.split(",",1)
         """ Get Route of Train"""
         jsonResponseTrainRoute=""
         try:

@@ -72,3 +72,11 @@ def checkRouteStationExists(routeStations):
     pass
 
 
+def checkStationExists(stations):
+    for line in stations:
+        trainNumber, trainName =line.split(",",1)
+        q = """ MERGE (a:TRAIN {NUMBER : '""" + trainNumber + """'}) ON CREATE SET a.NAME = '""" + trainName + """'"""
+        DATABASE_CONNECTION.query(q)
+    pass
+
+
