@@ -60,7 +60,6 @@ def addStationToRouteMapping(relationInformation):
     q=q+"""' ,SOURCEDAYNUMBER:"""+str(relationInformation.sourceDayNumber)
     q=q+""" ,DESTINATIONDAYNUMBER:"""+str(relationInformation.destinationDayNumber) + """}]->(b) RETURN r"""
     DATABASE_CONNECTION.query(q)
-    print q
     pass
 
 
@@ -70,7 +69,6 @@ def addRunningDaysToTrain(runningDays, trainNumber):
     q=q+"""', a.FRIDAY = '""" + runningDays["FRI"] + """', a.SATURDAY = '""" + runningDays["SAT"] + """'"""
 
     results = DATABASE_CONNECTION.query(q)
-    print results
     pass
 
 
@@ -85,6 +83,7 @@ def checkRouteStationExists(routeStations):
 
 def checkStationExists(stations):
     for line in stations:
+        print line
         trainNumber, trainName =line.split(",",1)
         q = """ MERGE (a:TRAIN {NUMBER : '""" + trainNumber + """'}) ON CREATE SET a.NAME = '""" + trainName + """'"""
         DATABASE_CONNECTION.query(q)
