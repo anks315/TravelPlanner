@@ -73,6 +73,12 @@ def getTrainFare(sourceStation,destinationStation,trainNumber,srcStationInformat
     fareData=parseAndReturnFare(jsonResponseTrainFare)
     if not fareData:
         logger.error("Response Error Getting Fare Data for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s] ",trainNumber,sourceStation,destinationStation)
+        logger.info("Adding route relation without fare for TrainNumber[%s]", trainNumber)
+        routeInformationToCommit = consolidateRouteDataToUpdate(srcStationInformation,destStationInformation,trainNumber)
+        try:
+            models.addStationToRouteMapping(routeInformationToCommit)
+        except:
+            logger.info("DB Error for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]. Failed to commit route information",trainNumber,sourceStation,destinationStation)
         return
     else:
         logger.info("Fare Data Fetch Success for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]",trainNumber,sourceStation,destinationStation)
@@ -81,7 +87,7 @@ def getTrainFare(sourceStation,destinationStation,trainNumber,srcStationInformat
     try:
         models.addStationToTrainMapping(finalInformationToCommit)
     except:
-        logger.info("DB Error for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]",trainNumber,sourceStation,destinationStation)
+        logger.info("DB Error for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]. Failed to commit fare information",trainNumber,sourceStation,destinationStation)
 
 
 
@@ -139,14 +145,7 @@ def parseAndPopulateTrainRunningDates(jsonData, trainNumber):
 
 
 def consolidateRelationDatatoUpdate(srcStationInformation,destStationInformation,fareInformation,trainNumber):
-        relation =StationToTrainRelation()
-        relation.destinationArrivalTime=destStationInformation["arrivalTime"]
-        relation.destinationDayNumber = destStationInformation["day"]
-        relation.sourceDayNumber = srcStationInformation["day"]
-        relation.sourceDepartureTime = srcStationInformation["departureTime"]
-        relation.sourceStationCode=srcStationInformation["code"]
-        relation.destinationStationCode=destStationInformation["code"]
-        relation.trainNumber=trainNumber
+        relation = consolidateRouteDataToUpdate(srcStationInformation, destStationInformation, trainNumber)
         for fare in fareInformation:
             if fare["code"]=="1A":
                 relation.fare_1A=fare["fare"]
@@ -170,12 +169,28 @@ def consolidateRelationDatatoUpdate(srcStationInformation,destStationInformation
         return relation
 
 
+def consolidateRouteDataToUpdate (srcStationInformation, destStationInformation, trainNumber):
+
+    relation = StationToTrainRelation
+    relation.destinationArrivalTime=destStationInformation["arrivalTime"]
+    relation.destinationDayNumber = destStationInformation["day"]
+    relation.sourceDayNumber = srcStationInformation["day"]
+    relation.sourceDepartureTime = srcStationInformation["departureTime"]
+    relation.sourceStationCode=srcStationInformation["code"]
+    relation.destinationStationCode=destStationInformation["code"]
+    relation.trainNumber=trainNumber
+
+    return relation
+
+
+
 
 def main():
     lines = read();
     for line in lines:
         trainNumber, trainName =line.split(",",1)
         """ Get Route of Train"""
+        logger.info("Fetching data for TrainNumber[%s]",trainNumber)
         jsonResponseTrainRoute=""
         try:
             jsonResponseTrainRoute = urllib.urlopen("http://api.railwayapi.com/route/train/" + trainNumber + "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
@@ -190,7 +205,7 @@ def main():
         models.checkRouteStationExists(routeStations)
         index=0
         # We can use a with statement to ensure threads are cleaned up promptly
-        with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             # Start the load operations and mark each future with its URL
             numberOfStations=len(routeStations)
             while index < numberOfStations-1:

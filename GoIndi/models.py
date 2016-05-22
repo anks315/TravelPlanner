@@ -53,6 +53,17 @@ def addStationToTrainMapping(relationInformation):
     pass
 
 
+def addStationToRouteMapping(relationInformation):
+    q ="""MATCH (a:TRAINSTATION),(b:TRAIN) WHERE a.CODE = '""" + relationInformation.sourceStationCode + """' AND b.NUMBER = '"""+ relationInformation.trainNumber + """' CREATE (a)-[r:""" + relationInformation.destinationStationCode
+    q=q+""" {SOURCEDEPARTURETIME: '"""+relationInformation.sourceDepartureTime
+    q=q+"""' ,DESTINATIONARRIVALTIME:'"""+relationInformation.destinationArrivalTime
+    q=q+"""' ,SOURCEDAYNUMBER:"""+str(relationInformation.sourceDayNumber)
+    q=q+""" ,DESTINATIONDAYNUMBER:"""+str(relationInformation.destinationDayNumber) + """}]->(b) RETURN r"""
+    DATABASE_CONNECTION.query(q)
+    print q
+    pass
+
+
 def addRunningDaysToTrain(runningDays, trainNumber):
     q = """match (a:TRAIN) where a.NUMBER = '""" + trainNumber + """' set a.SUNDAY = '""" + runningDays["SUN"] + """', a.MONDAY = '""" + runningDays["MON"]
     q=q+"""', a.TUESDAY = '""" + runningDays["TUE"] + """', a.WEDNESDAY = '""" + runningDays["WED"] + """', a.THRUSDAY = '""" + runningDays["THU"]
