@@ -1,3 +1,4 @@
+
 __author__ = 'ankur'
 
 
@@ -9,7 +10,7 @@ import concurrent.futures
 import time
 import  logging
 import models
-
+import googleapiparser
 
 
 trainNumberstoDurationMap ={}
@@ -33,9 +34,29 @@ def parseAndReturnFare(trainOption,trainCounter):
         route["full"]=[]
         route["parts"]=[]
         route["full"].append(full)
-        parts=full
-        parts["id"]="train"+str(trainCounter)+str(1)
-        route["parts"].append(parts)
+    except ValueError:
+        return route
+    return route
+
+def convertsPartsToFullJson(part_1,part_2):
+    route={}
+    try:
+        full={}
+        full["carrierName"]="Train"
+        full["price"]=part_1["full"]["price"]+part_2["full"]["price"]
+        full["duration"]=""
+        full["id"]= "train"+part_1["full"]["id"] + "_" + part_2["full"]["id"]
+        full["mode"]="train"
+        full["site"]="IRCTC"
+        full["source"]=part_1["full"]["source"]
+        full["destination"]=part_2["full"]["destination"]
+        full["arrival"]= part_1["full"]["arrival"]
+        full["departure"]=part_1["full"]["departure"]
+        route["full"]=[]
+        route["parts"]=[]
+        route["parts"].append(part_1)
+        route["parts"].append(part_2)
+        route["full"].append(full)
     except ValueError:
         return route
     return route
@@ -95,14 +116,44 @@ class TrainController:
         return resultJsonData
 
 
+    def combineData(self,sourceToBreakingStationJson,breakingToDestinationJson):
+        resultJsonData ={}
+        resultJsonData["train"]=[]
+        for possibleSrcToBreakRoute in sourceToBreakingStationJson["train"]:
+            for possibleBreakToDestRoute in breakingToDestinationJson["train"]:
+                combinedJson=convertsPartsToFullJson(possibleSrcToBreakRoute,possibleBreakToDestRoute)
+                resultJsonData["train"].append(combinedJson)
+        return resultJsonData
+
+
+    def convertBreakingStationToCity(self,breakingStation):
+        possibleCities = breakingStation.split()
+        for possibleCity in possibleCities:
+            if models.isCityExist(possibleCity):
+                return possibleCity
+        return
+
+
+
     def getRoutes(self,source,destination,dateOfJourney):
 
         sourceStations = self.placetoStationCodesCache.getStationsByCode(source)
         destinationStations = self.placetoStationCodesCache.getStationsByCode(destination)
         if not sourceStations or not destinationStations:
             return
-        else:
-            return self.findTrainsBetweenStations(sourceStations,destinationStations,dateOfJourney)
+        breakingStations = googleapiparser.getPossibleBreakingPlacesForTrain(source,destination)
+        breakingCity= self.convertBreakingStationToCity(breakingStations[0])
+        breakingStationsStations = self.placetoStationCodesCache.getStationsByCode(breakingCity)
+        sourceToBreakingStationJson=self.findTrainsBetweenStations(sourceStations,breakingStations,dateOfJourney)
+        breakingToDestinationJson =self.findTrainsBetweenStations(breakingStations,destinationStations,dateOfJourney)
+        combinedJson = self.combineData(sourceToBreakingStationJson,breakingToDestinationJson)
+        directJson = self.findTrainsBetweenStations(sourceStations,destinationStations,dateOfJourney)
+        return directJson["train"].append(combinedJson["train"])
+
+
+
+
+
 
 
 

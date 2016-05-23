@@ -15,6 +15,7 @@ import busapi
 import models
 import trainapiNeo4j
 import trainDBscript
+from googleapiparser import getPossibleBreakingPlacesForTrain
 
 
 trainController = trainapi.TrainController()
@@ -25,7 +26,8 @@ flightController = flightapi.FlightController()
 busController = busapi.BusController()
 
 def home(request):
-     trainDBscript.main()
+     #getPossibleBreakingPlacesForTrain('x',"Kanpur")
+     #models.isCityExist("ADRA")
      return render_to_response('eazzer.html',{},context_instance = RequestContext(request))
 
 def main(request):
