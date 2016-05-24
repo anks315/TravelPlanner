@@ -201,7 +201,7 @@ def main():
         if len(routeStations)==0:
             logger.error("Response Error Getting Train Route  for TrainNumber[%s]",trainNumber)
         else:
-            logger.info("Route Data Fetch Success for TrainNumber[%s] having train Route",trainNumber)
+            logger.info("Route Data Fetch Success for TrainNumber[%s], No of Routes[%s].",trainNumber, len(routeStations))
         models.checkRouteStationExists(routeStations)
         index=0
         # We can use a with statement to ensure threads are cleaned up promptly

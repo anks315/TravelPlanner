@@ -12,7 +12,7 @@ DATABASE_CONNECTION = GraphDatabase("http://localhost:7474/db/data/", username="
 
 def getTrainsBetweenStation(srcStationCode,destinationStationCode,journeyDate):
     start = time.time()
-    q = """MATCH (a:TrainStation)-[r:""" + destinationStationCode + """]->(b:Train) WHERE a.CODE='""" +srcStationCode + """' RETURN a,b,r"""
+    q = """MATCH (a:TRAINSTATION)-[r:""" + destinationStationCode + """]->(b:TRAIN) WHERE a.CODE='""" +srcStationCode + """' RETURN a,b,r"""
     results =DATABASE_CONNECTION.query(q)
     trainOption = TrainOption()
     trainOption.trainName = results.elements[0][1]['data']['name']
@@ -25,13 +25,25 @@ def getTrainsBetweenStation(srcStationCode,destinationStationCode,journeyDate):
 
 
 
-def getStationCodesByName(stationName):
+def getStationCodesByName(stationName, logger):
+
+    """
+    To fetch all nearby or in stations in the given city
+    :param stationName: city for which stations needs to be fetched
+    :param logger: to logger events
+    :return: list of all stations that are either in the city or nearby
+    """
+    logger.info("Fetching Station for City[%s]", stationName)
     start =time.time()
-    q = """MATCH (a:TrainStation) WHERE  a.NAME='""" + stationName + """' return a.CODE"""
-    results = DATABASE_CONNECTION.query(q)
+    q = """MATCH (a:TRAINSTATION) WHERE  a.NAME='""" + stationName + """' return a.CODE"""
+    try:
+        results = DATABASE_CONNECTION.query(q)
+    except:
+        logger.error("Error while fetching station codes for city[%s]", stationName)
     stationcodes=[]
     print("--- %s [MODELS] Stations By Code---" % (time.time() - start))
     stationcodes.append(results.elements[0][0])
+    logger.info("Stations for City[%s] are [%s]", stationName, stationcodes)
     return stationcodes
 
 def addStationToTrainMapping(relationInformation):
@@ -90,3 +102,22 @@ def checkStationExists(stations):
     pass
 
 
+def getBreakingCity(possibleCity, logger):
+
+    """
+    To get name of the city from where we can split journey between source & destination
+    :param possibleCity: possible city or station name
+    :param logger: logger to log events
+    :return: breaking city name
+    """
+    logger.info("Fetching matching city from breaking city/station[%s]", possibleCity)
+    start = time.time()
+    q = """MATCH (a:TRAINSTATION) where a.NAME = '""" + possibleCity + """' OR a.NAME STARTS WITH '""" + possibleCity + """ ' OR a.NAME ENDS WITH ' """ + possibleCity + """' OR a.CITY = '""" + possibleCity + """' OR a.CITY STARTS WITH '""" + possibleCity + """ ' OR a.CITY ENDS WITH ' """ + possibleCity + """' return a"""
+    logger.debug("Fetch matching city query [%s]", q)
+    try:
+        result = DATABASE_CONNECTION.query(q)
+    except:
+        logger.error("Error while fetching breaking city for [%s]", possibleCity)
+    if len(result.elements) == 0:
+        return
+    return result.elements[0][0]['data']['CITY']
