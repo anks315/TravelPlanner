@@ -8,26 +8,61 @@
 	font-weight:bold;
 	color:#056273; 
 }
+.modal-header
+ {
+
+     background-color: #f9B668 !important;
+ }
 .checkboxLabel { 
 	border:0; 
 	color:gray; 
 	font-size:80%; 
 }
 
-.divisionHover{
+.divisionFlightHover{
 	border-bottom-color:white !important;
 	background-color:#067084;
 	
 }
-.divisionSelected{
-	background-color:#0099ff;
+.divisionFlightNotSelected{
+	background-color:#83c6d2;
+}
+.divisionFlightSelected{
+	background-color:#067084;
+}
+.divisionOtherHover{
+	border-bottom-color:white !important;
+	background-color:#067084;
+	
+}
+.divisionOtherNotSelected{
+	background-color:#83c6d2;
+}
+.divisionOtherSelected{
+	background-color:#067084;
 }
 .divisionEnabled{
 }
-
+.nopadding {
+   padding: 2px !important;
+   margin: 0 !important;
+}
+.modal-wide .modal-dialog {
+  width: 90% !important; /* or whatever you wish */
+}
 td a {
     display:block;
     width:100%;
 }
+.journeyPrice{
+	color: green;
+	font-size: 130%
+}
 
-
+.journeyPriceLabel{
+	font-size: 90%;
+	font-weight:bold;
+}
+.sameLine{
+	display: inline-block
+}
