@@ -10,30 +10,56 @@ def demo():
 
 DATABASE_CONNECTION = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
 
-def getTrainsBetweenStation(sourceCity,destinationStationSet):
+def getTrainsBetweenStation(sourceCity,destinationStationSet, logger):
 
     """
     :param sourceCity: source of the journey
     :param destinationStationSet: destination cities station set
-    :param journeyDate: date of journey
+    :param logger: to log information
     :return: all possible routes along with fare between source and destination stations
     """
 
-
-
+    logger.debug("Fetching train routes between source[%s] and destination stations[%s]", sourceCity, destinationStationSet)
     start = time.time()
     q = """MATCH (a:TRAINSTATION {CITY : '""" + sourceCity + """'})-[r:""" + '|'.join(destinationStationSet) + """]->(b:TRAIN) RETURN a,b,r"""
-    results =DATABASE_CONNECTION.query(q)
-    trainOption = TrainOption()
-    trainOption.trainName = results.elements[0][1]['data']['name']
-    trainOption.destArrivalTime=results.elements[0][2]['data']['arrival_time']
-    trainOption.srcDepartureTime=results.elements[0][2]['data']['departure_time']
-    trainOption.srcStation=results.elements[0][0]['data']['name']
-    trainOption.fare=results.elements[0][2]['data']['fare']
-    print("--- %s [MODELS] Train Between Stations---" % (time.time() - start))
-    return trainOption
+    results = DATABASE_CONNECTION.query(q)
 
+    if len(results.elements) == 0:
+        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourceCity, destinationStationSet)
+        return
+    trainroutes = []
+    for i in range(len(results.elements)):
+        trainoption = TrainOption()
+        trainoption.trainName = results.elements[i][1]['data']['NAME']
+        trainoption.trainNumber = results.elements[i][1]['data']['NUMBER']
+        trainoption.destArrivalTime=results.elements[i][2]['data']['DESTINATIONARRIVALTIME']
+        trainoption.srcDepartureTime=results.elements[i][2]['data']['SOURCEDEPARTURETIME']
+        trainoption.srcStation=results.elements[i][0]['data']['NAME']
+        trainoption.duration= 0.0#getDuration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
+        trainoption.fare["FARE_1A"]=results.elements[i][2]['data']['FARE_1A']
+        trainoption.fare["FARE_2A"]=results.elements[i][2]['data']['FARE_2A']
+        trainoption.fare["FARE_3A"]=results.elements[i][2]['data']['FARE_3A']
+        trainoption.fare["FARE_3E"]=results.elements[i][2]['data']['FARE_3E']
+        trainoption.fare["FARE_FC"]=results.elements[i][2]['data']['FARE_FC']
+        trainoption.fare["FARE_CC"]=results.elements[i][2]['data']['FARE_CC']
+        trainoption.fare["FARE_2S"]=results.elements[i][2]['data']['FARE_2S']
+        trainoption.fare["FARE_SL"]=results.elements[i][2]['data']['FARE_SL']
+        trainoption.fare["FARE_GN"]=results.elements[i][2]['data']['FARE_GN']
+        trainoption.destStation=results.elements[i][2]['type']
+        trainroutes.append(trainoption)
+    return trainroutes
 
+def getDuration(sourceDepartureTime, sourceDay, destinationArrivalTime, destinationDay):
+
+    """
+    to get time duration between 2 stations
+    :param sourceDepartureTime: source departure time
+    :param sourceDay: day on which it reaches source station
+    :param destinationArrivalTime: destination arrival time
+    :param destinationDay: day on which it reaches destination station
+    :return: duration between source & destination
+    """
+    return (destinationDay * 24 + destinationArrivalTime) - (sourceDay * 24 + sourceDepartureTime)
 
 def getStationCodesByCityName(cityName, logger):
 

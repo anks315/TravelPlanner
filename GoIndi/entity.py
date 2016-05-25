@@ -7,8 +7,10 @@ class TrainOption:
     destStation=""
     srcDepartureTime=time.time()
     destArrivalTime=time.time()
-    fare=0.0
+    fare={}
     trainName=""
+    trainNumber=""
+    duration = time.time()
 
 
 class StationToTrainRelation:
