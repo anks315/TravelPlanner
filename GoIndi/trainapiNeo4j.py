@@ -8,7 +8,7 @@ import datetime
 from sets import Set
 
 today = datetime.date.today().strftime("%Y-%m-%d")
-skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT'])
+skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
 
 logger = logging.getLogger("TravelPlanner.TrainController.Routes")
 fileHandler = logging.FileHandler('C:/Users/Ankit Kumar/Downloads/TrainRoutes_' + today + '.log')
@@ -47,8 +47,8 @@ def convertsPartsToFullJson(part_1, part_2):
 
     route = {"full": [], "parts": []}
     try:
-        full = {"carrierName": "Train", "price": part_1["full"]["price"] + part_2["full"]["price"], "duration": "",
-                "id": "train" + part_1["full"]["id"] + "_" + part_2["full"]["id"], "mode": "train", "site": "IRCTC",
+        full = {"carrierName": "Train", "price": part_1["full"]["price"].append(part_2["full"]["price"]), "duration": "",
+                "id": part_1["full"]["id"] + "_" + part_2["full"]["id"], "mode": "train", "site": "IRCTC",
                 "source": part_1["full"]["source"], "destination": part_2["full"]["destination"],
                 "arrival": part_1["full"]["arrival"], "departure": part_1["full"]["departure"]}
         route["parts"].append(part_1)
@@ -90,12 +90,9 @@ class TrainController:
                     destinationstationset)
         start = time.time()
         trainroute = models.getTrainsBetweenStation(sourcecity, destinationstationset, logger)
-        faredata = parseAndReturnFare(trainroute, logger)
+        routedata = parseAndReturnFare(trainroute, logger)
         logger.info("Time taken [%s]", time.time() - start)
-        if not faredata:
-            return
-        else:
-            return faredata
+        return routedata
 
     def findTrainsBetweenStations(self, sourcecity, destinationstationset):
 
@@ -113,31 +110,32 @@ class TrainController:
 
 
     def combineData(self, sourcetobreakingstationjson, breakingtodestinationjson):
-        resultJsonData = {}
-        resultJsonData["train"] = []
+        resultjsondata = {"train": []}
         for possibleSrcToBreakRoute in sourcetobreakingstationjson["train"]:
             for possibleBreakToDestRoute in breakingtodestinationjson["train"]:
-                combinedJson = convertsPartsToFullJson(possibleSrcToBreakRoute, possibleBreakToDestRoute)
-                resultJsonData["train"].append(combinedJson)
-        return resultJsonData
+                combinedjson = convertsPartsToFullJson(possibleSrcToBreakRoute, possibleBreakToDestRoute)
+                resultjsondata["train"].append(combinedjson)
+        return resultjsondata
 
-    def convertBreakingStationToCity(self, breakingstation):
+    def convertBreakingStationToCity(self, breakingstationlist):
 
         """
         to fetch breaking city from DB, based on breaking station/city
-        :param breakingstation: either breaking city or station
+        :param breakingstationlist: either breaking city or station
         :return: breaking city
         """
+        logger.debug("Possible cities[%s]", breakingstationlist)
+        breakingcitylist = []
+        for breakingstation in breakingstationlist:
+            possiblecities = breakingstation.split()
+            for possiblecity in possiblecities:
+                if possiblecity.upper() not in skipValues:
+                    city = models.getBreakingCity(possiblecity.upper(), logger)
+                    if city:
+                        breakingcitylist.append(city)
+        return breakingcitylist
 
-        possibleCities = breakingstation.split()
-        logger.debug("Possible cities[%s]", breakingstation)
-
-        for possibleCity in possibleCities:
-            if possibleCity.upper not in skipValues:
-                return models.getBreakingCity(possibleCity.upper, logger)
-        return
-
-    def getRoutes(self, source, destination, dateofjourney):
+    def getRoutes(self, source, destination):
 
         """
         This method is used to fetch all possible route between source & destination stations via train and train/bus combined.
@@ -154,14 +152,32 @@ class TrainController:
         destinationStations = self.placetoStationCodesCache.getStationsByCityName(destination)
         destinationStationSet = Set(destinationStations)
         if not sourceStations or not destinationStations:
-            return
+            return {"train": []}
         directjson = self.findTrainsBetweenStations(source, destinationStationSet)
-        breakingStations = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger)
-        if len(breakingStations) > 0:
-            breakingCity = self.convertBreakingStationToCity(breakingStations[0])
-            breakingStationsStations = self.placetoStationCodesCache.getStationsByCityName(breakingCity)
-            sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingStationsStations)
-            breakingToDestinationJson = self.findTrainsBetweenStations(breakingStationsStations, destinationStations)
-            combinedJson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson)
-            return directjson["train"].append(combinedJson["train"])
+        breakingstationlist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger)
+        if len(breakingstationlist) > 0:
+            breakingcitylist = self.convertBreakingStationToCity(self.getBreakingStation(breakingstationlist))
+            if len(breakingcitylist) > 0:
+                breakingcitystations = self.placetoStationCodesCache.getStationsByCityName(breakingcitylist[0])
+                sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingcitystations)
+                breakingToDestinationJson = self.findTrainsBetweenStations(breakingcitylist[0], destinationStations)
+                combinedJson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson)
+                return directjson["train"].append(combinedJson["train"])
         return directjson["train"]
+    
+
+    def getBreakingStation(self, breakingstationlist):
+
+        """
+        this method is used to get relevant breaking station list from all the breaking station lists.
+        First prefernece is given to list having only one element then so on
+        :param breakingstationlist: list of breaking station list
+        :return: breaking list with one or two elements
+        """
+        for breakingstations in breakingstationlist:
+            if len(breakingstations) == 1:
+                return breakingstations
+
+        for breakingstations in breakingstationlist:
+            if len(breakingstations) == 2:
+                return breakingstations

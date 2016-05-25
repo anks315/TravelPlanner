@@ -2,7 +2,6 @@
 import urllib
 import trainConstants
 import json
-from sets import Set
 
 
 def parseTransitRoutes(jsontransitroute,destination):
@@ -16,19 +15,21 @@ def parseTransitRoutes(jsontransitroute,destination):
     returnedData = json.loads(jsontransitroute)
     # list containing list of all breaking points
     possiblebreaklist=[]
-    for leg in returnedData["routes"]["legs"]:
-        counter=0
-        possiblebreak = []
-        for step in leg["steps"]:
-            if "transit_details" in step and "RAIL" in step["transit_details"]["line"]["vehicle"]["type"]:
-                if counter == 1 and destination in str(step["transit_details"]["arrival_stop"]["name"]).upper():
-                    possiblebreak.append(step["transit_details"]["departure_stop"]["name"])
+    for route in returnedData["routes"]:
+        if route:
+            for leg in route["legs"]:
+                counter=0
+                possiblebreak = []
+                for step in leg["steps"]:
+                    if "transit_details" in step and ("RAIL" in step["transit_details"]["line"]["vehicle"]["type"] or "Train" in step["transit_details"]["line"]["vehicle"]["name"]):
+                        if counter == 1 and destination in str(step["transit_details"]["arrival_stop"]["name"]).upper():
+                            possiblebreak.append(step["transit_details"]["departure_stop"]["name"])
 
-                if counter != 0 and destination not in str(step["transit_details"]["arrival_stop"]["name"]).upper():
-                    possiblebreak.append(step["transit_details"]["departure_stop"]["name"])
-                    possiblebreak.append(step["transit_details"]["arrival_stop"]["name"])
-                counter += 1
-        possiblebreaklist.append(possiblebreak)
+                        if counter != 0 and destination not in str(step["transit_details"]["arrival_stop"]["name"]).upper():
+                            possiblebreak.append(step["transit_details"]["departure_stop"]["name"])
+                            possiblebreak.append(step["transit_details"]["arrival_stop"]["name"])
+                        counter += 1
+                possiblebreaklist.append(possiblebreak)
     return possiblebreaklist
 
 

@@ -23,11 +23,12 @@ def getTrainsBetweenStation(sourceCity,destinationStationSet, logger):
     start = time.time()
     q = """MATCH (a:TRAINSTATION {CITY : '""" + sourceCity + """'})-[r:""" + '|'.join(destinationStationSet) + """]->(b:TRAIN) RETURN a,b,r"""
     results = DATABASE_CONNECTION.query(q)
+    trainroutes = []
 
     if len(results.elements) == 0:
         logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourceCity, destinationStationSet)
-        return
-    trainroutes = []
+        return trainroutes
+
     for i in range(len(results.elements)):
         trainoption = TrainOption()
         trainoption.trainName = results.elements[i][1]['data']['NAME']
@@ -36,15 +37,16 @@ def getTrainsBetweenStation(sourceCity,destinationStationSet, logger):
         trainoption.srcDepartureTime=results.elements[i][2]['data']['SOURCEDEPARTURETIME']
         trainoption.srcStation=results.elements[i][0]['data']['NAME']
         trainoption.duration= 0.0#getDuration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
-        trainoption.fare["FARE_1A"]=results.elements[i][2]['data']['FARE_1A']
-        trainoption.fare["FARE_2A"]=results.elements[i][2]['data']['FARE_2A']
-        trainoption.fare["FARE_3A"]=results.elements[i][2]['data']['FARE_3A']
-        trainoption.fare["FARE_3E"]=results.elements[i][2]['data']['FARE_3E']
-        trainoption.fare["FARE_FC"]=results.elements[i][2]['data']['FARE_FC']
-        trainoption.fare["FARE_CC"]=results.elements[i][2]['data']['FARE_CC']
-        trainoption.fare["FARE_2S"]=results.elements[i][2]['data']['FARE_2S']
-        trainoption.fare["FARE_SL"]=results.elements[i][2]['data']['FARE_SL']
-        trainoption.fare["FARE_GN"]=results.elements[i][2]['data']['FARE_GN']
+        if 'FARE_1A' in results.elements[i][2]['data']:
+            trainoption.fare["FARE_1A"]=results.elements[i][2]['data']['FARE_1A']
+            trainoption.fare["FARE_2A"]=results.elements[i][2]['data']['FARE_2A']
+            trainoption.fare["FARE_3A"]=results.elements[i][2]['data']['FARE_3A']
+            trainoption.fare["FARE_3E"]=results.elements[i][2]['data']['FARE_3E']
+            trainoption.fare["FARE_FC"]=results.elements[i][2]['data']['FARE_FC']
+            trainoption.fare["FARE_CC"]=results.elements[i][2]['data']['FARE_CC']
+            trainoption.fare["FARE_2S"]=results.elements[i][2]['data']['FARE_2S']
+            trainoption.fare["FARE_SL"]=results.elements[i][2]['data']['FARE_SL']
+            trainoption.fare["FARE_GN"]=results.elements[i][2]['data']['FARE_GN']
         trainoption.destStation=results.elements[i][2]['type']
         trainroutes.append(trainoption)
     return trainroutes
@@ -72,16 +74,16 @@ def getStationCodesByCityName(cityName, logger):
     logger.info("Fetching Station for City[%s]", cityName)
     start =time.time()
     q = """MATCH (a:TRAINSTATION) WHERE  a.CITY='""" + cityName + """' return a.CODE"""
+    stationcodes=[]
     try:
         results = DATABASE_CONNECTION.query(q)
     except:
         logger.error("Error while fetching station codes for city[%s]", cityName)
-        return
-    stationcodes=[]
+        return stationcodes
     print("--- %s [MODELS] Stations By Code---" % (time.time() - start))
     if len(results.elements) == 0 :
         logger.warning("No Station for city[%s]", cityName)
-        return
+        return stationcodes
     for i in range(len(results.elements)):
         stationcodes.append(results.elements[i][0])
     logger.info("Stations for City[%s] are [%s]", cityName, stationcodes)
@@ -161,5 +163,5 @@ def getBreakingCity(possibleCity, logger):
         logger.error("Error while fetching breaking city for [%s]", possibleCity)
     if len(result.elements) == 0:
         logger.warning("No Breaking city present for [%s]", possibleCity)
-        return
+        return ''
     return result.elements[0][0]['data']['CITY']
