@@ -64,5 +64,13 @@ def removeDuplicates(breakingStations):
     return mySet
 
 
+def getPipeSeperatedStationCodes(destinationStationSet):
+
+    pipeSeperatedCodes = '|'.join(destinationStationSet)
+    print pipeSeperatedCodes
+    return
+
+
 #getPossibleBreakingPlacesForTrain('Jammu', 'KANPUR')
-models.getBreakingCity('BORIVALI')
+models.getTrainsBetweenStation('NEW DELHI', Set(['BCT', 'CSTM', 'UMB', 'BTI']))
+#getPipeSeperatedStationCodes(Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT']))

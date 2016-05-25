@@ -74,13 +74,13 @@ class PlaceToStationCodesCache:
 
     cityToStationsMap={}
 
-    def getStationsByCode(self,stationName):
-        if stationName in PlaceToStationCodesCache.cityToStationsMap:
-            return PlaceToStationCodesCache.cityToStationsMap[stationName]
+    def getStationsByCityName(self,cityName):
+        if cityName in PlaceToStationCodesCache.cityToStationsMap:
+            return PlaceToStationCodesCache.cityToStationsMap[cityName]
         else:
-            stationList = models.getStationCodesByName(stationName, logger)
+            stationList = models.getStationCodesByCityName(cityName, logger)
             if stationList:
-                PlaceToStationCodesCache.cityToStationsMap[stationName]=stationList
+                PlaceToStationCodesCache.cityToStationsMap[cityName]=stationList
             return stationList
 
 
@@ -88,10 +88,21 @@ class TrainController:
     """Entry point to get all routes with train as the major mode of transport"""
     placetoStationCodesCache = PlaceToStationCodesCache()
 
-    def getTrainFare(self,sourceStation,destinationStation,journeyDate,trainCounter):
+    def getTrainFare(self,sourceCity,destinationStationSet,journeyDate):
+
+        """
+        to get list of all possible routes along with fare between all stations of source city and destination stations
+        :param sourceCity: source of the journey
+        :param destinationStationSet: set of destination city's stations
+        :param journeyDate: date of journey
+        :param trainCounter:
+        :return: list of all possible routes with fare
+        """
+        logger.info("Fetching train routes between sourceCity[%s] and destination Stations[%s] for [%s]", sourceCity, destinationStationSet, journeyDate)
         start = time.time()
-        trainRoute = models.getTrainsBetweenStation(sourceStation,destinationStation,journeyDate)
-        fareData=parseAndReturnFare(trainRoute,trainCounter)
+        destinationStationPipeSeperated = self.getPipeSeperatedStationCodes(destinationStationSet)
+        trainRoute = models.getTrainsBetweenStation(sourceCity,destinationStationSet)
+        fareData=parseAndReturnFare(trainRoute,1)
         print("--- %s api---" % (time.time() - start))
         if not fareData:
             return
@@ -100,13 +111,13 @@ class TrainController:
 
 
 
-    def findTrainsBetweenStations(self,sourceStationList,destinationStationList,journeyDate):
+    def findTrainsBetweenStations(self,sourceCity,destinationStationSet,journeyDate):
 
         """
-        find the trains between the
-        :param sourceStationList:
-        :param destinationStationList:
-        :param journeyDate:
+        find the trains between the sourceCity & destination cities stations
+        :param sourceCity: source of the journey
+        :param destinationStationSet: list of all available railway stations in destination city
+        :param journeyDate: date of journey
         :return:
         """
         resultJsonData = {}
@@ -114,9 +125,11 @@ class TrainController:
         start_time = time.time()
         farefutures=[]
         trainCounter=0
+
+        self.getTrainFare(sourceCity, destinationStationSet, journeyDate)
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            for srcStation in sourceStationList:
-                for destStation in destinationStationList:
+            for srcStation in sourceCity:
+                for destStation in destinationStationSet:
                     trainCounter += 1
                     farefutures.append(executor.submit(self.getTrainFare,srcStation,destStation,journeyDate,trainCounter))
 
@@ -172,21 +185,30 @@ class TrainController:
         source = str(source).upper()
         destination = str(destination).upper()
 
-        sourceStations = self.placetoStationCodesCache.getStationsByCode(source)
-        destinationStations = self.placetoStationCodesCache.getStationsByCode(destination)
+        sourceStations = self.placetoStationCodesCache.getStationsByCityName(source)
+        destinationStations = self.placetoStationCodesCache.getStationsByCityName(destination)
+        destinationStationSet = Set(destinationStations)
         if not sourceStations or not destinationStations:
             return
+        directJson = self.findTrainsBetweenStations(source,destinationStationSet,dateOfJourney)
         breakingStations = googleapiparser.getPossibleBreakingPlacesForTrain(source,destination, logger)
-        breakingCity= self.convertBreakingStationToCity(breakingStations[0])
-        breakingStationsStations = self.placetoStationCodesCache.getStationsByCode(breakingCity)
-        sourceToBreakingStationJson=self.findTrainsBetweenStations(sourceStations,breakingStationsStations,dateOfJourney)
-        breakingToDestinationJson =self.findTrainsBetweenStations(breakingStationsStations,destinationStations,dateOfJourney)
-        combinedJson = self.combineData(sourceToBreakingStationJson,breakingToDestinationJson)
-        directJson = self.findTrainsBetweenStations(sourceStations,destinationStations,dateOfJourney)
-        return directJson["train"].append(combinedJson["train"])
+        if breakingStations:
+            breakingCity = self.convertBreakingStationToCity(breakingStations[0])
+            breakingStationsStations = self.placetoStationCodesCache.getStationsByCityName(breakingCity)
+            sourceToBreakingStationJson=self.findTrainsBetweenStations(source,breakingStationsStations,dateOfJourney)
+            breakingToDestinationJson =self.findTrainsBetweenStations(breakingStationsStations,destinationStations,dateOfJourney)
+            combinedJson = self.combineData(sourceToBreakingStationJson,breakingToDestinationJson)
+            return directJson["train"].append(combinedJson["train"])
+        return directJson["train"]
 
 
+    def getPipeSeperatedStationCodes(self, destinationStationSet):
 
+        pipeSeperatedCodes = ""
+        for code in destinationStationSet:
+            pipeSeperatedCodes.join(code)
+        print pipeSeperatedCodes
+        return
 
 
 

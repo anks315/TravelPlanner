@@ -10,9 +10,19 @@ def demo():
 
 DATABASE_CONNECTION = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
 
-def getTrainsBetweenStation(srcStationCode,destinationStationCode,journeyDate):
+def getTrainsBetweenStation(sourceCity,destinationStationSet):
+
+    """
+    :param sourceCity: source of the journey
+    :param destinationStationSet: destination cities station set
+    :param journeyDate: date of journey
+    :return: all possible routes along with fare between source and destination stations
+    """
+
+
+
     start = time.time()
-    q = """MATCH (a:TRAINSTATION)-[r:""" + destinationStationCode + """]->(b:TRAIN) WHERE a.CODE='""" +srcStationCode + """' RETURN a,b,r"""
+    q = """MATCH (a:TRAINSTATION {CITY : '""" + sourceCity + """'})-[r:""" + '|'.join(destinationStationSet) + """]->(b:TRAIN) RETURN a,b,r"""
     results =DATABASE_CONNECTION.query(q)
     trainOption = TrainOption()
     trainOption.trainName = results.elements[0][1]['data']['name']
@@ -25,25 +35,30 @@ def getTrainsBetweenStation(srcStationCode,destinationStationCode,journeyDate):
 
 
 
-def getStationCodesByName(stationName, logger):
+def getStationCodesByCityName(cityName, logger):
 
     """
     To fetch all nearby or in stations in the given city
-    :param stationName: city for which stations needs to be fetched
+    :param cityName: city for which stations needs to be fetched
     :param logger: to logger events
     :return: list of all stations that are either in the city or nearby
     """
-    logger.info("Fetching Station for City[%s]", stationName)
+    logger.info("Fetching Station for City[%s]", cityName)
     start =time.time()
-    q = """MATCH (a:TRAINSTATION) WHERE  a.NAME='""" + stationName + """' return a.CODE"""
+    q = """MATCH (a:TRAINSTATION) WHERE  a.CITY='""" + cityName + """' return a.CODE"""
     try:
         results = DATABASE_CONNECTION.query(q)
     except:
-        logger.error("Error while fetching station codes for city[%s]", stationName)
+        logger.error("Error while fetching station codes for city[%s]", cityName)
+        return
     stationcodes=[]
     print("--- %s [MODELS] Stations By Code---" % (time.time() - start))
-    stationcodes.append(results.elements[0][0])
-    logger.info("Stations for City[%s] are [%s]", stationName, stationcodes)
+    if len(results.elements) == 0 :
+        logger.warning("No Station for city[%s]", cityName)
+        return
+    for i in range(len(results.elements)):
+        stationcodes.append(results.elements[i][0])
+    logger.info("Stations for City[%s] are [%s]", cityName, stationcodes)
     return stationcodes
 
 def addStationToTrainMapping(relationInformation):
@@ -119,5 +134,6 @@ def getBreakingCity(possibleCity, logger):
     except:
         logger.error("Error while fetching breaking city for [%s]", possibleCity)
     if len(result.elements) == 0:
+        logger.warning("No Breaking city present for [%s]", possibleCity)
         return
     return result.elements[0][0]['data']['CITY']
