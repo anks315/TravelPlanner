@@ -2,9 +2,12 @@
 import urllib
 import trainConstants
 import json
+import models
+from sets import Set
 
+skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
 
-def parseTransitRoutes(jsontransitroute,destination):
+def parseTransitRoutes(jsontransitroute,destination, logger):
 
     """
     To parse breaking journey json object
@@ -22,16 +25,46 @@ def parseTransitRoutes(jsontransitroute,destination):
                 possiblebreak = []
                 for step in leg["steps"]:
                     if "transit_details" in step and ("RAIL" in step["transit_details"]["line"]["vehicle"]["type"] or "Train" in step["transit_details"]["line"]["vehicle"]["name"]):
-                        if counter == 1 and destination in str(step["transit_details"]["arrival_stop"]["name"]).upper():
+                        routedestinationstation = str(step["transit_details"]["arrival_stop"]["name"]).upper()
+                        destinationcity = getdestinationcity(routedestinationstation, logger)
+                        if counter == 1 and destination in destinationcity:
                             possiblebreak.append(step["transit_details"]["departure_stop"]["name"])
 
-                        if counter != 0 and destination not in str(step["transit_details"]["arrival_stop"]["name"]).upper():
+                        if counter != 0 and destination not in destinationcity:
                             possiblebreak.append(step["transit_details"]["departure_stop"]["name"])
                             possiblebreak.append(step["transit_details"]["arrival_stop"]["name"])
                         counter += 1
                 possiblebreaklist.append(possiblebreak)
     return possiblebreaklist
 
+
+def getdestinationcity(routedestinationstation, logger):
+
+    """
+    This method is used to fetch destination from station name
+    :param routedestinationstation: destination station/city
+    :param logger: to log events
+    :return: destination city name if mapped to routedestinationstation
+    """
+    try:
+        city = models.getBreakingCity(routedestinationstation, logger)
+        if city:
+            return city
+    except:
+        logger.error("Error getting city for breakingstation[%s]", routedestinationstation)
+
+    possiblecities = routedestinationstation.split()  # split by space and search on indiviual words
+    for possiblecity in possiblecities:
+        try:
+            if possiblecity.upper() not in skipValues:
+                city = models.getBreakingCity(possiblecity.upper(), logger)
+                if city:
+                    return city
+        except:
+            logger.error("Error getting city for breakingstation[%s]", possiblecity.upper())
+
+    logger.warning("Breaking Station [%s] not mapped to any station in DB", routedestinationstation)
+    return routedestinationstation # return same value if not mapped to any station
 
 
 def getPossibleBreakingPlacesForTrain(source,destination, logger):
@@ -53,7 +86,7 @@ def getPossibleBreakingPlacesForTrain(source,destination, logger):
         logger.warning("No breaking journey between source[%s] and destination[%s]", source, destination)
         return possiblebreakage
     logger.debug("Breaking journey between source[%s] and destination[%s] is [%s]", source, destination, jsontransitroute)
-    possiblebreakage = parseTransitRoutes(jsontransitroute,destination)
+    possiblebreakage = parseTransitRoutes(jsontransitroute,destination, logger)
     logger.debug("Breaking journey stations between source[%s] and destination[%s] are [%s]", source, destination, possiblebreakage)
     return possiblebreakage
 

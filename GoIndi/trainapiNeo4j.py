@@ -20,7 +20,7 @@ logger.setLevel(logging.INFO)
 trainNumberstoDurationMap = {}
 
 
-def parseAndReturnFare(trainroutes, logger):
+def parseandreturnroute(trainroutes, logger):
     """
     to return map of train routes in either full or by parts journey
     :param trainroutes: list of trainroutes
@@ -48,6 +48,13 @@ def parseAndReturnFare(trainroutes, logger):
 
 def convertsPartsToFullJson(part_1, part_2):
 
+    """
+    This method is used to combine train journey data from part_1 and part_2 into a single entity
+    :param part_1: part 1 of journey
+    :param part_2: part 2 of journey
+    :return: combined journey data
+    """
+
     route = {"full": [], "parts": []}
     try:
         full = {"carrierName": "Train", "duration": "",
@@ -67,6 +74,7 @@ def convertsPartsToFullJson(part_1, part_2):
         route["parts"].append(part_2)
         route["full"].append(full)
     except ValueError:
+        logger.error("Error while combining data for Train[%s] and Train[%s]", part_1["full"]["id"], part_2["full"]["id"])
         return route
     return route
 
@@ -77,6 +85,12 @@ class PlaceToStationCodesCache:
     cityToStationsMap = {}
 
     def getStationsByCityName(self, cityname):
+
+        """
+        This method is used to get stations corrsponding to city given
+        :param cityname: name of city for which all railway station are to be found
+        :return: station for cityname
+        """
         if cityname in PlaceToStationCodesCache.cityToStationsMap:
             return PlaceToStationCodesCache.cityToStationsMap[cityname]
         else:
@@ -90,7 +104,7 @@ class TrainController:
     """Entry point to get all routes with train as the major mode of transport"""
     placetoStationCodesCache = PlaceToStationCodesCache()
 
-    def getTrainFare(self, sourcecity, destinationstationset):
+    def gettrainroutes(self, sourcecity, destinationstationset):
 
         """
         to get list of all possible routes along with fare between all stations of source city and destination stations
@@ -101,8 +115,8 @@ class TrainController:
         logger.info("Fetching train routes between sourcecity[%s] and destination Stations[%s]", sourcecity,
                     destinationstationset)
         start = time.time()
-        trainroute = models.getTrainsBetweenStation(sourcecity, destinationstationset, logger)
-        routedata = parseAndReturnFare(trainroute, logger)
+        trains = models.getTrainsBetweenStation(sourcecity, destinationstationset, logger)
+        routedata = parseandreturnroute(trains, logger)
         logger.info("Time taken [%s]", time.time() - start)
         return routedata
 
@@ -116,12 +130,20 @@ class TrainController:
         :return:
         """
         resultjsondata = {"train": []}
-        faredata = self.getTrainFare(sourcecity, destinationstationset)
-        resultjsondata["train"].append(faredata)
+        routedata = self.gettrainroutes(sourcecity, destinationstationset)
+        if len(routedata["full"]) > 0:
+            resultjsondata["train"].append(routedata)
         return resultjsondata
 
 
     def combineData(self, sourcetobreakingstationjson, breakingtodestinationjson):
+
+        """
+        To combine data from 2 parts into one
+        :param sourcetobreakingstationjson: journey data from source to breaking city
+        :param breakingtodestinationjson: journey data from breaking city to destination
+        :return: combined data
+        """
         resultjsondata = {"train": []}
         for possibleSrcToBreakRoute in sourcetobreakingstationjson["train"]:
             for possibleBreakToDestRoute in breakingtodestinationjson["train"]:
@@ -139,12 +161,22 @@ class TrainController:
         logger.debug("Possible cities[%s]", breakingstationlist)
         breakingcitylist = []
         for breakingstation in breakingstationlist:
-            possiblecities = breakingstation.split()
+            try:
+                city = models.getBreakingCity(breakingstation.upper(), logger)
+                if city:
+                    breakingcitylist.append(city)
+                    continue # continue to other list
+            except:
+                logger.error("Error getting city for breakingstation[%s]", breakingstation)
+            possiblecities = breakingstation.split()  # split by space and search on indiviual words
             for possiblecity in possiblecities:
-                if possiblecity.upper() not in skipValues:
-                    city = models.getBreakingCity(possiblecity.upper(), logger)
-                    if city:
-                        breakingcitylist.append(city)
+                try:
+                    if possiblecity.upper() not in skipValues:
+                        city = models.getBreakingCity(possiblecity.upper(), logger)
+                        if city:
+                            breakingcitylist.append(city)
+                except:
+                    logger.error("Error getting city for breakingstation[%s]", possiblecity.upper())
         return breakingcitylist
 
     def getRoutes(self, source, destination):
@@ -170,11 +202,14 @@ class TrainController:
         if len(breakingstationlist) > 0:
             breakingcitylist = self.convertBreakingStationToCity(self.getBreakingStation(breakingstationlist))
             if len(breakingcitylist) > 0:
-                breakingcitystations = self.placetoStationCodesCache.getStationsByCityName(breakingcitylist[0])
-                sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingcitystations)
-                breakingToDestinationJson = self.findTrainsBetweenStations(breakingcitylist[0], destinationStations)
-                combinedJson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson)
-                return directjson["train"].append(combinedJson["train"])
+                for breakingcity in breakingcitylist:
+                    breakingcitystations = self.placetoStationCodesCache.getStationsByCityName(breakingcity)
+                    sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingcitystations)
+                    if len(sourceToBreakingStationJson["train"]) > 0:
+                        breakingToDestinationJson = self.findTrainsBetweenStations(breakingcity, destinationStations)
+                        if len(breakingToDestinationJson["train"]) > 0:
+                            combinedJson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson)
+                            directjson["train"].append(combinedJson["train"])
         return directjson["train"]
     
 
@@ -190,6 +225,6 @@ class TrainController:
             if len(breakingstations) == 1:
                 return breakingstations
 
-        for breakingstations in breakingstationlist:
-            if len(breakingstations) == 2:
-                return breakingstations
+        # for breakingstations in breakingstationlist:
+        #     if len(breakingstations) == 2:
+        #         return breakingstations

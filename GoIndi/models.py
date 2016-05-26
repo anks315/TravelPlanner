@@ -25,12 +25,12 @@ def getTrainsBetweenStation(sourceCity, destinationStationSet, logger):
     q = """MATCH (a:TRAINSTATION {CITY : '""" + sourceCity + """'})-[r:""" + '|'.join(
         destinationStationSet) + """]->(b:TRAIN) RETURN a,b,r"""
     results = DATABASE_CONNECTION.query(q)
-    trainroutes = []
+    trains = []
 
     if len(results.elements) == 0:
         logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourceCity,
                        destinationStationSet)
-        return trainroutes
+        return trains
 
     for i in range(len(results.elements)):
         trainoption = TrainOption()
@@ -51,8 +51,8 @@ def getTrainsBetweenStation(sourceCity, destinationStationSet, logger):
             trainoption.fare_SL = results.elements[i][2]['data']['FARE_SL']
             trainoption.fare_GN = results.elements[i][2]['data']['FARE_GN']
         trainoption.destStation = results.elements[i][2]['type']
-        trainroutes.append(trainoption)
-    return trainroutes
+        trains.append(trainoption)
+    return trains
 
 
 def getDuration(sourceDepartureTime, sourceDay, destinationArrivalTime, destinationDay):
@@ -168,5 +168,5 @@ def getBreakingCity(possibleCity, logger):
         logger.error("Error while fetching breaking city for [%s]", possibleCity)
     if len(result.elements) == 0:
         logger.warning("No Breaking city present for [%s]", possibleCity)
-        return ''
+        return
     return result.elements[0][0]['data']['CITY']
