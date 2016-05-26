@@ -205,7 +205,7 @@ def main():
         models.checkRouteStationExists(routeStations)
         index=0
         # We can use a with statement to ensure threads are cleaned up promptly
-        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             # Start the load operations and mark each future with its URL
             numberOfStations=len(routeStations)
             while index < numberOfStations-1:
