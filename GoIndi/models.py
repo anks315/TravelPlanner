@@ -1,17 +1,17 @@
-
 from neo4jrestclient.client import GraphDatabase
 import logging
-from entity import TrainOption,StationToTrainRelation
+from entity import TrainOption, StationToTrainRelation
 import time
 
+
 def demo():
-   pass
+    pass
 
 
 DATABASE_CONNECTION = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
 
-def getTrainsBetweenStation(sourceCity,destinationStationSet, logger):
 
+def getTrainsBetweenStation(sourceCity, destinationStationSet, logger):
     """
     :param sourceCity: source of the journey
     :param destinationStationSet: destination cities station set
@@ -19,40 +19,43 @@ def getTrainsBetweenStation(sourceCity,destinationStationSet, logger):
     :return: all possible routes along with fare between source and destination stations
     """
 
-    logger.debug("Fetching train routes between source[%s] and destination stations[%s]", sourceCity, destinationStationSet)
+    logger.debug("Fetching train routes between source[%s] and destination stations[%s]", sourceCity,
+                 destinationStationSet)
     start = time.time()
-    q = """MATCH (a:TRAINSTATION {CITY : '""" + sourceCity + """'})-[r:""" + '|'.join(destinationStationSet) + """]->(b:TRAIN) RETURN a,b,r"""
+    q = """MATCH (a:TRAINSTATION {CITY : '""" + sourceCity + """'})-[r:""" + '|'.join(
+        destinationStationSet) + """]->(b:TRAIN) RETURN a,b,r"""
     results = DATABASE_CONNECTION.query(q)
     trainroutes = []
 
     if len(results.elements) == 0:
-        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourceCity, destinationStationSet)
+        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourceCity,
+                       destinationStationSet)
         return trainroutes
 
     for i in range(len(results.elements)):
         trainoption = TrainOption()
         trainoption.trainName = results.elements[i][1]['data']['NAME']
         trainoption.trainNumber = results.elements[i][1]['data']['NUMBER']
-        trainoption.destArrivalTime=results.elements[i][2]['data']['DESTINATIONARRIVALTIME']
-        trainoption.srcDepartureTime=results.elements[i][2]['data']['SOURCEDEPARTURETIME']
-        trainoption.srcStation=results.elements[i][0]['data']['NAME']
-        trainoption.duration= 0.0#getDuration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
+        trainoption.destArrivalTime = results.elements[i][2]['data']['DESTINATIONARRIVALTIME']
+        trainoption.srcDepartureTime = results.elements[i][2]['data']['SOURCEDEPARTURETIME']
+        trainoption.srcStation = results.elements[i][0]['data']['NAME']
+        trainoption.duration = 0.0  # getDuration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
         if 'FARE_1A' in results.elements[i][2]['data']:
-            trainoption.fare["FARE_1A"]=results.elements[i][2]['data']['FARE_1A']
-            trainoption.fare["FARE_2A"]=results.elements[i][2]['data']['FARE_2A']
-            trainoption.fare["FARE_3A"]=results.elements[i][2]['data']['FARE_3A']
-            trainoption.fare["FARE_3E"]=results.elements[i][2]['data']['FARE_3E']
-            trainoption.fare["FARE_FC"]=results.elements[i][2]['data']['FARE_FC']
-            trainoption.fare["FARE_CC"]=results.elements[i][2]['data']['FARE_CC']
-            trainoption.fare["FARE_2S"]=results.elements[i][2]['data']['FARE_2S']
-            trainoption.fare["FARE_SL"]=results.elements[i][2]['data']['FARE_SL']
-            trainoption.fare["FARE_GN"]=results.elements[i][2]['data']['FARE_GN']
-        trainoption.destStation=results.elements[i][2]['type']
+            trainoption.fare_1A = results.elements[i][2]['data']['FARE_1A']
+            trainoption.fare_2A = results.elements[i][2]['data']['FARE_2A']
+            trainoption.fare_3A = results.elements[i][2]['data']['FARE_3A']
+            trainoption.fare_3E = results.elements[i][2]['data']['FARE_3E']
+            trainoption.fare_FC = results.elements[i][2]['data']['FARE_FC']
+            trainoption.fare_CC = results.elements[i][2]['data']['FARE_CC']
+            trainoption.fare_2S = results.elements[i][2]['data']['FARE_2S']
+            trainoption.fare_SL = results.elements[i][2]['data']['FARE_SL']
+            trainoption.fare_GN = results.elements[i][2]['data']['FARE_GN']
+        trainoption.destStation = results.elements[i][2]['type']
         trainroutes.append(trainoption)
     return trainroutes
 
-def getDuration(sourceDepartureTime, sourceDay, destinationArrivalTime, destinationDay):
 
+def getDuration(sourceDepartureTime, sourceDay, destinationArrivalTime, destinationDay):
     """
     to get time duration between 2 stations
     :param sourceDepartureTime: source departure time
@@ -63,8 +66,8 @@ def getDuration(sourceDepartureTime, sourceDay, destinationArrivalTime, destinat
     """
     return (destinationDay * 24 + destinationArrivalTime) - (sourceDay * 24 + sourceDepartureTime)
 
-def getStationCodesByCityName(cityName, logger):
 
+def getStationCodesByCityName(cityName, logger):
     """
     To fetch all nearby or in stations in the given city
     :param cityName: city for which stations needs to be fetched
@@ -72,16 +75,16 @@ def getStationCodesByCityName(cityName, logger):
     :return: list of all stations that are either in the city or nearby
     """
     logger.info("Fetching Station for City[%s]", cityName)
-    start =time.time()
+    start = time.time()
     q = """MATCH (a:TRAINSTATION) WHERE  a.CITY='""" + cityName + """' return a.CODE"""
-    stationcodes=[]
+    stationcodes = []
     try:
         results = DATABASE_CONNECTION.query(q)
     except:
         logger.error("Error while fetching station codes for city[%s]", cityName)
         return stationcodes
     print("--- %s [MODELS] Stations By Code---" % (time.time() - start))
-    if len(results.elements) == 0 :
+    if len(results.elements) == 0:
         logger.warning("No Station for city[%s]", cityName)
         return stationcodes
     for i in range(len(results.elements)):
@@ -89,39 +92,42 @@ def getStationCodesByCityName(cityName, logger):
     logger.info("Stations for City[%s] are [%s]", cityName, stationcodes)
     return stationcodes
 
+
 def addStationToTrainMapping(relationInformation):
-    q ="""MATCH (a:TRAINSTATION),(b:TRAIN) WHERE a.CODE = '""" + relationInformation.sourceStationCode + """' AND b.NUMBER = '"""+ relationInformation.trainNumber + """' CREATE (a)-[r:""" + relationInformation.destinationStationCode
-    q=q+""" {SOURCEDEPARTURETIME: '"""+relationInformation.sourceDepartureTime
-    q=q+"""' ,DESTINATIONARRIVALTIME:'"""+relationInformation.destinationArrivalTime
-    q=q+"""' ,SOURCEDAYNUMBER:"""+str(relationInformation.sourceDayNumber)
-    q=q+""" ,DESTINATIONDAYNUMBER:"""+str(relationInformation.destinationDayNumber)
-    q=q+""" ,FARE_1A:"""+str(relationInformation.fare_1A)
-    q=q+""" ,FARE_2A:"""+str(relationInformation.fare_2A)
-    q=q+""" ,FARE_3A:"""+str(relationInformation.fare_3A)
-    q=q+""" ,FARE_SL:"""+str(relationInformation.fare_SL)
-    q=q+""" ,FARE_2S:"""+str(relationInformation.fare_2S)
-    q=q+""" ,FARE_CC:"""+str(relationInformation.fare_CC)
-    q=q+""" ,FARE_FC:"""+str(relationInformation.fare_FC)
-    q=q+""" ,FARE_3E:"""+str(relationInformation.fare_3E)
-    q=q+""" ,FARE_GN:"""+str(relationInformation.fare_GN) + """}]->(b) RETURN r"""
+    q = """MATCH (a:TRAINSTATION),(b:TRAIN) WHERE a.CODE = '""" + relationInformation.sourceStationCode + """' AND b.NUMBER = '""" + relationInformation.trainNumber + """' CREATE (a)-[r:""" + relationInformation.destinationStationCode
+    q = q + """ {SOURCEDEPARTURETIME: '""" + relationInformation.sourceDepartureTime
+    q = q + """' ,DESTINATIONARRIVALTIME:'""" + relationInformation.destinationArrivalTime
+    q = q + """' ,SOURCEDAYNUMBER:""" + str(relationInformation.sourceDayNumber)
+    q = q + """ ,DESTINATIONDAYNUMBER:""" + str(relationInformation.destinationDayNumber)
+    q = q + """ ,FARE_1A:""" + str(relationInformation.fare_1A)
+    q = q + """ ,FARE_2A:""" + str(relationInformation.fare_2A)
+    q = q + """ ,FARE_3A:""" + str(relationInformation.fare_3A)
+    q = q + """ ,FARE_SL:""" + str(relationInformation.fare_SL)
+    q = q + """ ,FARE_2S:""" + str(relationInformation.fare_2S)
+    q = q + """ ,FARE_CC:""" + str(relationInformation.fare_CC)
+    q = q + """ ,FARE_FC:""" + str(relationInformation.fare_FC)
+    q = q + """ ,FARE_3E:""" + str(relationInformation.fare_3E)
+    q = q + """ ,FARE_GN:""" + str(relationInformation.fare_GN) + """}]->(b) RETURN r"""
     DATABASE_CONNECTION.query(q)
     pass
 
 
 def addStationToRouteMapping(relationInformation):
-    q ="""MATCH (a:TRAINSTATION),(b:TRAIN) WHERE a.CODE = '""" + relationInformation.sourceStationCode + """' AND b.NUMBER = '"""+ relationInformation.trainNumber + """' CREATE (a)-[r:""" + relationInformation.destinationStationCode
-    q=q+""" {SOURCEDEPARTURETIME: '"""+relationInformation.sourceDepartureTime
-    q=q+"""' ,DESTINATIONARRIVALTIME:'"""+relationInformation.destinationArrivalTime
-    q=q+"""' ,SOURCEDAYNUMBER:"""+str(relationInformation.sourceDayNumber)
-    q=q+""" ,DESTINATIONDAYNUMBER:"""+str(relationInformation.destinationDayNumber) + """}]->(b) RETURN r"""
+    q = """MATCH (a:TRAINSTATION),(b:TRAIN) WHERE a.CODE = '""" + relationInformation.sourceStationCode + """' AND b.NUMBER = '""" + relationInformation.trainNumber + """' CREATE (a)-[r:""" + relationInformation.destinationStationCode
+    q = q + """ {SOURCEDEPARTURETIME: '""" + relationInformation.sourceDepartureTime
+    q = q + """' ,DESTINATIONARRIVALTIME:'""" + relationInformation.destinationArrivalTime
+    q = q + """' ,SOURCEDAYNUMBER:""" + str(relationInformation.sourceDayNumber)
+    q = q + """ ,DESTINATIONDAYNUMBER:""" + str(relationInformation.destinationDayNumber) + """}]->(b) RETURN r"""
     DATABASE_CONNECTION.query(q)
     pass
 
 
 def addRunningDaysToTrain(runningDays, trainNumber):
-    q = """match (a:TRAIN) where a.NUMBER = '""" + trainNumber + """' set a.SUNDAY = '""" + runningDays["SUN"] + """', a.MONDAY = '""" + runningDays["MON"]
-    q=q+"""', a.TUESDAY = '""" + runningDays["TUE"] + """', a.WEDNESDAY = '""" + runningDays["WED"] + """', a.THRUSDAY = '""" + runningDays["THU"]
-    q=q+"""', a.FRIDAY = '""" + runningDays["FRI"] + """', a.SATURDAY = '""" + runningDays["SAT"] + """'"""
+    q = """match (a:TRAIN) where a.NUMBER = '""" + trainNumber + """' set a.SUNDAY = '""" + runningDays[
+        "SUN"] + """', a.MONDAY = '""" + runningDays["MON"]
+    q = q + """', a.TUESDAY = '""" + runningDays["TUE"] + """', a.WEDNESDAY = '""" + runningDays[
+        "WED"] + """', a.THRUSDAY = '""" + runningDays["THU"]
+    q = q + """', a.FRIDAY = '""" + runningDays["FRI"] + """', a.SATURDAY = '""" + runningDays["SAT"] + """'"""
 
     results = DATABASE_CONNECTION.query(q)
     pass
@@ -139,14 +145,13 @@ def checkRouteStationExists(routeStations):
 def checkStationExists(stations):
     for line in stations:
         print line
-        trainNumber, trainName =line.split(",",1)
+        trainNumber, trainName = line.split(",", 1)
         q = """ MERGE (a:TRAIN {NUMBER : '""" + trainNumber + """'}) ON CREATE SET a.NAME = '""" + trainName + """'"""
         DATABASE_CONNECTION.query(q)
     pass
 
 
 def getBreakingCity(possibleCity, logger):
-
     """
     To get name of the city from where we can split journey between source & destination
     :param possibleCity: possible city or station name

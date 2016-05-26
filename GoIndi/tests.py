@@ -19,27 +19,23 @@ def populateDB():
     with open(filename) as data_file:
         routedata = json.load(data_file)
     print routedata
-    trainStations = []
+    trainstations = []
 
     for route in routedata["route"]:
-        stationInformation={}
-        stationInformation["code"]=route["code"]
-        stationInformation["arrivalTime"]=route["scharr"]
-        stationInformation["departureTime"]=route["schdep"]
-        stationInformation["day"]=route["day"]
-        stationInformation["name"]=route["fullname"]
-        print stationInformation
-        trainStations.append(stationInformation)
+        stationinformation = {"code": route["code"], "arrivalTime": route["scharr"], "departureTime": route["schdep"],
+                             "day": route["day"], "name": route["fullname"]}
+        print stationinformation
+        trainstations.append(stationinformation)
 
     index=0
     # We can use a with statement to ensure threads are cleaned up promptly
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         # Start the load operations and mark each future with its URL
-        numberOfStations=len(trainStations)
+        numberOfStations=len(trainstations)
         while index < numberOfStations-1:
             iterator=index+1
             while iterator <= numberOfStations -1:
-                executor.submit(trainDBscript.getTrainFare(trainStations[index]["code"],trainStations[iterator]["code"],'11072', trainStations[index],trainStations[iterator]))
+                executor.submit(trainDBscript.getTrainFare(trainstations[index]["code"],trainstations[iterator]["code"],'11057', trainstations[index],trainstations[iterator]))
                 iterator += 1
             index += 1
 

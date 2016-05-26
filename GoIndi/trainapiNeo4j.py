@@ -32,10 +32,13 @@ def parseAndReturnFare(trainroutes, logger):
     route = {"full": [], "parts": []}
     for trainRoute in trainroutes:
         try:
-            full = {"carrierName": trainRoute.trainName, "price": trainRoute.fare, "duration": trainRoute.duration,
+            full = {"carrierName": trainRoute.trainName, "duration": trainRoute.duration,
                     "id": trainRoute.trainNumber, "mode": "train", "site": "IRCTC", "source": trainRoute.srcStation,
                     "destination": trainRoute.destStation, "arrival": trainRoute.destArrivalTime,
-                    "departure": trainRoute.srcDepartureTime}
+                    "departure": trainRoute.srcDepartureTime, "fare_1A": trainRoute.fare_1A, "fare_2A": trainRoute.fare_2A,
+                    "fare_3A": trainRoute.fare_3A, "fare_3E": trainRoute.fare_3E, "fare_FC": trainRoute.fare_FC,
+                    "fare_CC": trainRoute.fare_CC, "fare_2S": trainRoute.fare_2S, "fare_SL": trainRoute.fare_SL,
+                    "fare_GN": trainRoute.fare_GN}
             route["full"].append(full)
         except ValueError:
             logger.error("Error while route map with full & parts journey")
@@ -47,10 +50,19 @@ def convertsPartsToFullJson(part_1, part_2):
 
     route = {"full": [], "parts": []}
     try:
-        full = {"carrierName": "Train", "price": part_1["full"]["price"].append(part_2["full"]["price"]), "duration": "",
+        full = {"carrierName": "Train", "duration": "",
                 "id": part_1["full"]["id"] + "_" + part_2["full"]["id"], "mode": "train", "site": "IRCTC",
                 "source": part_1["full"]["source"], "destination": part_2["full"]["destination"],
-                "arrival": part_1["full"]["arrival"], "departure": part_1["full"]["departure"]}
+                "arrival": part_1["full"]["arrival"], "departure": part_1["full"]["departure"],
+                "fare_1A": part_1["full"]["fare_1A"] + part_2["full"]["fare_1A"],
+                "fare_2A": part_1["full"]["fare_2A"] + part_2["full"]["fare_2A"],
+                "fare_3A": part_1["full"]["fare_3A"] + part_2["full"]["fare_3A"],
+                "fare_3E": part_1["full"]["fare_3E"] + part_2["full"]["fare_3E"],
+                "fare_FC": part_1["full"]["fare_FC"] + part_2["full"]["fare_FC"],
+                "fare_CC": part_1["full"]["fare_CC"] + part_2["full"]["fare_CC"],
+                "fare_SL": part_1["full"]["fare_SL"] + part_2["full"]["fare_SL"],
+                "fare_2S": part_1["full"]["fare_2S"] + part_2["full"]["fare_2S"],
+                "fare_GN": part_1["full"]["fare_GN"] + part_2["full"]["fare_GN"]}
         route["parts"].append(part_1)
         route["parts"].append(part_2)
         route["full"].append(full)
