@@ -4,6 +4,7 @@ import json
 import urllib2
 from django.http import HttpResponse
 import time
+import flightSkyScanner
 
 class FlightController:
     """Class returns all stations corresponding to a city"""
@@ -14,7 +15,8 @@ class FlightController:
 
     def getResults(self, sourcecity,sourcestate, destinationcity,destinationstate, journeyDate):
         flightCounter = 0
-        onlyFlight = self.flightApiCallResults(sourcecity,sourcestate, destinationcity,destinationstate, journeyDate, flightCounter)
+        #onlyFlight = self.flightApiCallResults(sourcecity,sourcestate, destinationcity,destinationstate, journeyDate, flightCounter)
+        onlyFlight = flightSkyScanner.getApiResults("IXJ","IXE")
         flightCounter = len(onlyFlight["flight"])
         if sourcecity in FlightController.nearestBigAirportMap.keys():
             bigSource = FlightController.nearestBigAirportMap[sourcecity]
@@ -27,11 +29,14 @@ class FlightController:
         finalList = {}
         mixedFlight = {}
         if((bigSource!=bigDestination)and(bigSource!='empty')and(bigDestination!='empty')):
-            mixedFlight = self.flightApiCallResults(bigSource,bigSource, bigDestination,bigDestination, journeyDate, flightCounter)
+            #mixedFlight = self.flightApiCallResults(bigSource,bigSource, bigDestination,bigDestination, journeyDate, flightCounter)
+            mixedFlight = flightSkyScanner.getApiResults("DEL","BLR")
             flightCounter = flightCounter + len(mixedFlight["flight"])
-            mixedFlightEnd = self.flightApiCallResults(bigSource,bigSource, destinationcity,destinationstate, journeyDate, flightCounter)
+            #mixedFlightEnd = self.flightApiCallResults(bigSource,bigSource, destinationcity,destinationstate, journeyDate, flightCounter)
+            mixedFlightEnd =flightSkyScanner.getApiResults("DEL","IXE")
             flightCounter = flightCounter + len(mixedFlightEnd["flight"])
-            mixedFlightInit = self.flightApiCallResults(sourcecity, sourcestate, bigDestination, bigDestination, journeyDate,flightCounter)
+            #mixedFlightInit = self.flightApiCallResults(sourcecity, sourcestate, bigDestination, bigDestination, journeyDate,flightCounter)
+            mixedFlightInit =flightSkyScanner.getApiResults("IXJ","BLR")
             if(sourcecity!=bigSource):
                 otherModesInit = self.getOtherModes(sourcecity,bigSource,journeyDate)
                 mixedFlightEnd = self.mixAndMatchEnd(mixedFlightEnd, otherModesInit)
@@ -65,7 +70,7 @@ class FlightController:
             newPart = {}
             newPart["subParts"]=subParts
             newPart["mode"]="bus"
-            newPart["id"]=mixedFlightInit["flight"][j]["full"][0]["id"]+str(1)
+            #newPart["id"]=mixedFlightInit["flight"][j]["full"][0]["id"]+str(1)
             newPart["duration"] = subParts[0]["duration"]
             newPart["destination"] = subParts[0]["destination"]
             newPart["arrival"] = subParts[0]["arrival"]
