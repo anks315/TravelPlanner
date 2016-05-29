@@ -160,7 +160,7 @@ class TrainController:
 
 
 
-def getdummyRoute(source,destination):
+def getdummyRoute(source,destination,journeyDate):
     route={}
     part ={}
     part["carrierName"]="Duronto Express"
@@ -173,6 +173,8 @@ def getdummyRoute(source,destination):
     part["destination"]=destination
     part["arrival"]="18:10"
     part["departure"]="6:00"
+    part["departureDate"]=journeyDate
+    part["arrivalDate"]=journeyDate
     route["full"]={}
     route["parts"]=[]
     route["parts"].append(part)
