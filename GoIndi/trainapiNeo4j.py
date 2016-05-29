@@ -11,10 +11,10 @@ today = datetime.date.today().strftime("%Y-%m-%d")
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
 
 logger = logging.getLogger("TravelPlanner.TrainController.Routes")
-fileHandler = logging.FileHandler('C:/Users/Ankit Kumar/Downloads/TrainRoutes_' + today + '.log')
+#fileHandler = logging.FileHandler('C:/Users/Ankit Kumar/Downloads/TrainRoutes_' + today + '.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-fileHandler.setFormatter(formatter)
-logger.addHandler(fileHandler)
+#fileHandler.setFormatter(formatter)
+#logger.addHandler(fileHandler)
 logger.setLevel(logging.INFO)
 
 trainNumberstoDurationMap = {}

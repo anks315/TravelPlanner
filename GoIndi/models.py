@@ -8,7 +8,7 @@ def demo():
     pass
 
 
-DATABASE_CONNECTION = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
+DATABASE_CONNECTION = "hi"
 
 
 def getTrainsBetweenStation(sourceCity, destinationStationSet, logger):

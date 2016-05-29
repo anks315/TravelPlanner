@@ -117,7 +117,7 @@ function trainFilters(){
 }
 function trainFilter(){
 	var j=0;
-		var newTrainList = new Array();
+		 newtrainList = new Array();
 		for (i = 0; i < trainList.length; i++) { 
 		durationArr = trainList[i].full[0].duration.split(":");
 		durationVal = durationArr[0]*60 + 1*durationArr[1];
@@ -126,9 +126,9 @@ function trainFilter(){
 		departureArr = trainList[i].full[0].departure.split(":");
 		departureVal = departureArr[0]*60 + 1*departureArr[1]
 		if((trainList[i].full[0].price <=filterTrainPrice)&&(durationVal <= filterTrainDuration)&&(arrivalVal <= filterTrainMaxArrival)&&(arrivalVal >= filterTrainMinArrival)&&(departureVal <= filterTrainMaxDeparture)&&(departureVal >= filterTrainMinDeparture)){
-			newTrainList[j]=trainList[i];
+			newtrainList[j]=trainList[i];
 			j++;
 		}
 		}
-		showtransportJourneyList(newTrainList,"train");
+		showtransportJourneyList(newtrainList,"train");
 }

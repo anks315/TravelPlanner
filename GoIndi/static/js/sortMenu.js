@@ -39,21 +39,21 @@ function showSortMenuMain(){
 		});
 		
 	$( "#priceSort" ).click(function() {
-				SortListByPrice(busList);
-				showBusJourneyList(busList);
-				SortListByPrice(trainList);
-				showtransportJourneyList(trainList,"train");
-				SortListByPrice(flightList);
-				showtransportJourneyList(flightList,"flight");
+				SortListByPrice(newbusList);
+				showBusJourneyList(newbusList);
+				SortListByPrice(newtrainList);
+				showtransportJourneyList(newtrainList,"train");
+				SortListByPrice(newflightList);
+				showtransportJourneyList(newflightList,"flight");
 				showSummary();
 		});
 	$( "#durationSort" ).click(function() {
-				SortListByDuration(busList);
-				showBusJourneyList(busList);
-				SortListByDuration(trainList);
-				showtransportJourneyList(trainList,"train");
-				SortListByDuration(flightList);
-				showtransportJourneyList(flightList,"flight");
+				SortListByDuration(newbusList);
+				showBusJourneyList(newbusList);
+				SortListByDuration(newtrainList);
+				showtransportJourneyList(newtrainList,"train");
+				SortListByDuration(newflightList);
+				showtransportJourneyList(newflightList,"flight");
 				showSummary();
 		});
 		

@@ -29,17 +29,17 @@ filename = "C:/Users/Ankit Kumar/Downloads/tmp.txt"
 today = datetime.date.today().strftime("%Y-%m-%d")
 
 logger = logging.getLogger("TravelPlanner.Train.DBSCRIPT")
-fileHandler = logging.FileHandler('C:/Users/Ankit Kumar/Downloads/DBSCRIPT_' + today + '.log')
+#fileHandler = logging.FileHandler('D:/DBSCRIPT_' + today +'.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-fileHandler.setFormatter(formatter)
-logger.addHandler(fileHandler)
+#fileHandler.setFormatter(formatter)
+#logger.addHandler(fileHandler)
 logger.setLevel(logging.INFO)
 
 jsonLogger = logging.getLogger("DBSCRIPTJSON")
-jsonfileHandler = logging.FileHandler('C:/Users/Ankit Kumar/Downloads/DBSCRIPTJSON_' + today + '.log')
+#jsonfileHandler = logging.FileHandler('D:/DBSCRIPTJSON_'+today+'.log')
 jsonformatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-jsonfileHandler.setFormatter(jsonformatter)
-jsonLogger.addHandler(jsonfileHandler)
+#jsonfileHandler.setFormatter(jsonformatter)
+#jsonLogger.addHandler(jsonfileHandler)
 jsonLogger.setLevel(logging.INFO)
 
 

@@ -5,25 +5,24 @@ function showFlightJourneyList(transportList){
 	for (i = 0; i < transportList.length; i++) { 
 		var transportTotalDetails = transportList[i].full[0];
         var transportTotaljourney = "";
-		var first = 1;
 		var journeyDividerContent = "";
 		var individualJourneyDetails = "";
 		
 		for (j = 0; j < transportList[i].parts.length;j++ ){
 			var transportDetails = transportList[i].parts[j];
 			
-			if(first == 1 && transportDetails.mode == 'flight'){
-					transportTotaljourney = transportTotaljourney + "<img src='/static/images/"+transportDetails.carrierName+".png'></img>"
-					first = 0;
-			} else if (transportDetails.mode == 'flight'){
-					transportTotaljourney = transportTotaljourney + "&nbsp;&#8594;&nbsp" + "<img src='/static/images/"+transportDetails.carrierName+".png'></img>";
-			}
-			var siteName = "";
-			siteName = transportDetails.site;
-			
-			
-			transportCarrier = "<img src='/static/images/"+transportDetails.carrierName+".png'></img><br/>";
 
+			if(transportDetails.mode == 'flight'){
+				for(var q=0;q<transportDetails.subParts.length;q++){
+					var first = 1;
+					if(first==1 ){
+						transportTotaljourney = transportTotaljourney + "<img height='40' width='70' src='"+transportDetails.subParts[q].carrierName+"'></img>"
+						first = 0;
+					} else if(transportDetails.subParts[q].carrierName!=transportDetails.subParts[q-1].carrierName){
+						transportTotaljourney = transportTotaljourney + "&nbsp;&#8594;&nbsp" + "<img height='40' width='70' src='"+transportDetails.subParts[q].carrierName+"'></img>";
+					}
+				}
+			}
 			
 			if(transportDetails.mode=='flight'){
 				selectedClass = 'divisionFlightSelected';
@@ -102,7 +101,7 @@ function showFlightJourneyList(transportList){
 				
 				var journeyDivider = "<br/><table class='table table-bordered' style ='text-align:center' ><tbody><tr>"+journeyDividerContent+"</tr><tr><td colspan='"+transportList[i].parts.length+"'>"+individualJourneyDetails+"</td></tr></tbody></table>";
 				
-				output = output + "<div class='flightMain' id = 'main"+transportTotalDetails.id+"'><tr><td bgcolor='WhiteSmoke'><div class='row-eq-height'><table width = '100%'><tr><td style ='text-align:left'>&nbsp;&nbsp;<font color = 'grey'><b>"+transportTotaljourney+"</b></font></td><td width = '25%' style ='text-align:right'><button type='button' class='btn btn-warning'  data-toggle='modal' data-target='#details"+transportTotalDetails.id+"'>Select</button>&nbsp;&nbsp;</td></tr></table></div></td></tr><tr><td><div class='row-eq-height'>"+journeyDivider+"</div>";
+				output = output + "<div class='flightMain' id = 'main"+transportTotalDetails.id+"'><tr><td bgcolor='WhiteSmoke'><div class='row-eq-height'><table width = '100%'><tr><td style ='text-align:left'><font color = 'grey'><b>"+transportTotaljourney+"</b></font></td><td width = '25%' style ='text-align:right'><button type='button' class='btn btn-warning'  data-toggle='modal' data-target='#details"+transportTotalDetails.id+"'>Select</button>&nbsp;&nbsp;</td></tr></table></div></td></tr><tr><td><div class='row-eq-height'>"+journeyDivider+"</div>";
 				
 				output = output + "<div class='modal fade modal-wide' id='details"+transportTotalDetails.id+"' role='dialog'><div class='modal-dialog'><div class='modal-content'><div class='modal-body'>"+getModalForFlights(transportList[i].parts,transportTotalDetails.id)+"</div></div></div></div></td></tr></div>";
 				

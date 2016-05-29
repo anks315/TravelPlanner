@@ -1,67 +1,214 @@
-function showTrainJourneyList(transportList, mode){
-	var output = "<br/><div id='trainBox' hidden>";
+var radionames = []
+var isSelected =0
+function showTrainJourneyList(transportList){
+	var output = "<br/><div id='trainBox' hidden><table width='100%'><tr>";
 	for (i = 0; i < transportList.length; i++) { 
 		var transportTotalDetails = transportList[i].full[0];
         var transportTotaljourney = "";
-		var details = "";
-		var first = 1;
+		
 		var journeyDividerContent = "";
+		var individualJourneyDetails = "";
+		
 		for (j = 0; j < transportList[i].parts.length;j++ ){
 			var transportDetails = transportList[i].parts[j];
-			if(j==0){
-				//source and details of begining station
-				details = details + "<table width='100%' style='color:grey'><tr><td><table width='100%'><tr><td width='20%' class = 'detailsCity'>"+transportDetails.source+"&nbsp;&nbsp;</td><td class = 'detailsTime'>  Dep : "+transportDetails.departure+"</td></tr></table></td></tr>";
+			if(transportDetails.mode == 'train'){
+				for(var q=0;q<transportDetails.subParts.length;q++){
+					var first = 1;
+					if(first==1 ){
+						transportTotaljourney = transportTotaljourney + "<div>"+transportDetails.subParts[q].carrierName+"</div>"
+						first = 0;
+					} else {
+						transportTotaljourney = transportTotaljourney + "&nbsp;&#8594;&nbsp" + "<div>"+transportDetails.subParts[q].carrierName+"</div>";
+					}
+				}
 			}
-			if(first == 1 && transportDetails.mode == 'train'){
-
-					transportTotaljourney = transportDetails.carrierName;
-					first = 0;
-			} else if (transportDetails.mode == 'train'){
-
-					transportTotaljourney = transportTotaljourney + "&nbsp;&#8594;&nbsp" + transportDetails.carrierName;
-			}
-			var siteName = "";
-
-			
-
-			transportCarrier = transportDetails.carrierName;
-			//details of the transportation mode
-			details = details + "<tr><td><table width='100%'><tr><td width='5%'><table><tr><td style='white-space: nowrap;'><img src='/static/images/"+transportDetails.mode+"2.png'>&nbsp;&nbsp;</td><td><div style='border-left:1px solid #808080;border-left-style:dotted;height:150px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;<b class='detailsMode'>"+transportCarrier+"</b><br/><div class='detailsPrice'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Price : </b>&#8377 "+transportDetails.price+"/-</div><div class='detailsDuration'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Duration : </b>"+transportDetails.duration+" hrs</div></td></tr></table></td><td width='95%' style='text-align:right'>"+siteName+"&nbsp;&nbsp;<button type='button' class='btn btn-success btn-arrow-right' id = 'hello'>Book</button>&nbsp;&nbsp;&nbsp;</td></tr></table></td></tr>";
-			
-			if(j==transportList[i].parts.length-1){
-				//details of last station
-				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsCity'>"+transportDetails.destination+"&nbsp;&nbsp;</td><td class = 'detailsTime'>  Arr : "+transportDetails.arrival+"</td></tr></table></td></tr></table>";
-			} else {
-				//datails of intermediate station
-				k=j+1;
-				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsCity'>"+transportDetails.destination+"&nbsp;&nbsp;</td><td><table><tr><td class = 'detailsTime'>  Arr : "+transportDetails.arrival+"</td></tr><tr><td class = 'detailsTime'>  Dep : "+transportList[i].parts[j].departure+"</td></tr></table></td></tr></table></td></tr>"
+			if(transportDetails.mode=='train'){
+				selectedClass = 'divisionTrainSelected';
+				boxTypeClass = 'divisionTrainBox';
+			}else{
+				selectedClass = 'divisionOtherNotSelected';
+				boxTypeClass = 'divisionOtherBox';
 			}
 			
 			//bar displaying journey division on the main widget
-			var journeyDividerContent = journeyDividerContent + "<td style ='padding: 1px'><img src='/static/images/"+transportDetails.mode+"2.png'/></td>";
-		}
-			var travelSpecificWid = travelSpecificsWidget(transportTotalDetails.source,transportTotalDetails.destination,transportTotalDetails.arrival,transportTotalDetails.departure,transportTotalDetails.duration);
 			
-			var journeyDivider = "<br/><table class='table table-bordered' style ='text-align:center'><tbody><tr>"+journeyDividerContent+"</tr></tbody></table>"
-
-				
-				var numberOfChanges = transportList[i].parts.length-1
+			
+				 
+			var carrierClass = '';
+			var colspan = '';
+			var hiddenProperty = '';
+			if(transportDetails.mode == "train"){
+				carrierClass = '';
+				var numberOfChanges = transportDetails.subParts.length-1
 				if (numberOfChanges == 1){
-					var numberOfChangesView = numberOfChanges + " Stop"
+						var numberOfChangesView = numberOfChanges + " Stop"
 				} else if (numberOfChanges == 0) {
-					var numberOfChangesView = "Direct"
+						var numberOfChangesView = "Direct"
 				} else {
-					var numberOfChangesView = numberOfChanges + " Stops"
+						var numberOfChangesView = numberOfChanges + " Stops"
 				}
-				output = output + "<div class='trainMain' id = 'main"+transportTotalDetails.id+"'><div class='panel panel-default'><div class='panel-body'><div class='row-eq-height'><table width = '100%'><tr><td style ='text-align:left'><font color = 'grey'><b>"+transportTotaljourney+"</b></font></td><td width = '25%' style ='text-align:right'><button type='button' class='btn btn-warning'  data-toggle='modal' data-target='#details"+transportTotalDetails.id+"'>Select</button></td></tr></table></div><div class='row-eq-height'>"+journeyDivider+"</div><div class='row-eq-height'><div class='col-sm-3 col-height col-middle' style ='text-align:left'><font color = 'grey'>"+numberOfChangesView+"<br/>&nbsp;</div><div class='col-sm-6 col-height col-middle' style ='text-align:center'>"+travelSpecificWid+"</div></font><div class='col-sm-3 col-height col-middle'><table width = '100%' style ='text-align:right'><tr><td><h4 style='white-space: nowrap;'><font color='green'>&#8377 "+transportTotalDetails.price+"/-</font><h4></td></tr></table></div></div></div></div></div>";
+				if(transportList[i].parts.length==2){
+					colspan = 'width="90%"';
+				}else if(transportList[i].parts.length==3){
+					colspan = 'width="80%"';
+				}
+				hiddenProperty='';
+			} else {
+					carrierClass = '';
+					numberOfChangesView = transportDetails.carrierName
+			}
+			
+			journeyDividerContent = journeyDividerContent + "<td class='divisionEnabled' style ='padding: 0px' "+colspan+"'><a href='#' class='"+boxTypeClass+" "+selectedClass+" box"+i+"' id='"+transportDetails.id+"divBox' style ='padding: 1px'><img src='/static/images/"+transportDetails.mode+"3.png'/></a></td>";
+			
+			
+			//details of journey
+			if(transportDetails.mode == "train"){
 				
-				output = output + "<div class='modal fade' id='details"+transportTotalDetails.id+"' role='dialog'><div class='modal-dialog'><div class='modal-content'><div class='modal-header'><button type='button' class='close' data-dismiss='modal'>&times;</button></div><div class='modal-body'>"+details+"</div><div class='modal-footer'><button type='button' class='btn btn-default' data-dismiss='modal'>Close</button></div></div></div></div>";
+				
+				var travelSpecificWid = travelSpecificsWidget(transportDetails.source,transportDetails.destination,transportDetails.arrival,transportDetails.departure,transportDetails.duration);
+				
+				individualJourneyDetails = individualJourneyDetails+"<div class='"+transportDetails.id+"divBox detailsBox"+i+"'> <table width='100%'><tr ><td ><div class='row-eq-height'><div class='col-sm-3 col-height col-middle' style ='text-align:left'><font color = 'grey'>"+numberOfChangesView+"<br/>&nbsp;</div><div class='col-sm-6 col-height col-middle' style ='text-align:center'>"+travelSpecificWid+"</div></font><div class='col-sm-3 col-height col-middle'><table width = '100%' style ='text-align:right'><tr><td><h4 style='white-space: nowrap;'><font color='green'>&#8377 "+transportDetails.price+"/-</font><h4></td></tr></table></div></div></tr></table></div>"
+			
+			}else{
+				individualJourneyDetails = individualJourneyDetails + "<div class='"+transportDetails.id+"divBox detailsBox"+i+"' hidden>"
+				for(k=0;k<transportDetails.subParts.length;k++){
+					var transportOptionDetails = transportDetails.subParts[k];
+					
+					
+					var priceList = transportOptionDetails.price;
+					var priceArr = priceList.split(",");
+					var price = priceArr[0]
+					
+					var startingFrom='';
+					if (priceArr.length>1){
+							startingFrom="Staring from&nbsp;&nbsp;"
+					}
+					
+					var travelSpecificWid = travelSpecificsWidget(transportDetails.source,transportDetails.destination,transportOptionDetails.arrival,transportOptionDetails.departure,transportOptionDetails.duration);
+					
+					individualJourneyDetails = individualJourneyDetails+"<table width='100%'><tr ><td ><div class='row-eq-height'><div class='col-sm-3 col-height col-middle' style ='text-align:left'><font color = '#056273'><b>"+transportOptionDetails.carrierName+"</b>&nbsp;</div><div class='col-sm-6 col-height col-middle' style ='text-align:center'>"+travelSpecificWid+"</div></font><div class='col-sm-3 col-height col-middle'><table width = '100%' style ='text-align:right'><tr><td><font color='grey' size='1'>"+startingFrom+"</font><h4 style='white-space: nowrap;'><font color='green'>&#8377 "+price+"/-</font><h4></td></tr></table></div></div></tr></table>"
+					if (k!=(transportDetails.subParts.length-1)){
+						individualJourneyDetails = individualJourneyDetails + '<hr/>'
+					}
+				}
+				individualJourneyDetails = individualJourneyDetails + "</div>"
+			}
+	
+		}
+			
+				
+				var journeyDivider = "<br/><table class='table table-bordered' style ='text-align:center' ><tbody><tr>"+journeyDividerContent+"</tr><tr><td colspan='"+transportList[i].parts.length+"'>"+individualJourneyDetails+"</td></tr></tbody></table>";
+				
+				output = output + "<div class='trainMain' id = 'main"+transportTotalDetails.id+"'><tr><td bgcolor='WhiteSmoke'><div class='row-eq-height'><table width = '100%'><tr><td style ='text-align:left'>&nbsp;&nbsp;<font color = 'grey'><b>"+transportTotaljourney+"</b></font></td><td width = '25%' style ='text-align:right'><button type='button' class='btn btn-warning'  data-toggle='modal' data-target='#details"+transportTotalDetails.id+"'>Select</button>&nbsp;&nbsp;</td></tr></table></div></td></tr><tr><td><div class='row-eq-height'>"+journeyDivider+"</div>";
+				
+				output = output + "<div class='modal fade modal-wide' id='details"+transportTotalDetails.id+"' role='dialog'><div class='modal-dialog'><div class='modal-content'><div class='modal-body'>"+getModalForTrains(transportList[i].parts,transportTotalDetails.id)+"</div></div></div></div></td></tr></div>";
 				
 	}
-	output = output + "</div>"
-	 //binding data to trains tab
-	    $("#trainData").empty();
+	output = output + "</table></div>"
+	//binding data to trains tab
+		$("#trainData").empty();
 		document.getElementById("trainData").innerHTML = output;
+	for(var l=0; l<radionames.length;l++){
+		$("input:radio[name='"+radionames[l]+"']").change(function(){
+			var id = $(this).attr('class');
+			getTotalPrice(id);
+		});
+	}
 		$("#trainBox").fadeIn();
-	
+		//setting action on mode menu box
+		$(".divisionTrainBox").mouseover(function() {
+					if($(this).hasClass("divisionTrainSelected")){
+						isSelected=1;
+					}else{
+						isSelected=0;
+					}
+					$(this).removeClass('divisionTrainNotSelected');
+					$(this).addClass('divisionTrainHover');
+				}).mouseout(function() { 
+				$(this).removeClass('divisionTrainHover');
+				if(isSelected){
+					$(this).addClass('divisionTrainSelected');
+				} else {
+					$(this).addClass('divisionTrainNotSelected');
+				}
+					
+				});
+		$(".divisionTrainBox").click(function() {
+			var classList = $(this).attr('class').split(/\s+/);
+			var selectedWid = '';
+				for (var i = 0; i < classList.length; i++) {
+					if (classList[i].substring(0, 3)=='box') {
+						selectedWid = classList[i]
+					}
+				}
+			var len = selectedWid.length;
+			var num = selectedWid.substring(3, len);
+			var classToBeHidden = 'detailsBox'+num;
+			var id = $(this).attr('id');
+			$("."+classToBeHidden).hide();
+			$("."+id).fadeIn();
+			$("."+selectedWid).each(function() {
+				if($(this).hasClass("divisionOtherSelected")){
+						$(this).removeClass('divisionOtherSelected');
+						$(this).addClass('divisionOtherNotSelected');
+					}else if($(this).hasClass("divisionTrainSelected")){
+						$(this).removeClass('divisionTrainSelected');
+						$(this).addClass('divisionTrainNotSelected');
+					}
+			});
+			isSelected=1;
+			event.preventDefault();
+		});
+		$(".divisionOtherBox").mouseover(function() {
+					if($(this).hasClass("divisionOtherSelected")){
+						isSelected=1;
+					}else{
+						isSelected=0;
+					}
+					$(this).removeClass('divisionOtherNotSelected');
+					$(this).addClass('divisionOtherHover');
+				}).mouseout(function() { 
+				$(this).removeClass('divisionOtherHover');
+				if(isSelected){
+					$(this).addClass('divisionOtherSelected');
+				} else {
+					$(this).addClass('divisionOtherNotSelected');
+				}
+					
+				});
+		$(".divisionOtherBox").click(function() {
+			var classList = $(this).attr('class').split(/\s+/);
+			var selectedWid = '';
+				for (var i = 0; i < classList.length; i++) {
+					if (classList[i].substring(0, 3)=='box') {
+						selectedWid = classList[i]
+					}
+				}
+			var len = selectedWid.length;
+			var num = selectedWid.substring(3, len);
+			var classToBeHidden = 'detailsBox'+num;
+			var id = $(this).attr('id');
+			$("."+classToBeHidden).hide();
+			$("."+id).fadeIn();
+			$("."+selectedWid).each(function() {
+				if($(this).hasClass("divisionOtherSelected")){
+						$(this).removeClass('divisionOtherSelected');
+						$(this).addClass('divisionOtherNotSelected');
+					}else if($(this).hasClass("divisionTrainSelected")){
+						$(this).removeClass('divisionTrainSelected');
+						$(this).addClass('divisionTrainNotSelected');
+					}
+			});
+			isSelected=1;
+			event.preventDefault();
+		});
+		
+		for (i = 0; i < transportList.length; i++) { 
+			var transportTotalDetails = transportList[i].full[0];
+			for (j = 0; j < transportList[i].parts.length;j++ ){
+				var transportDetailsId = transportList[i].parts[j].id + 'divBox';
+				
+			}
+		}
+		
 }

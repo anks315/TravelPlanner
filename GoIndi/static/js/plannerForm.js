@@ -79,6 +79,7 @@ function showPlanner(plannerContainer){
 				  if (err != "success") {
 				  } else {
 					  trainList = data.train
+					  newtrainList=trainList
 					showtransportJourneyList(trainList,"train");
 					trainFilters();
 				  }
@@ -87,6 +88,7 @@ function showPlanner(plannerContainer){
 				  if (err != "success") {
 				  } else {
 					  flightList = data.flight
+					  newflightList = flightList
 					showtransportJourneyList(flightList,"flight");
 					flightFilters();
 				  }
@@ -95,6 +97,7 @@ function showPlanner(plannerContainer){
 				  if (err != "success") {
 				  } else {
 					  busList = data.bus
+					  newbusList=busList
 					showBusJourneyList(busList);
 					busFilters();
 				  }
@@ -207,6 +210,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 				  if (err != "success") {
 				  } else {
 					  trainList = data.train
+					  newtrainList = trainList
 					showtransportJourneyList(trainList,"train");
 					trainFilters();
 				  }
@@ -216,6 +220,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 				  if (err != "success") {
 				  } else {
 					  flightList = data.flight
+					  newflightList = flightList
 					showtransportJourneyList(flightList,"flight");
 					flightFilters();
 				  }
@@ -224,6 +229,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 				  if (err != "success") {
 				  } else {
 					  busList = data.bus
+					  newbusList=busList
 					showBusJourneyList(busList);
 					busFilters();
 				  }

@@ -1,6 +1,6 @@
 function getModalForFlights(transportParts, id){
 	
-	transportParts[1] = {"id":""+transportParts[0].id+"1","source":"Delhi","destination":"bangalore","mode":"bus","subParts":[{"id":""+transportParts[0].id+"11","source":"Delhi","destination":"bangalore","carrierName":"srs travels","busType":"AC Sleeper","price":"500","duration":"05:15","departure":"12:40","arrival":"17:50"},{"id":""+transportParts[0].id+"12","source":"Delhi","destination":"bangalore","carrierName":"srs travels","busType":"AC Sleeper","price":"600","duration":"05:15","departure":"12:40","arrival":"17:50"}]};
+	//transportParts[1] = {"id":""+transportParts[0].id+"1","source":"Delhi","destination":"bangalore","mode":"bus","subParts":[{"id":""+transportParts[0].id+"11","source":"Delhi","destination":"bangalore","carrierName":"srs travels","busType":"AC Sleeper","price":"500","duration":"05:15","departure":"12:40","arrival":"17:50"},{"id":""+transportParts[0].id+"12","source":"Delhi","destination":"bangalore","carrierName":"srs travels","busType":"AC Sleeper","price":"600","duration":"05:15","departure":"12:40","arrival":"17:50"}]};
 	colWidth = 12/transportParts.length;
 	
 	var partOutput=""
@@ -11,9 +11,12 @@ function getModalForFlights(transportParts, id){
 		if(transportParts[i].mode == 'flight'){
 			price = price + transportParts[i].price*1
 			part=getFlightPart(transportParts[i], id)
-		} else if(transportParts[i].mode == 'bus'){
-			part=getBusPart(transportParts[i], id)
-			price = price + transportParts[i]['subParts'][0].price*1
+		} else{
+			part=getOtherPart(transportParts[i], id)
+			var priceList = transportParts[i]['subParts'][0].price;
+			var priceArr = priceList.split(",");
+			var subprice = priceArr[0]
+			price = price + subprice*1
 		}
 		partOutput = partOutput+"<div class='col-sm-"+colWidth+" col-height col-middle nopadding'>"+part+"</div>"
 		
@@ -37,25 +40,25 @@ function getFlightPart(flight,id){
 			var transportDetails = flight.subParts[j];
 			if(j==0){
 				//source and details of begining station
-				details = details + "<table width='100%' style='color:grey'><tr><td><table width='100%'><tr><td width='20%'>"+transportDetails.source+"&nbsp;&nbsp;</td><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(transportDetails.departure)+"</td></tr></table></td></tr>";
+				details = details + "<table width='100%' style='color:grey'><tr><td><table width='100%'><tr><td width='20%'>"+transportDetails.source+"&nbsp;&nbsp;</td><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(flight.departure)+"</td></tr></table></td></tr>";
 			}
 
 			var siteName = "";
 			siteName = transportDetails.site;
 			
 			
-			transportCarrier = "<img src='/static/images/"+transportDetails.carrierName+".png'></img><br/>";
+			transportCarrier = "<img src='"+transportDetails.carrierName+"'></img><br/>";
 
 			//details of the transportation mode
 			details = details + "<tr><td><table width='100%'><td width='5%'><table><tr><td style='white-space: nowrap;'>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div style='border-left:1px solid #808080;border-left-style:dotted;height:150px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;<b class='detailsMode'>"+transportCarrier+"</b><div class='detailsDuration'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Duration : </b>"+transportDetails.duration+" hrs</div></td></tr></table></td><td width='95%' style='text-align:right'></td></tr></table></td></tr>";
 			
 			if(j==flight.subParts.length-1){
 				//details of last station
-				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"&nbsp;&nbsp;</td><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(transportDetails.arrival)+"</td></tr></table></td></tr></table>";
+				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"&nbsp;&nbsp;</td><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(flight.arrival)+"</td></tr></table></td></tr></table>";
 			} else {
 				//datails of intermediate station
 				k=j+1;
-				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"&nbsp;&nbsp;</td><td><table><tr><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(transportDetails.arrival)+"</td></tr><tr><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(transportDetails.departure)+"</td></tr></table></td></tr></table></td></tr></td>"
+				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"&nbsp;&nbsp;</td><td><table><tr><td></td></tr></table></td></tr></table></td></tr></td>"
 			}
 			
 	
@@ -64,20 +67,27 @@ function getFlightPart(flight,id){
 	return details;
 	
 }
-function getBusPart(bus, id){
-	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+bus.mode+"2.png'>&nbsp;&nbsp;"+bus.source+"&nbsp;&#8594;&nbsp"+bus.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success'>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
+function getOtherPart(other, id){
+	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+other.mode+"2.png'>&nbsp;&nbsp;"+other.source+"&nbsp;&#8594;&nbsp"+other.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success'>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
 	var first = 1;
-	for ( var j = 0; j < bus.subParts.length;j++ ){
+	for ( var j = 0; j < other.subParts.length;j++ ){
 			var isChecked = '';
 			if (j==0){
 				 isChecked = 'checked';
 			}
-			var transportDetails = bus.subParts[j];
-			details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+bus.id+"' "+isChecked+" value = '"+transportDetails.price+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+transportDetails.price+"/-</td></tr>";
-	
+			var transportDetails = other.subParts[j];
+			
+			var priceList = transportDetails.price;
+			var priceArr = priceList.split(",");
+			var price = priceArr[0]
+			if(other.mode=='bus'){
+				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+other.id+"' "+isChecked+" value = '"+price+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
+			} else {
+				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+other.id+"' "+isChecked+" value = '"+price+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.seatType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"<br/>"+transportDetails.source+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"<br/>"+transportDetails.destination+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
+			}
 	}
 	details = details+"</table>";
 	var length =  radionames.length
-	radionames[length] = "radio"+bus.id
+	radionames[length] = "radio"+other.id
 	return details;
 }

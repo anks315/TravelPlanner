@@ -138,7 +138,7 @@ function busFilters(){
 }
 function busFilter(){
 	var j=0;
-		var newbusList = new Array();
+	 newbusList = new Array();
 		for (i = 0; i < busList.length; i++) { 
 		busType = busList[i].full[0].busType;
 		durationArr = busList[i].full[0].duration.split(":");
