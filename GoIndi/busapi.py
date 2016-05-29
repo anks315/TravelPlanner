@@ -5,20 +5,20 @@ import urllib2
 import requests
 from requests.auth import HTTPDigestAuth
 from django.http import HttpResponse
-
+import dateTimeUtility
 class BusController:
     """Class returns all stations corresponding to a city"""
 
 
     def getResults(self, source, destination, journeyDate):
         jdList = journeyDate.split("-")
-        journeyDate = jdList[2]+"-"+jdList[1]+"-"+jdList[0]
-        url = "http://agent.etravelsmart.com/etsAPI/api/getAvailableBuses?sourceCity="+source+"&destinationCity="+destination+"&doj="+journeyDate
+        newFormatJourneyDate = jdList[2]+"-"+jdList[1]+"-"+jdList[0]
+        url = "http://agent.etravelsmart.com/etsAPI/api/getAvailableBuses?sourceCity="+source+"&destinationCity="+destination+"&doj="+newFormatJourneyDate
         req = requests.get(url, auth=HTTPDigestAuth('eazzer', 'E@ZZer1713'))
-        response = self.parseResultAndReturnFare(req.json(),source,destination)
+        response = self.parseResultAndReturnFare(req.json(),source,destination,journeyDate)
         return response
 
-    def parseResultAndReturnFare(self, jsonData, source, destination):
+    def parseResultAndReturnFare(self, jsonData, source, destination,journeyDate):
             resultJsonData={}
             resultJsonData["bus"]=[]
             counter = 1
@@ -69,6 +69,8 @@ class BusController:
                 part["id"] = "bus"+str(counter)+str("1")
                 part["inventoryType"] = option["inventoryType"]
                 part["routeScheduleId"]= option["routeScheduleId"]
+                part["departureDate"]=journeyDate
+                part["arrivalDate"]=dateTimeUtility.calculateArrivalTimeAndDate(journeyDate,part["departure"],part["duration"])["arrivalDate"]
                 route["parts"].append(part)
                 full=part
                 full["id"]="bus"+str(counter)

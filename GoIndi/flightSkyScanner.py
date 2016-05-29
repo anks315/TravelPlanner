@@ -1,6 +1,7 @@
 __author__ = 'ankur'
 
 from skyscanner import Flights
+import dateTimeUtility
 
 def getApiResults(sourcecity,destinationcity,journeyDate,id):
     cityAndStateToStationsMap = {'Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
@@ -58,12 +59,12 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id):
         outbounddate=str(year)+'-'+str(month)+'-'+str(day),
         adults=1), initial_delay = 5, delay = 3, tries = 20).parsed
 
-    resultJson=parseFlightAndReturnFare(result,id, sourcecity, destinationcity)
+    resultJson=parseFlightAndReturnFare(result,id, sourcecity, destinationcity,journeyDate)
     return resultJson
 
 
 
-def parseFlightAndReturnFare(apiresult,id,source,destination):
+def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate):
     returnedFareData = apiresult
 
     resultJsonData = {}
@@ -92,6 +93,7 @@ def parseFlightAndReturnFare(apiresult,id,source,destination):
             part["source"] = source
             part["destination"] = destination
             part["arrival"]=(returnedFareData["Legs"][flightCounter]["Arrival"]).split("T")[1]
+            part["departureDate"]=journeyDate
             full["minArrival"]=(returnedFareData["Legs"][flightCounter]["Arrival"]).split("T")[1]
             full["maxArrival"]=(returnedFareData["Legs"][flightCounter]["Arrival"]).split("T")[1]
             part["departure"]=returnedFareData["Legs"][flightCounter]["Departure"].split("T")[1]
@@ -101,6 +103,7 @@ def parseFlightAndReturnFare(apiresult,id,source,destination):
             hours = int(duration)/60
             minutes = int(duration)%60
             part["duration"]= str(hours)+":"+str(minutes)
+            part["arrivalDate"] = dateTimeUtility.calculateArrivalTimeAndDate(journeyDate, part["departure"],part["duration"])["arrivalDate"]
             full["minDuration"]=str(hours)+":"+str(minutes)
             full["maxDuration"]=str(hours)+":"+str(minutes)
             part["bookingOptions"] = itinerary["PricingOptions"]
