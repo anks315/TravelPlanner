@@ -39,6 +39,16 @@ def main(request):
 def test(request):
 
      return render_to_response('index.html',{},context_instance = RequestContext(request))
+def flightapi(request):
+    sourcecity = request.GET['sourcecity']
+    sourcestate = request.GET['sourcestate']
+    destinationcity = request.GET['destinationcity']
+    destinationstate = request.GET['destinationstate']
+    journeyDate = request.GET['journeyDate']
+    # request.session['source']=source
+    # request.session['destination']=destination
+    resultJsonData = flightController.getResults(sourcecity,sourcestate, destinationcity,destinationstate, journeyDate)
+    return HttpResponse(json.dumps(resultJsonData), content_type='application/json')
 
 def trainapi(request):
     source = request.GET['source']
@@ -58,13 +68,3 @@ def busapi(request):
     resultJsonData = busController.getResults(source,destination,journeyDate)
     return HttpResponse(json.dumps(resultJsonData), content_type='application/json')
 
-def flightapi(request):
-    sourcecity = request.GET['sourcecity']
-    sourcestate = request.GET['sourcestate']
-    destinationcity = request.GET['destinationcity']
-    destinationstate = request.GET['destinationstate']
-    journeyDate = request.GET['journeyDate']
-    # request.session['source']=source
-    # request.session['destination']=destination
-    resultJsonData = flightController.getResults(sourcecity,sourcestate, destinationcity,destinationstate, journeyDate)
-    return HttpResponse(json.dumps(resultJsonData), content_type='application/json')

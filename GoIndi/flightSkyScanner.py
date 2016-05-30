@@ -4,7 +4,7 @@ from skyscanner import Flights
 import dateTimeUtility
 
 def getApiResults(sourcecity,destinationcity,journeyDate,id):
-    cityAndStateToStationsMap = {'Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
+    cityAndStateToStationsMap = {'Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
                                  'Amritsar': 'ATQ', 'Aurangabad': 'IXU', 'Bagdogra': 'IXB', 'Bangalore': 'BLR',
                                  'Bhavnagar': 'BHU', 'Bhopal': 'BHO', 'Bhubaneswar': 'BBI', 'Bhuj': 'BHJ',
                                  'Calcutta': 'CCU', 'Kolkata': 'CCU', 'Chandigarh': 'IXC', 'Chennai': 'MAA',
@@ -40,7 +40,7 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id):
                                  'Gujarat': 'RAJ', 'Jharkhand': 'IXR', 'Meghalaya': 'SHL', 'Mizoram': 'IXS',
                                  'J & K': 'SXR', 'Gujrat': 'STV', 'Assam': 'TEZ', 'Tamil Nadu': 'TRZ',
                                  'Andhra Pradesh': 'TIR', 'Kerala': 'TRV', 'Rajasthan': 'UDR', 'Gujarat': 'BDQ',
-                                 'Uttar Pradesh': 'VNS', 'Andhra Pradesh': 'VGA', 'Andhra Pradesh': 'VTZ'}
+                                 'Uttar Pradesh': 'VNS', 'Andhra Pradesh': 'VGA', 'Andhra Pradesh': 'VTZ','Shimla':'SLV'}
     nearestBigAirportMap = {'Jammu': 'Delhi', 'Mangalore': 'Bangalore', 'Delhi': 'Delhi'}
 
     source = cityAndStateToStationsMap[sourcecity]
@@ -57,7 +57,7 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id):
         originplace=source+'-sky',
         destinationplace=destination+'-sky',
         outbounddate=str(year)+'-'+str(month)+'-'+str(day),
-        adults=1), initial_delay = 5, delay = 3, tries = 20).parsed
+        adults=1), initial_delay = 3, delay = 1, tries = 70).parsed
 
     resultJson=parseFlightAndReturnFare(result,id, sourcecity, destinationcity,journeyDate)
     return resultJson
@@ -106,6 +106,7 @@ def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate):
             part["arrivalDate"] = dateTimeUtility.calculateArrivalTimeAndDate(journeyDate, part["departure"],part["duration"])["arrivalDate"]
             full["minDuration"]=str(hours)+":"+str(minutes)
             full["maxDuration"]=str(hours)+":"+str(minutes)
+            full["route"]=part["source"]+",flight,"+part["destination"]
             part["bookingOptions"] = itinerary["PricingOptions"]
             for option in part["bookingOptions"]:
                 option["Agents"]=getAgentNameById(option["Agents"][0],returnedFareData["Agents"])

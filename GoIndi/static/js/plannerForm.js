@@ -75,15 +75,6 @@ function showPlanner(plannerContainer){
 					document.getElementById("flightData").innerHTML = loadingFlight;
 					document.getElementById("flightFilters").innerHTML = '';
 				// change in documeent ready as well, if changed here
-				$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+'', function(data, err) {
-				  if (err != "success") {
-				  } else {
-					  trainList = data.train
-					  newtrainList=trainList
-					showtransportJourneyList(trainList,"train");
-					trainFilters();
-				  }
-				});
 				$.getJSON('flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate, function(data, err) {
 				  if (err != "success") {
 				  } else {
@@ -93,6 +84,16 @@ function showPlanner(plannerContainer){
 					flightFilters();
 				  }
 				});
+				$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+'', function(data, err) {
+				  if (err != "success") {
+				  } else {
+					  trainList = data.train
+					  newtrainList=trainList
+					showtransportJourneyList(trainList,"train");
+					trainFilters();
+				  }
+				});
+				
 				$.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
 				  if (err != "success") {
 				  } else {
@@ -205,6 +206,15 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 	var depDateArr = document.getElementById('departureBox').value.split("/");
 	var depDate = depDateArr[1]+"-"+depDateArr[0]+"-"+depDateArr[2]
 	//change in the search click as well if changed here
+	$.getJSON('flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate, function(data, err) {
+				  if (err != "success") {
+				  } else {
+					  flightList = data.flight
+					  newflightList = flightList
+					showtransportJourneyList(flightList,"flight");
+					flightFilters();
+				  }
+				});
 	$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
 					
 				  if (err != "success") {
@@ -216,15 +226,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 				  }
 				  
 				});
-	$.getJSON('flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate, function(data, err) {
-				  if (err != "success") {
-				  } else {
-					  flightList = data.flight
-					  newflightList = flightList
-					showtransportJourneyList(flightList,"flight");
-					flightFilters();
-				  }
-				});
+	
 	 $.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
 				  if (err != "success") {
 				  } else {

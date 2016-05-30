@@ -8,29 +8,40 @@ import flightSkyScanner
 import concurrent.futures
 import dateTimeUtility
 import miscUtility
+import distanceutil
 class FlightController:
     """Class returns all stations corresponding to a city"""
 
-
-    cityAndStateToStationsMap={'Agartala':'IXA','Agra':'AGR','Ahmedabad':'AMD','Allahabad':'IXD','Amritsar':'ATQ','Aurangabad':'IXU','Bagdogra':'IXB','Bangalore':'BLR','Bhavnagar':'BHU','Bhopal':'BHO','Bhubaneswar':'BBI','Bhuj':'BHJ','Calcutta':'CCU','Kolkata':'CCU','Chandigarh':'IXC','Chennai':'MAA','Madras':'MAA','Cochin':'COK','Coimbatore':'CJB','Daman':'NMB','Dehradun':'DED','Dibrugarh':'DIB','Dimapur':'DMU','Diu':'DIU','Gauhati':'GAU','Goa':'GOI','Gwalior':'GWL','Hubli':'HBX','Hyderabad':'HYD','Imphal':'IMF','Indore':'IDR','Jaipur':'JAI','Jammu':'IXJ','Jamnagar':'JGA','Jamshedpur':'IXW','Jodhpur':'JDH','Jorhat':'JRH','Kanpur':'KNU','Khajuraho':'HJR','Kozhikode':'CCJ','calicut':'CCJ','Leh':'IXL','Lucknow':'LKO','Ludhiana':'LUH','Madurai':'IXM','Mangalore':'IXE','Mumbai':'BOM','Bombay':'BOM','Nagpur':'NAG','Nanded':'NDC','Nasik':'ISK','New Delhi':'DEL','Delhi':'DEL','Patna':'PAT','Pondicherry':'PNY','Poona':'PNQ','Pune':'PNQ','Porbandar':'PBD','Port Blair':'IXZ','PuttasubParthi':'PUT','Rae Bareli':'BEK','Rajkot':'RAJ','Ranchi':'IXR','Shillong':'SHL','Silchar':'IXS','Srinagar':'SXR','Surat':'STV','Tezpur':'TEZ','Tiruchirapally':'TRZ','Tirupati':'TIR','Trivandrum':'TRV','Udaipur':'UDR','Vadodara':'BDQ','Varanasi':'VNS','Vijayawada':'VGA','Vishakhapatnam':'VTZ','Gurgaon':'DEL','Noida':'DEL','Ghaziabad':'DEL','Tripura':'IXA','Uttar Pradesh':'AGR','Gujarat':'AMD','Uttar Pradesh':'IXD','Punjab':'ATQ','Maharashtra':'IXU','Sikkim':'IXB','Karnataka':'BLR','Gujarat':'BHU','Madhya Pradesh':'BHO','Orissa':'BBI','Gujarat':'BHJ','West Bengal':'CCU','Chandigarh':'IXC','Tamil Nadu':'MAA','Kerala':'COK','Coimbatore':'CJB','Daman':'NMB','Uttar Pradesh':'DED','Assam':'DIB','Nagaland':'DMU','Daman and Diu':'DIU','Assam':'GAU','Goa':'GOI','Madhya Pradesh':'GWL','Karnataka':'HBX','Andhra Pradesh':'HYD','Manipur':'IMF','Madhya Pradesh':'IDR','Rajasthan':'JAI','Jammu & Kashmir':'IXJ','Gujarat':'JGA','Jharkhand':'IXW','Rajasthan':'JDH','Assam':'JRH','Uttar Pradesh':'KNU','Madhya Pradesh':'HJR','Kerala':'CCJ','Jammu & Kashmir':'IXL','Utter Pradesh':'LKO','Punjab':'LUH','Tamil Nadu':'IXM','Karnataka':'IXE','Maharashtra':'BOM','Maharashtra':'NDC','Maharashtra':'ISK','Delhi':'DEL','Bihar':'PAT','Maharashtra':'PNQ','Gujarat':'PBD','Andaman and Nicobar Islands':'IXZ','Andhra Pradesh':'PUT','Uttar Pradesh':'BEK','Gujarat':'RAJ','Jharkhand':'IXR','Meghalaya':'SHL','Mizoram':'IXS','J & K':'SXR','Gujrat':'STV','Assam':'TEZ','Tamil Nadu':'TRZ','Andhra Pradesh':'TIR','Kerala':'TRV','Rajasthan':'UDR','Gujarat':'BDQ','Uttar Pradesh':'VNS','Andhra Pradesh':'VGA','Andhra Pradesh':'VTZ'}
-    nearestBigAirportMap={'Jammu':'Delhi','Mangalore':'Bangalore','Delhi':'Delhi','Bangalore':'Bangalore'}
+    stationToCityMap = {'KUU':'Kullu','SLV':'Shimla','IXA':'Agartala','AGR':'Agra','AMD':'Ahmedabad','IXD':'Allahabad','ATQ':'Amritsar','IXU':'Aurangabad','IXB':'Bagdogra','BLR':'Bangalore','BHU':'Bhavnagar','BHO':'Bhopal','BBI':'Bhubaneswar','BHJ':'Bhuj','CCU':'Kolkata','IXC':'Chandigarh','MAA':'Chennai','COK':'Cochin','CJB':'Coimbatore','NMB':'Daman','DED':'Dehradun','DIB':'Dibrugarh','DMU':'Dimapur','DIU':'Diu','GAU':'Gauhati','GOI':'Goa','GWL':'Gwalior','HBX':'Hubli','HYD':'Hyderabad','IMF':'Imphal','IDR':'Indore','JAI':'Jaipur','IXJ':'Jammu','JGA':'Jamnagar','IXW':'Jamshedpur','JDH':'Jodhpur','JRH':'Jorhat','KNU':'Kanpur','HJR':'Khajuraho','CCJ':'Kozhikode','IXL':'Leh','LKO':'Lucknow','LUH':'Ludhiana','IXM':'Madurai','IXE':'Mangalore','BOM':'Mumbai','BOM':'Bombay','NAG':'Nagpur','NDC':'Nanded','ISK':'Nasik','DEL':'Delhi','PAT':'Patna','PNY':'Pondicherry','PNQ':'Poona','PNQ':'Pune','PBD':'Porbandar','IXZ':'Port Blair','PUT':'PuttasubParthi','BEK':'Rae Bareli','RAJ':'Rajkot','IXR':'Ranchi','SHL':'Shillong','IXS':'Silchar','SXR':'Srinagar','STV':'Surat','TEZ':'Tezpur','TRZ':'Tiruchirapally','TIR':'Tirupati','TRV':'Trivandrum','UDR':'Udaipur','BDQ':'Vadodara','VNS':'Varanasi','VGA':'Vijayawada','VTZ': 'Vishakhapatnam'}
 
     def getResults(self, sourcecity,sourcestate, destinationcity,destinationstate, journeyDate):
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             flightCounter = 0
             source = sourcecity
             destination = destinationcity
+            response = urllib2.urlopen('https://maps.googleapis.com/maps/api/geocode/json?address='+ source)
+            sourceLatLong = json.loads(response.read())
+            response.close()
+            sourceLat = sourceLatLong["results"][0]["geometry"]["location"]["lat"]
+            sourceLong = sourceLatLong["results"][0]["geometry"]["location"]["lng"]
+            sourceAirport = distanceutil.findNearestAirport(sourceLat,sourceLong)
+            bigSourceAirport = distanceutil.findNearestBigAirport(sourceLat,sourceLong)
+            response2 = urllib2.urlopen('https://maps.googleapis.com/maps/api/geocode/json?address=' + destination)
+            destLatLong = json.loads(response2.read())
+            destLat = destLatLong["results"][0]["geometry"]["location"]["lat"]
+            destLong = destLatLong["results"][0]["geometry"]["location"]["lng"]
+            destAirport = distanceutil.findNearestAirport(destLat, destLong)
+            bigDestinationAirport = distanceutil.findNearestBigAirport(destLat, destLong)
+            bigSource = FlightController.stationToCityMap[bigSourceAirport]
+            bigDestination = FlightController.stationToCityMap[bigDestinationAirport]
+            sourceFlight = FlightController.stationToCityMap[sourceAirport]
+            destinationFlight = FlightController.stationToCityMap[destAirport]
 
-            onlyFlightFuture = executor.submit(flightSkyScanner.getApiResults,source,destination,journeyDate,"flight0")
+            onlyFlightFuture = executor.submit(flightSkyScanner.getApiResults,sourceFlight,destinationFlight,journeyDate,"flight0")
 
-            if sourcecity in FlightController.nearestBigAirportMap.keys():
-                bigSource = FlightController.nearestBigAirportMap[sourcecity]
-            else:
-                bigSource='empty'
-            if destinationcity in FlightController.nearestBigAirportMap.keys():
-                 bigDestination = FlightController.nearestBigAirportMap[destinationcity]
-            else:
-                bigDestination='empty'
+
+
+
             finalList = {}
             mixedFlight = {}
             if((bigSource!='empty')and(bigDestination!='empty')and(bigSource!=destination)and(bigDestination!=source)):
@@ -53,14 +64,14 @@ class FlightController:
                     otherModesEnd2Future = executor.submit(self.getOtherModes, bigDestination, destinationcity,
                                                           dateTimeUtility.getNextDate(journeyDate))
                 if (bigSource != source):
-                    mixedFlightEndFuture =executor.submit(flightSkyScanner.getApiResults,bigSource,destination,journeyDate,"flight2")
+                    mixedFlightEndFuture =executor.submit(flightSkyScanner.getApiResults,bigSource,destinationFlight,journeyDate,"flight2")
                     if otherModesInitFuture==[]:
                         otherModesInitFuture = executor.submit(self.getOtherModes,sourcecity, bigSource, journeyDate)
                         otherModesInit2Future = executor.submit(self.getOtherModes, sourcecity, bigSource,
                                                         dateTimeUtility.getPreviousDate(journeyDate))
 
                 if (bigDestination != destination):
-                    mixedFlightInitFuture =executor.submit(flightSkyScanner.getApiResults,source,bigDestination,journeyDate,"flight3")
+                    mixedFlightInitFuture =executor.submit(flightSkyScanner.getApiResults,sourceFlight,bigDestination,journeyDate,"flight3")
                     if otherModesEndFuture==[]:
                         otherModesEndFuture = executor.submit(self.getOtherModes,bigDestination, destinationcity, journeyDate)
                         otherModesEnd2Future = executor.submit(self.getOtherModes, bigDestination, destinationcity,
@@ -113,6 +124,9 @@ class FlightController:
                                                                                 subPart["arrivalDate"],
                                                                                 flightPart["departureDate"])
                         subParts.append(subPart)
+                if len(subParts) > 5:
+                    subParts.sort(miscUtility.sortOnWaitingTime)
+                    subParts = subParts[0:5]
                 if subParts != []:
                     newPart = {}
                     newPart["subParts"] = subParts
@@ -123,6 +137,7 @@ class FlightController:
                     newPart["carrierName"] = subParts[0]["carrierName"]
                     flightPart["id"] = mixedFlight["flight"][j]["full"][0]["id"] + str(1)
                     mixedFlight["flight"][j]["parts"].insert(0, newPart)
+                    mixedFlight["flight"][j]["full"][0]["route"] = newPart["source"] + ",bus," + newPart["destination"] + ",flight," + flightPart["destination"]
                 subParts = []
                 for k in range(len(otherModesEnd["bus"])):
                     subPart = otherModesEnd["bus"][k]["parts"][0]
@@ -132,6 +147,9 @@ class FlightController:
                                                                                 flightPart["arrivalDate"],
                                                                                 subPart["departureDate"])
                         subParts.append(subPart)
+                if len(subParts) > 5:
+                    subParts.sort(miscUtility.sortOnWaitingTime)
+                    subParts = subParts[0:5]
                 if subParts != []:
                     newPart = {}
                     newPart["subParts"] = subParts
@@ -141,6 +159,7 @@ class FlightController:
                     newPart["source"] = subParts[0]["source"]
                     newPart["carrierName"] = subParts[0]["carrierName"]
                     mixedFlight["flight"][j]["parts"].append(newPart)
+                    mixedFlight["flight"][j]["full"][0]["route"] = mixedFlight["flight"][j]["full"][0]["route"] + ",bus," + newPart["destination"]
 
         mixedFlight["flight"] = [x for x in mixedFlight["flight"] if len(x["parts"]) == 3]
 
@@ -157,6 +176,9 @@ class FlightController:
                 if dateTimeUtility.checkIfApplicable(flightPart["arrival"],flightPart["arrivalDate"],subPart["departure"],subPart["departureDate"],3):
                     subPart["waitingTime"] = dateTimeUtility.getWaitingTime(flightPart["arrival"],subPart["departure"],flightPart["arrivalDate"],subPart["departureDate"])
                     subParts.append(subPart)
+            if len(subParts) > 5:
+                subParts.sort(miscUtility.sortOnWaitingTime)
+                subParts = subParts[0:5]
             if subParts!=[]:
                 newPart = {}
                 newPart["subParts"]=subParts
@@ -166,6 +188,7 @@ class FlightController:
                 newPart["source"] = subParts[0]["source"]
                 newPart["carrierName"] = subParts[0]["carrierName"]
                 mixedFlightInit["flight"][j]["parts"].append(newPart)
+                mixedFlightInit["flight"][j]["full"][0]["route"]=flightPart["source"]+",flight,"+flightPart["destination"]+",bus,"+newPart["destination"]
 
         mixedFlightInit["flight"] = [x for x in mixedFlightInit["flight"] if len(x["parts"]) == 2]
         return mixedFlightInit
@@ -184,6 +207,10 @@ class FlightController:
                                                                             subPart["arrivalDate"],
                                                                             flightPart["departureDate"])
                     subParts.append(subPart)
+
+            if len(subParts) > 5:
+                subParts.sort(miscUtility.sortOnWaitingTime)
+                subParts = subParts[0:5]
             if subParts != []:
                 parts = []
                 newPart = {}
@@ -195,6 +222,7 @@ class FlightController:
                 newPart["carrierName"] = subParts[0]["carrierName"]
                 flightPart["id"]=mixedFlightEnd["flight"][j]["full"][0]["id"] + str(1)
                 mixedFlightEnd["flight"][j]["parts"].insert(0,newPart)
+                mixedFlightEnd["flight"][j]["full"][0]["route"] = newPart["source"] + ",bus," + newPart["destination"] + ",flight," + flightPart["destination"]
 
         mixedFlightEnd["flight"] = [x for x in mixedFlightEnd["flight"] if len(x["parts"]) == 2]
         return mixedFlightEnd
