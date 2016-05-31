@@ -1,5 +1,5 @@
 from geopy.distance import vincenty
-import sdd
+# import sdd
 
 
 newport_ri = (41.49008, -71.312796)
