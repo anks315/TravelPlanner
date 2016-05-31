@@ -4,6 +4,7 @@ var IsFromChange = true
 var IsToChange = true
 var directionsService;
 var directionsDisplay;
+var flightRouteChecked=0;
 
 function showPlanner(plannerContainer){
 		var out ="";
@@ -78,7 +79,10 @@ function showPlanner(plannerContainer){
 				$.getJSON('flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate, function(data, err) {
 				  if (err != "success") {
 				  } else {
+					  newflightList = []
 					  flightList = data.flight
+					  routeFilter(flightList,"flight")
+					  flightList = routeMap["flight"][flightRouteList[0]]
 					  newflightList = flightList
 					showtransportJourneyList(flightList,"flight");
 					flightFilters();
@@ -209,7 +213,10 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 	$.getJSON('flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate, function(data, err) {
 				  if (err != "success") {
 				  } else {
+					  newflightList = []
 					  flightList = data.flight
+					  routeFilter(flightList,"flight")
+					  flightList = routeMap["flight"][flightRouteList[0]]
 					  newflightList = flightList
 					showtransportJourneyList(flightList,"flight");
 					flightFilters();

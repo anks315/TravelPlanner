@@ -11,7 +11,24 @@ var filterflightMinArrival;
 var filterflightMaxArrival;
 
 function flightFilters(){
-	var output = "<div class='panel panel-default'><div class='panel-body'><p><label for='flightAmount' class='filterLabel'>Price range:</label><div id='flightAmount' class='filterValue'></div></p><div id='flightPriceRange'></div><br/><p><label for='flightTime' class='filterLabel'>Travel time range:</label><div id='flightTime' class='filterValue'></div></p><div id='flightDurationRange'></div><br/><p><label for='flightDeparture' class='filterLabel'>Departure time range:</label><div id='flightDeparture' class='filterValue'></div></p><div id='flightDepartureTimeRange'></div><br/><p><label for='flightArrival' class='filterLabel'>Arrival time range:</label><div id='flightArrival' class='filterValue'></div></p><div id='flightArrivalTimeRange'></div><br/></div></div></div>"
+	var routeOptions =""
+		for (var i =0;i<flightRouteList.length;i++){
+			var isChecked=''
+			if (flightRouteChecked==i){
+					 isChecked = 'checked';
+				}
+			routeOptions = routeOptions + "<input type='radio' class ='flightRoutes' name='flightRoutes' id='flight"+i+"' "+isChecked+" value = '"+flightRouteList[i]+"'>"
+			routeArr = flightRouteList[i].split(",")
+			routeLabel="<div class='journeyPriceLabel sameLine'>"+routeArr[0]+"</div>"
+			for(var j =1;j<routeArr.length;j++){
+				routeLabel = routeLabel + "&nbsp;&nbsp;<img class='sameLine' src='/static/images/"+routeArr[j]+"2.png'></img>&nbsp;&nbsp;"
+				j++
+				routeLabel=routeLabel+"<div class='journeyPriceLabel sameLine'>"+routeArr[j]+"</div>"
+			}
+			routeOptions = routeOptions + routeLabel+"</input><br/><br/>"
+		}
+	
+	var output = "<div class='panel panel-default'><div class='panel-body'><p><label for='routeOptions' class='filterLabel'>Route options:</label><div id='routeOptions' class='filterValue'>"+routeOptions+"</div></p><hr/><p><label for='flightAmount' class='filterLabel'>Price range:</label><div id='flightAmount' class='filterValue'></div></p><div id='flightPriceRange'></div><br/><p><label for='flightTime' class='filterLabel'>Travel time range:</label><div id='flightTime' class='filterValue'></div></p><div id='flightDurationRange'></div><br/><p><label for='flightDeparture' class='filterLabel'>Departure time range:</label><div id='flightDeparture' class='filterValue'></div></p><div id='flightDepartureTimeRange'></div><br/><p><label for='flightArrival' class='filterLabel'>Arrival time range:</label><div id='flightArrival' class='filterValue'></div></p><div id='flightArrivalTimeRange'></div><br/></div></div></div>"
 
 	document.getElementById("flightFilters").innerHTML = output;
 	if($("#flightDataHead").hasClass("active")){
@@ -121,6 +138,16 @@ function flightFilters(){
 	filterflightMaxArrival=1440;
     document.getElementById("flightArrival").innerHTML = "12:00 AM - 12:00 PM";
 						
+						
+	$("input:radio[name='flightRoutes']").change(function(){
+			var routeId = $(this).val();
+			flightRouteChecked = $(this).attr('id').split("flight")[1]
+			newflightList = []
+			flightList = routeMap["flight"][routeId]
+			newflightList = flightList
+			showtransportJourneyList(flightList,"flight");
+			flightFilters();
+		});
 }
 function flightFilter(){
 	var j=0;
