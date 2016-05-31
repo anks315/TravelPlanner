@@ -1,3 +1,4 @@
+
 from neo4jrestclient.client import GraphDatabase
 import logging
 from entity import TrainOption, StationToTrainRelation
@@ -8,7 +9,7 @@ def demo():
     pass
 
 
-DATABASE_CONNECTION = "hi"
+DATABASE_CONNECTION = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="ankurjain")
 
 
 def getTrainsBetweenStation(sourceCity, destinationStationSet, logger):
@@ -39,16 +40,24 @@ def getTrainsBetweenStation(sourceCity, destinationStationSet, logger):
         trainoption.destArrivalTime = results.elements[i][2]['data']['DESTINATIONARRIVALTIME']
         trainoption.srcDepartureTime = results.elements[i][2]['data']['SOURCEDEPARTURETIME']
         trainoption.srcStation = results.elements[i][0]['data']['NAME']
-        trainoption.duration = 0.0  # getDuration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
+        trainoption.duration =  getDuration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
         if 'FARE_1A' in results.elements[i][2]['data']:
             trainoption.fare_1A = results.elements[i][2]['data']['FARE_1A']
+        if 'FARE_2A' in results.elements[i][2]['data']:
             trainoption.fare_2A = results.elements[i][2]['data']['FARE_2A']
+        if 'FARE_3A' in results.elements[i][2]['data']:
             trainoption.fare_3A = results.elements[i][2]['data']['FARE_3A']
+        if 'FARE_3E' in results.elements[i][2]['data']:
             trainoption.fare_3E = results.elements[i][2]['data']['FARE_3E']
+        if 'FARE_FC' in results.elements[i][2]['data']:
             trainoption.fare_FC = results.elements[i][2]['data']['FARE_FC']
+        if 'FARE_CC' in results.elements[i][2]['data']:
             trainoption.fare_CC = results.elements[i][2]['data']['FARE_CC']
+        if 'FARE_2S' in results.elements[i][2]['data']:
             trainoption.fare_2S = results.elements[i][2]['data']['FARE_2S']
+        if 'FARE_SL' in results.elements[i][2]['data']:
             trainoption.fare_SL = results.elements[i][2]['data']['FARE_SL']
+        if 'FARE_GN' in results.elements[i][2]['data']:
             trainoption.fare_GN = results.elements[i][2]['data']['FARE_GN']
         trainoption.destStation = results.elements[i][2]['type']
         trains.append(trainoption)
@@ -64,8 +73,14 @@ def getDuration(sourceDepartureTime, sourceDay, destinationArrivalTime, destinat
     :param destinationDay: day on which it reaches destination station
     :return: duration between source & destination
     """
-    return (destinationDay * 24 + destinationArrivalTime) - (sourceDay * 24 + sourceDepartureTime)
-
+    destinationArrivalTimeSplit = destinationArrivalTime.split(':')
+    destinationArrivalTimeIntoMinutes=int(destinationArrivalTimeSplit[0])*60 + int(destinationArrivalTimeSplit[1])
+    sourceDepartureTimeSplit = sourceDepartureTime.split(':')
+    sourceDepartureTimeIntoMinutes = int(sourceDepartureTimeSplit[0])*60 + int(sourceDepartureTimeSplit[1])
+    duration = (destinationDay * 24 + destinationArrivalTimeIntoMinutes) - (sourceDay * 24 + sourceDepartureTimeIntoMinutes)
+    durationHours=duration/60
+    durationMinutes=duration%60
+    return str(durationHours) + ':' + str(durationMinutes)
 
 def getStationCodesByCityName(cityName, logger):
     """
