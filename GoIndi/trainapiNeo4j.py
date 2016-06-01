@@ -39,13 +39,23 @@ def parseandreturnroute(trainroutes, logger,journeyDate):
             full = {"carrierName": trainRoute.trainName, "duration": trainRoute.duration,
                     "id": trainRoute.trainNumber, "mode": "train", "site": "IRCTC", "source": trainRoute.srcStation,
                     "destination": trainRoute.destStation, "arrival": trainRoute.destArrivalTime,
-                    "arrivalDate":dateTimeUtility.calculateArrivalTimeAndDate(journeyDate,trainRoute.srcDepartureTime,trainRoute.duration),
+                    "arrivalDate":dateTimeUtility.calculateArrivalTimeAndDate(journeyDate,trainRoute.srcDepartureTime,trainRoute.duration)["arrivalDate"],
                     "departure": trainRoute.srcDepartureTime,"departureDate":journeyDate,
                     "fare_1A": trainRoute.fare_1A, "fare_2A": trainRoute.fare_2A,
                     "fare_3A": trainRoute.fare_3A, "fare_3E": trainRoute.fare_3E, "fare_FC": trainRoute.fare_FC,
                     "fare_CC": trainRoute.fare_CC, "fare_2S": trainRoute.fare_2S, "fare_SL": trainRoute.fare_SL,
                     "fare_GN": trainRoute.fare_GN,"price":trainRoute.fare_1A}
-            part =full
+            part = {"carrierName": trainRoute.trainName, "duration": trainRoute.duration,
+                    "id": trainRoute.trainNumber, "mode": "train", "site": "IRCTC", "source": trainRoute.srcStation,
+                    "destination": trainRoute.destStation, "arrival": trainRoute.destArrivalTime,
+                    "arrivalDate":dateTimeUtility.calculateArrivalTimeAndDate(journeyDate,trainRoute.srcDepartureTime,trainRoute.duration)["arrivalDate"],
+                    "departure": trainRoute.srcDepartureTime,"departureDate":journeyDate,
+                    "fare_1A": trainRoute.fare_1A, "fare_2A": trainRoute.fare_2A,
+                    "fare_3A": trainRoute.fare_3A, "fare_3E": trainRoute.fare_3E, "fare_FC": trainRoute.fare_FC,
+                    "fare_CC": trainRoute.fare_CC, "fare_2S": trainRoute.fare_2S, "fare_SL": trainRoute.fare_SL,
+                    "fare_GN": trainRoute.fare_GN,"price":trainRoute.fare_1A}
+            part["subparts"]=[]
+            part["subparts"].append(full)
             route["full"]=full
             route["parts"].append(part)
             routes.append(route)
@@ -66,11 +76,11 @@ def convertsPartsToFullJson(part_1, part_2):
 
     route = {"full": {}, "parts": []}
     try:
-        full = {"carrierName": "Train", "duration": "",
+        part = {"carrierName": "Train", "duration": "",
                 "id": part_1["full"]["id"] + "_" + part_2["full"]["id"], "mode": "train", "site": "IRCTC",
                 "source": part_1["full"]["source"], "destination": part_2["full"]["destination"],
                 "arrival": part_1["full"]["arrival"], "departure": part_1["full"]["departure"],
-                "departureDate":part_1["full"]["departureDate"],"arrivalDate":part_2["full"]["arrivaldate"],
+                "departureDate":part_1["full"]["departureDate"],"arrivalDate":part_2["full"]["arrivalDate"],
                 "fare_1A": part_1["full"]["fare_1A"] + part_2["full"]["fare_1A"],
                 "fare_2A": part_1["full"]["fare_2A"] + part_2["full"]["fare_2A"],
                 "fare_3A": part_1["full"]["fare_3A"] + part_2["full"]["fare_3A"],
@@ -82,9 +92,11 @@ def convertsPartsToFullJson(part_1, part_2):
                 "fare_GN": part_1["full"]["fare_GN"] + part_2["full"]["fare_GN"],
                 "price":part_1["full"]["price"] + part_2["full"]["price"]
         }
-        route["parts"].append(part_1["parts"])
-        route["parts"].append(part_2["parts"])
-        route["full"]=full
+        part["subparts"]=[]
+        part["subparts"].append(part_1["parts"][0]["subparts"][0])
+        part["subparts"].append(part_2["parts"][0]["subparts"][0])
+        route["parts"].append(part)
+        route["full"]={}
     except ValueError:
         logger.error("Error while combining data for Train[%s] and Train[%s]", part_1["full"]["id"], part_2["full"]["id"])
         return route
@@ -144,7 +156,7 @@ class TrainController:
         resultjsondata = {"train": []}
         routedata = self.gettrainroutes(sourcecity, destinationstationset,journeyDate)
         if len(routedata)>0:
-            resultjsondata["train"].append(routedata)
+            resultjsondata["train"].extend(routedata)
         return resultjsondata
 
 
@@ -162,6 +174,8 @@ class TrainController:
                 if dateTimeUtility.checkIfApplicable(possibleSrcToBreakRoute["parts"][0]["arrival"],possibleSrcToBreakRoute["parts"][0]["arrivalDate"],possibleBreakToDestRoute["parts"][0]["departure"],possibleBreakToDestRoute["parts"][0]["departureDate"],3):
                     combinedjson = convertsPartsToFullJson(possibleSrcToBreakRoute, possibleBreakToDestRoute)
                     resultjsondata["train"].append(combinedjson)
+                combinedjson = convertsPartsToFullJson(possibleSrcToBreakRoute, possibleBreakToDestRoute)
+                resultjsondata["train"].append(combinedjson)
         return resultjsondata
 
     def convertBreakingStationToCity(self, breakingstationlist):
@@ -221,12 +235,13 @@ class TrainController:
                     busController= busapi.BusController()
                     sourceToBreakingStationBusJson=busController.getResults(source,breakingcity,journeyDate)
 
-                    if len(sourceToBreakingStationJson["train"]) > 0 or len(sourceToBreakingStationBusJson["bus"]>0):
+                    if len(sourceToBreakingStationJson["train"]) > 0 or len(sourceToBreakingStationBusJson["bus"])>0:
                         breakingToDestinationJson = self.findTrainsBetweenStations(breakingcity, destinationStations,journeyDate)
                         breakingToDestinationBusJson=busController.getResults(breakingcity,destination,journeyDate)
                         if len(breakingToDestinationJson["train"]) > 0 and len(sourceToBreakingStationJson["train"])>0:
                             combinedJson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson)
-                            directjson["train"].append(combinedJson["train"])
+                            if len(combinedJson["train"])>0:
+                                directjson["train"].append(combinedJson["train"])
                         if len(sourceToBreakingStationBusJson["bus"])>0 and len(breakingToDestinationJson["train"]) >0:
                             combinedJson = self.combineBusAndTrainInit(sourceToBreakingStationBusJson, breakingToDestinationJson)
                             directjson["train"].append(combinedJson["train"])
