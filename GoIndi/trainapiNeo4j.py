@@ -33,7 +33,7 @@ def parseandreturnroute(trainroutes, logger,journeyDate):
     logger.info("Generating route map with full & parts journey")
     routes = []
     for trainRoute in trainroutes:
-        route = {"full": {}, "parts": []}
+        route = {"full": [], "parts": []}
         try:
             part ={}
             full = {"carrierName": trainRoute.trainName, "duration": trainRoute.duration,
@@ -54,9 +54,9 @@ def parseandreturnroute(trainroutes, logger,journeyDate):
                     "fare_3A": trainRoute.fare_3A, "fare_3E": trainRoute.fare_3E, "fare_FC": trainRoute.fare_FC,
                     "fare_CC": trainRoute.fare_CC, "fare_2S": trainRoute.fare_2S, "fare_SL": trainRoute.fare_SL,
                     "fare_GN": trainRoute.fare_GN,"price":trainRoute.fare_1A}
-            part["subparts"]=[]
-            part["subparts"].append(full)
-            route["full"]=full
+            part["subParts"]=[]
+            part["subParts"].append(full)
+            route["full"].append(full)
             route["parts"].append(part)
             routes.append(route)
         except ValueError:
@@ -96,7 +96,7 @@ def convertsPartsToFullJson(part_1, part_2):
         part["subparts"].append(part_1["parts"][0]["subparts"][0])
         part["subparts"].append(part_2["parts"][0]["subparts"][0])
         route["parts"].append(part)
-        route["full"]={}
+        route["full"]=[]
     except ValueError:
         logger.error("Error while combining data for Train[%s] and Train[%s]", part_1["full"]["id"], part_2["full"]["id"])
         return route
@@ -249,7 +249,7 @@ class TrainController:
                             combinedJson = self.combineBusAndTrainEnd(sourceToBreakingStationJson, breakingToDestinationBusJson)
                             directjson["train"].append(combinedJson["train"])
 
-        return directjson["train"]
+        return directjson
     
 
     def getBreakingStation(self, breakingstationlist):
