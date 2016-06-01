@@ -13,7 +13,7 @@ today = datetime.date.today().strftime("%Y-%m-%d")
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
 
 logger = logging.getLogger("TravelPlanner.TrainController.Routes")
-#fileHandler = logging.FileHandler('C:/Users/Ankit Kumar/Downloads/TrainRoutes_' + today + '.log')
+#fileHandler = logging.FileHandler('/home/ankur/TrainRoutes_' + today + '.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 #fileHandler.setFormatter(formatter)
 #logger.addHandler(fileHandler)
@@ -264,9 +264,10 @@ class TrainController:
             if len(breakingstations) == 1:
                 return breakingstations
 
-        # for breakingstations in breakingstationlist:
-        #     if len(breakingstations) == 2:
-        #         return breakingstations
+        #for breakingstations in breakingstationlist:
+         #   if len(breakingstations) == 2:
+          #       return breakingstations
+        return []
 
     def combineBusAndTrainInit(self,sourceToBreakingBusJson,breakingToDestinationJson):
 
