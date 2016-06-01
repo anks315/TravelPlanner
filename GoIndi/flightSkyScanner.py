@@ -57,7 +57,7 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id):
         originplace=source+'-sky',
         destinationplace=destination+'-sky',
         outbounddate=str(year)+'-'+str(month)+'-'+str(day),
-        adults=1), initial_delay = 5, delay = 3, tries = 70).parsed
+        adults=1), initial_delay = 3, delay = 1, tries = 100).parsed
 
     resultJson=parseFlightAndReturnFare(result,id, sourcecity, destinationcity,journeyDate)
     return resultJson
