@@ -11,7 +11,7 @@ def demo():
 
 # = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="ankurjain")
 
-DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
+DATABASE_CONNECTION=GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
 
 
 
@@ -94,7 +94,7 @@ def getStationCodesByCityName(cityName, logger):
     """
     logger.info("Fetching Station for City[%s]", cityName)
     start = time.time()
-    q = """MATCH (a:TRAINSTATION) WHERE  a.CITY='""" + cityName + """' return a.CODE"""
+    q = """MATCH (a:TRAINSTATION) where a.NAME = '""" + cityName + """' OR a.NAME STARTS WITH '""" + cityName + """ ' OR a.NAME ENDS WITH ' """ + cityName + """' OR a.CITY = '""" + cityName + """' OR a.CITY STARTS WITH '""" + cityName + """ ' OR a.CITY ENDS WITH ' """ + cityName + """' return a.CODE"""
     stationcodes = []
     try:
         results = DATABASE_CONNECTION.query(q)
