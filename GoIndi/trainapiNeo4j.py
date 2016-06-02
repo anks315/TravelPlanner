@@ -8,6 +8,7 @@ import datetime
 from sets import Set
 import dateTimeUtility
 import busapi
+import copy
 
 today = datetime.date.today().strftime("%Y-%m-%d")
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
@@ -22,7 +23,7 @@ logger.setLevel(logging.INFO)
 trainNumberstoDurationMap = {}
 
 
-def parseandreturnroute(trainroutes, logger,journeyDate):
+def parseandreturnroute(trainroutes, logger,journeyDate,trainCounter):
     """
     to return map of train routes in either full or by parts journey
     :param trainroutes: list of trainroutes
@@ -32,12 +33,14 @@ def parseandreturnroute(trainroutes, logger,journeyDate):
 
     logger.info("Generating route map with full & parts journey")
     routes = []
+
     for trainRoute in trainroutes:
         route = {"full": [], "parts": []}
+        trainCounter[0]=trainCounter[0]+1
         try:
             part ={}
             full = {"carrierName": trainRoute.trainName, "duration": trainRoute.duration,
-                    "id": trainRoute.trainNumber, "mode": "train", "site": "IRCTC", "source": trainRoute.srcStation,
+                    "id": "train"+str(trainCounter[0]), "mode": "train", "site": "IRCTC", "source": trainRoute.srcStation,
                     "destination": trainRoute.destStation, "arrival": trainRoute.destArrivalTime,
                     "arrivalDate":dateTimeUtility.calculateArrivalTimeAndDate(journeyDate,trainRoute.srcDepartureTime,trainRoute.duration)["arrivalDate"],
                     "departure": trainRoute.srcDepartureTime,"departureDate":journeyDate,
@@ -45,17 +48,12 @@ def parseandreturnroute(trainroutes, logger,journeyDate):
                     "fare_3A": trainRoute.fare_3A, "fare_3E": trainRoute.fare_3E, "fare_FC": trainRoute.fare_FC,
                     "fare_CC": trainRoute.fare_CC, "fare_2S": trainRoute.fare_2S, "fare_SL": trainRoute.fare_SL,
                     "fare_GN": trainRoute.fare_GN,"price":trainRoute.fare_1A}
-            part = {"carrierName": trainRoute.trainName, "duration": trainRoute.duration,
-                    "id": trainRoute.trainNumber, "mode": "train", "site": "IRCTC", "source": trainRoute.srcStation,
-                    "destination": trainRoute.destStation, "arrival": trainRoute.destArrivalTime,
-                    "arrivalDate":dateTimeUtility.calculateArrivalTimeAndDate(journeyDate,trainRoute.srcDepartureTime,trainRoute.duration)["arrivalDate"],
-                    "departure": trainRoute.srcDepartureTime,"departureDate":journeyDate,
-                    "fare_1A": trainRoute.fare_1A, "fare_2A": trainRoute.fare_2A,
-                    "fare_3A": trainRoute.fare_3A, "fare_3E": trainRoute.fare_3E, "fare_FC": trainRoute.fare_FC,
-                    "fare_CC": trainRoute.fare_CC, "fare_2S": trainRoute.fare_2S, "fare_SL": trainRoute.fare_SL,
-                    "fare_GN": trainRoute.fare_GN,"price":trainRoute.fare_1A}
+            part = copy.deepcopy(full)
+            part["id"]="train" + str(trainCounter[0]) + str(1)
             part["subParts"]=[]
-            part["subParts"].append(full)
+            part["subParts"].append(copy.deepcopy(full))
+            part["subParts"][0]["id"]="train" + str(trainCounter[0]) + str(1)+str(1)
+
             route["full"].append(full)
             route["parts"].append(part)
             routes.append(route)
@@ -65,7 +63,7 @@ def parseandreturnroute(trainroutes, logger,journeyDate):
     return routes
 
 
-def convertsPartsToFullJson(part_1, part_2):
+def convertsPartsToFullJson(part_1, part_2,trainCounter):
 
     """
     This method is used to combine train journey data from part_1 and part_2 into a single entity
@@ -75,28 +73,35 @@ def convertsPartsToFullJson(part_1, part_2):
     """
 
     route = {"full": {}, "parts": []}
+    trainCounter[0]=trainCounter[0]+1
     try:
         part = {"carrierName": "Train", "duration": "",
-                "id": part_1["full"]["id"] + "_" + part_2["full"]["id"], "mode": "train", "site": "IRCTC",
-                "source": part_1["full"]["source"], "destination": part_2["full"]["destination"],
-                "arrival": part_1["full"]["arrival"], "departure": part_1["full"]["departure"],
-                "departureDate":part_1["full"]["departureDate"],"arrivalDate":part_2["full"]["arrivalDate"],
-                "fare_1A": part_1["full"]["fare_1A"] + part_2["full"]["fare_1A"],
-                "fare_2A": part_1["full"]["fare_2A"] + part_2["full"]["fare_2A"],
-                "fare_3A": part_1["full"]["fare_3A"] + part_2["full"]["fare_3A"],
-                "fare_3E": part_1["full"]["fare_3E"] + part_2["full"]["fare_3E"],
-                "fare_FC": part_1["full"]["fare_FC"] + part_2["full"]["fare_FC"],
-                "fare_CC": part_1["full"]["fare_CC"] + part_2["full"]["fare_CC"],
-                "fare_SL": part_1["full"]["fare_SL"] + part_2["full"]["fare_SL"],
-                "fare_2S": part_1["full"]["fare_2S"] + part_2["full"]["fare_2S"],
-                "fare_GN": part_1["full"]["fare_GN"] + part_2["full"]["fare_GN"],
+                "id": "train"+str(trainCounter[0])+str(1), "mode": "train", "site": "IRCTC",
+                "source": part_1["full"][0]["source"], "destination": part_2["full"][0]["destination"],
+                "arrival": part_1["full"][0]["arrival"], "departure": part_1["full"][0]["departure"],
+                "departureDate":part_1["full"][0]["departureDate"],"arrivalDate":part_2["full"][0]["arrivalDate"],
+                "fare_1A": part_1["full"][0]["fare_1A"] + part_2["full"][0]["fare_1A"],
+                "fare_2A": part_1["full"][0]["fare_2A"] + part_2["full"][0]["fare_2A"],
+                "fare_3A": part_1["full"][0]["fare_3A"] + part_2["full"][0]["fare_3A"],
+                "fare_3E": part_1["full"][0]["fare_3E"] + part_2["full"][0]["fare_3E"],
+                "fare_FC": part_1["full"][0]["fare_FC"] + part_2["full"][0]["fare_FC"],
+                "fare_CC": part_1["full"][0]["fare_CC"] + part_2["full"][0]["fare_CC"],
+                "fare_SL": part_1["full"][0]["fare_SL"] + part_2["full"][0]["fare_SL"],
+                "fare_2S": part_1["full"][0]["fare_2S"] + part_2["full"][0]["fare_2S"],
+                "fare_GN": part_1["full"][0]["fare_GN"] + part_2["full"][0]["fare_GN"],
                 "price":part_1["full"]["price"] + part_2["full"]["price"]
         }
-        part["subparts"]=[]
-        part["subparts"].append(part_1["parts"][0]["subparts"][0])
-        part["subparts"].append(part_2["parts"][0]["subparts"][0])
+        part["subParts"]=[]
+        part["subParts"].append(copy.deepcopy(part_1["parts"][0]["subParts"][0]))
+        part["subParts"][0]["id"]="train" +str(trainCounter[0])+str(1)+str(1)
+
+        part["subParts"].append(copy.deepcopy(part_2["parts"][0]["subParts"][0]))
+        part["subParts"][1]["id"]="train"+str(trainCounter[0])+str(1)+str(2)
         route["parts"].append(part)
         route["full"]=[]
+        full ={}
+        full["id"]="train"+str(trainCounter[0])
+        route["full"].append(full)
     except ValueError:
         logger.error("Error while combining data for Train[%s] and Train[%s]", part_1["full"]["id"], part_2["full"]["id"])
         return route
@@ -128,7 +133,7 @@ class TrainController:
     """Entry point to get all routes with train as the major mode of transport"""
     placetoStationCodesCache = PlaceToStationCodesCache()
 
-    def gettrainroutes(self, sourcecity, destinationstationset,journeyDate):
+    def gettrainroutes(self, sourcecity, destinationstationset,journeyDate,trainCounter):
 
         """
         to get list of all possible routes along with fare between all stations of source city and destination stations
@@ -140,11 +145,11 @@ class TrainController:
                     destinationstationset)
         start = time.time()
         trains = models.getTrainsBetweenStation(sourcecity, destinationstationset, logger)
-        routedata = parseandreturnroute(trains, logger,journeyDate)
+        routedata = parseandreturnroute(trains, logger,journeyDate,trainCounter)
         logger.info("Time taken [%s]", time.time() - start)
         return routedata
 
-    def findTrainsBetweenStations(self, sourcecity, destinationstationset,journeyDate):
+    def findTrainsBetweenStations(self, sourcecity, destinationstationset,journeyDate,trainCounter):
 
         """
         find the trains between the sourcecity & destination cities stations
@@ -154,7 +159,7 @@ class TrainController:
         :return:
         """
         resultjsondata = {"train": []}
-        routedata = self.gettrainroutes(sourcecity, destinationstationset,journeyDate)
+        routedata = self.gettrainroutes(sourcecity, destinationstationset,journeyDate,trainCounter)
         if len(routedata)>0:
             resultjsondata["train"].extend(routedata)
         return resultjsondata
@@ -224,19 +229,20 @@ class TrainController:
         destinationStationSet = Set(destinationStations)
         if not sourceStations or not destinationStations:
             return {"train": []}
-        directjson = self.findTrainsBetweenStations(source, destinationStationSet,journeyDate)
+        trainCounter =[0]
+        directjson = self.findTrainsBetweenStations(source, destinationStationSet,journeyDate,trainCounter)
         breakingstationlist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger)
         if len(breakingstationlist) > 0:
             breakingcitylist = self.convertBreakingStationToCity(self.getBreakingStation(breakingstationlist))
             if len(breakingcitylist) > 0:
                 for breakingcity in breakingcitylist:
                     breakingcitystations = self.placetoStationCodesCache.getStationsByCityName(breakingcity)
-                    sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingcitystations,journeyDate)
+                    sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingcitystations,journeyDate,trainCounter)
                     busController= busapi.BusController()
-                    sourceToBreakingStationBusJson=busController.getResults(source,breakingcity,journeyDate)
+                    sourceToBreakingStationBusJson=busController.getResults("Delhi",breakingcity,journeyDate)
 
                     if len(sourceToBreakingStationJson["train"]) > 0 or len(sourceToBreakingStationBusJson["bus"])>0:
-                        breakingToDestinationJson = self.findTrainsBetweenStations(breakingcity, destinationStations,journeyDate)
+                        breakingToDestinationJson = self.findTrainsBetweenStations(breakingcity, destinationStations,journeyDate,trainCounter)
                         breakingToDestinationBusJson=busController.getResults(breakingcity,destination,journeyDate)
                         if len(breakingToDestinationJson["train"]) > 0 and len(sourceToBreakingStationJson["train"])>0:
                             combinedJson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson)
@@ -283,7 +289,7 @@ class TrainController:
                 newPart = {}
                 newPart["subParts"]=subParts
                 newPart["mode"]="bus"
-                #newPart["id"]=mixedFlightInit["flight"][j]["full"][0]["id"]+str(1)
+                newPart["id"]=breakingToDestinationJson["train"][j]["full"][0]["id"]+str(0)
                 newPart["destination"] = subParts[0]["destination"]
                 newPart["source"] = subParts[0]["source"]
                 newPart["carrierName"] = subParts[0]["carrierName"]
@@ -305,7 +311,7 @@ class TrainController:
                 newPart = {}
                 newPart["subParts"]=subParts
                 newPart["mode"]="bus"
-                #newPart["id"]=mixedFlightInit["flight"][j]["full"][0]["id"]+str(1)
+                newPart["id"]=sourceToBreakingJson["train"][j]["full"][0]["id"]+str(2)
                 newPart["destination"] = subParts[0]["destination"]
                 newPart["source"] = subParts[0]["source"]
                 newPart["carrierName"] = subParts[0]["carrierName"]
