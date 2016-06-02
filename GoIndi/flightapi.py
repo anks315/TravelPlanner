@@ -15,7 +15,7 @@ class FlightController:
     stationToCityMap = {'KUU':'Kullu','SLV':'Shimla','IXA':'Agartala','AGR':'Agra','AMD':'Ahmedabad','IXD':'Allahabad','ATQ':'Amritsar','IXU':'Aurangabad','IXB':'Bagdogra','BLR':'Bangalore','BHU':'Bhavnagar','BHO':'Bhopal','BBI':'Bhubaneswar','BHJ':'Bhuj','CCU':'Kolkata','IXC':'Chandigarh','MAA':'Chennai','COK':'Cochin','CJB':'Coimbatore','NMB':'Daman','DED':'Dehradun','DIB':'Dibrugarh','DMU':'Dimapur','DIU':'Diu','GAU':'Gauhati','GOI':'Goa','GWL':'Gwalior','HBX':'Hubli','HYD':'Hyderabad','IMF':'Imphal','IDR':'Indore','JAI':'Jaipur','IXJ':'Jammu','JGA':'Jamnagar','IXW':'Jamshedpur','JDH':'Jodhpur','JRH':'Jorhat','KNU':'Kanpur','HJR':'Khajuraho','CCJ':'Kozhikode','IXL':'Leh','LKO':'Lucknow','LUH':'Ludhiana','IXM':'Madurai','IXE':'Mangalore','BOM':'Mumbai','BOM':'Mumbai','NAG':'Nagpur','NDC':'Nanded','ISK':'Nasik','DEL':'Delhi','PAT':'Patna','PNY':'Pondicherry','PNQ':'Poona','PNQ':'Pune','PBD':'Porbandar','IXZ':'Port Blair','PUT':'PuttasubParthi','BEK':'Rae Bareli','RAJ':'Rajkot','IXR':'Ranchi','SHL':'Shillong','IXS':'Silchar','SXR':'Srinagar','STV':'Surat','TEZ':'Tezpur','TRZ':'Tiruchirapally','TIR':'Tirupati','TRV':'Trivandrum','UDR':'Udaipur','BDQ':'Vadodara','VNS':'Varanasi','VGA':'Vijayawada','VTZ': 'Vishakhapatnam'}
 
     def getResults(self, sourcecity,sourcestate, destinationcity,destinationstate, journeyDate):
-        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
             flightCounter = 0
             source = sourcecity
             destination = destinationcity
@@ -37,6 +37,14 @@ class FlightController:
             sourceFlight = FlightController.stationToCityMap[sourceAirport]
             destinationFlight = FlightController.stationToCityMap[destAirport]
 
+            if(source!=sourceFlight):
+                otherModesSmInitFuture = executor.submit(self.getOtherModes,sourcecity, sourceFlight, journeyDate)
+                otherModesSmInit2Future = executor.submit(self.getOtherModes, sourcecity, sourceFlight, dateTimeUtility.getPreviousDate(journeyDate))
+            if (destination != destinationFlight):
+                otherModesSmEndFuture = executor.submit(self.getOtherModes, destinationFlight, destinationcity, journeyDate)
+                otherModesSmEnd2Future = executor.submit(self.getOtherModes, destinationFlight, destinationcity,
+                                                          dateTimeUtility.getNextDate(journeyDate))
+
             onlyFlightFuture = executor.submit(flightSkyScanner.getApiResults,sourceFlight,destinationFlight,journeyDate,"flight0")
 
 
@@ -44,7 +52,7 @@ class FlightController:
 
             finalList = {}
             mixedFlight = {}
-            if((bigSource!='empty')and(bigDestination!='empty')and(bigSource!=destination)and(bigDestination!=source)):
+            if((bigSource!='empty')and(bigDestination!='empty')and(bigSource!=destinationFlight)and(bigDestination!=sourceFlight)):
                 mixedFlight = {}
                 mixedFlight["flight"] = []
                 mixedFlightEnd = {}
@@ -56,49 +64,90 @@ class FlightController:
                 otherModesInitFuture = []
                 otherModesEndFuture = []
                 #if there is only one big airport in between or both source and destination are big airports
-                if((bigSource!=bigDestination) and ((bigSource != source)and(bigDestination!=destination))):
+                if((bigSource!=bigDestination) and ((bigSource != sourceFlight)and(bigDestination!=destinationFlight))):
                     mixedFlightFuture = executor.submit(flightSkyScanner.getApiResults,bigSource,bigDestination,journeyDate,"flight1")
                     otherModesInitFuture = executor.submit(self.getOtherModes, sourcecity, bigSource, journeyDate)
                     otherModesInit2Future = executor.submit(self.getOtherModes, sourcecity, bigSource, dateTimeUtility.getPreviousDate(journeyDate))
                     otherModesEndFuture = executor.submit(self.getOtherModes, bigDestination, destinationcity, journeyDate)
                     otherModesEnd2Future = executor.submit(self.getOtherModes, bigDestination, destinationcity,
                                                           dateTimeUtility.getNextDate(journeyDate))
-                if (bigSource != source):
+                if (bigSource != sourceFlight):
                     mixedFlightEndFuture =executor.submit(flightSkyScanner.getApiResults,bigSource,destinationFlight,journeyDate,"flight2")
                     if otherModesInitFuture==[]:
                         otherModesInitFuture = executor.submit(self.getOtherModes,sourcecity, bigSource, journeyDate)
                         otherModesInit2Future = executor.submit(self.getOtherModes, sourcecity, bigSource,
                                                         dateTimeUtility.getPreviousDate(journeyDate))
 
-                if (bigDestination != destination):
+                if (bigDestination != destinationFlight):
                     mixedFlightInitFuture =executor.submit(flightSkyScanner.getApiResults,sourceFlight,bigDestination,journeyDate,"flight3")
                     if otherModesEndFuture==[]:
                         otherModesEndFuture = executor.submit(self.getOtherModes,bigDestination, destinationcity, journeyDate)
                         otherModesEnd2Future = executor.submit(self.getOtherModes, bigDestination, destinationcity,
                                                        dateTimeUtility.getNextDate(journeyDate))
                 onlyFlight = onlyFlightFuture.result()
-                if ((bigSource!=bigDestination) and ((bigSource != source)and(bigDestination!=destination))):
+                onlyFlight = miscUtility.limitResults(onlyFlight, "flight")
+                if source != sourceFlight and destination !=destinationFlight:
+                    otherModesSmInit = otherModesSmInitFuture.result()
+                    otherModesSmInit2 = otherModesSmInit2Future.result()
+                    otherModesSmEnd = otherModesSmEndFuture.result()
+                    otherModesSmEnd2 = otherModesSmEnd2Future.result()
+                    onlyFlight = self.mixAndMatch(onlyFlight, otherModesSmInit,otherModesSmInit2, otherModesSmEnd,otherModesSmEnd2)
+                elif source != sourceFlight:
+                    otherModesSmInit = otherModesSmInitFuture.result()
+                    otherModesSmInit2 = otherModesSmInit2Future.result()
+                    onlyFlight = self.mixAndMatchEnd(onlyFlight, otherModesSmInit, otherModesSmInit2)
+                elif destination != destinationFlight:
+                    otherModesSmEnd = otherModesSmEndFuture.result()
+                    otherModesSmEnd2 = otherModesSmEnd2Future.result()
+                    onlyFlight = self.mixAndMatchInit(onlyFlight, otherModesSmEnd, otherModesSmEnd2)
+
+
+                if ((bigSource!=bigDestination) and ((bigSource != sourceFlight)and(bigDestination!=destinationFlight))):
                     otherModesInit=otherModesInitFuture.result()
                     otherModesInit2 = otherModesInit2Future.result()
                     otherModesEnd= otherModesEndFuture.result()
                     otherModesEnd2 = otherModesEnd2Future.result()
                     mixedFlight = self.mixAndMatch(mixedFlightFuture.result(), otherModesInit,otherModesInit2, otherModesEnd,otherModesEnd2)
-                if(bigSource != source):
+                if(bigSource != sourceFlight):
                     if otherModesInit==[]:
                         otherModesInit = otherModesInitFuture.result()
                         otherModesInit2 = otherModesInit2Future.result()
-                    mixedFlightEnd = self.mixAndMatchEnd(mixedFlightEndFuture.result(), otherModesInit, otherModesInit2)
-                if(bigDestination != destination):
+                    if destination != destinationFlight:
+                        mixedFlightEnd = self.mixAndMatch(mixedFlightEndFuture.result(), otherModesInit, otherModesInit2,
+                                                   otherModesSmEnd, otherModesSmEnd2)
+                    else:
+                        mixedFlightEnd = self.mixAndMatchEnd(mixedFlightEndFuture.result(), otherModesInit, otherModesInit2)
+                if(bigDestination != destinationFlight):
                     if otherModesEnd==[]:
                         otherModesEnd = otherModesEndFuture.result()
                         otherModesEnd2 = otherModesEnd2Future.result()
-                    mixedFlightInit = self.mixAndMatchInit(mixedFlightInitFuture.result(), otherModesEnd,otherModesEnd2)
+                    if source != sourceFlight:
+                        mixedFlightInit = self.mixAndMatch(mixedFlightInitFuture.result(), otherModesSmInit,
+                                                          otherModesSmInit2,
+                                                           otherModesEnd, otherModesEnd2)
+                    else:
+                        mixedFlightInit = self.mixAndMatchInit(mixedFlightInitFuture.result(), otherModesEnd,otherModesEnd2)
 
-                onlyFlight = miscUtility.limitResults(onlyFlight,"flight")
                 finalList["flight"]=onlyFlight["flight"]+mixedFlight["flight"]+mixedFlightInit["flight"]+mixedFlightEnd["flight"]
             else:
                 onlyFlight = onlyFlightFuture.result()
-                onlyFlight = miscUtility.limitResults(onlyFlight,"flight")
+                onlyFlight = miscUtility.limitResults(onlyFlight, "flight")
+                if source != sourceFlight and destination != destinationFlight:
+                    otherModesSmInit = otherModesSmInitFuture.result()
+                    otherModesSmInit2 = otherModesSmInit2Future.result()
+                    otherModesSmEnd = otherModesSmEndFuture.result()
+                    otherModesSmEnd2 = otherModesSmEnd2Future.result()
+                    onlyFlight = self.mixAndMatch(onlyFlight, otherModesSmInit, otherModesSmInit2, otherModesSmEnd,
+                                                  otherModesSmEnd2)
+                elif source != sourceFlight:
+                    otherModesSmInit = otherModesSmInitFuture.result()
+                    otherModesSmInit2 = otherModesSmInit2Future.result()
+                    onlyFlight = self.mixAndMatchEnd(onlyFlight, otherModesSmInit, otherModesSmInit2)
+                elif destination != destinationFlight:
+                    otherModesSmEnd = otherModesSmEndFuture.result()
+                    otherModesSmEnd2 = otherModesSmEnd2Future.result()
+                    onlyFlight = self.mixAndMatchInit(onlyFlight, otherModesSmEnd, otherModesSmEnd2)
+
                 finalList["flight"] = onlyFlight["flight"]
             return finalList
 

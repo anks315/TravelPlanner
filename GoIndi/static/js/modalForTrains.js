@@ -47,7 +47,7 @@ function getTrainPart(train,id){
 			siteName = transportDetails.site;
 			
 			
-			transportCarrier = "<img src='/static/images/"+transportDetails.carrierName+".png'></img><br/>";
+			transportCarrier = "<font color = '#056273'><b>"+transportDetails.carrierName+"</b></font><br/>";
 
 			//details of the transportation mode
 			details = details + "<tr><td><table width='100%'><td width='5%'><table><tr><td style='white-space: nowrap;'>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div style='border-left:1px solid #808080;border-left-style:dotted;height:150px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;<b class='detailsMode'>"+transportCarrier+"</b><div class='detailsDuration'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Duration : </b>"+transportDetails.duration+" hrs</div></td></tr></table></td><td width='95%' style='text-align:right'></td></tr></table></td></tr>";

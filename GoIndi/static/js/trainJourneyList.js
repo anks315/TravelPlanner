@@ -15,10 +15,10 @@ function showTrainJourneyList(transportList){
 				for(var q=0;q<transportDetails.subParts.length;q++){
 					var first = 1;
 					if(first==1 ){
-						transportTotaljourney = transportTotaljourney + "<div>"+transportDetails.subParts[q].carrierName+"</div>"
+						transportTotaljourney = transportTotaljourney +transportDetails.subParts[q].carrierName
 						first = 0;
 					} else {
-						transportTotaljourney = transportTotaljourney + "&nbsp;&#8594;&nbsp" + "<div>"+transportDetails.subParts[q].carrierName+"</div>";
+						transportTotaljourney = transportTotaljourney + "&nbsp;&#8594;&nbsp" +transportDetails.subParts[q].carrierName;
 					}
 				}
 			}
@@ -99,7 +99,7 @@ function showTrainJourneyList(transportList){
 				
 				var journeyDivider = "<br/><table class='table table-bordered' style ='text-align:center' ><tbody><tr>"+journeyDividerContent+"</tr><tr><td colspan='"+transportList[i].parts.length+"'>"+individualJourneyDetails+"</td></tr></tbody></table>";
 				
-				output = output + "<div class='trainMain' id = 'main"+transportTotalDetails.id+"'><tr><td bgcolor='WhiteSmoke'><div class='row-eq-height'><table width = '100%'><tr><td style ='text-align:left'>&nbsp;&nbsp;<font color = 'grey'><b>"+transportTotaljourney+"</b></font></td><td width = '25%' style ='text-align:right'><button type='button' class='btn btn-warning'  data-toggle='modal' data-target='#details"+transportTotalDetails.id+"'>Select</button>&nbsp;&nbsp;</td></tr></table></div></td></tr><tr><td><div class='row-eq-height'>"+journeyDivider+"</div>";
+				output = output + "<div class='trainMain' id = 'main"+transportTotalDetails.id+"'><tr><td bgcolor='WhiteSmoke'><div class='row-eq-height'><table width = '100%'><tr><td width = '75%' style ='text-align:left'>&nbsp;&nbsp;<font color = '#056273'><b>"+transportTotaljourney+"</b></td><td width = '25%' style ='text-align:right'><button type='button' class='btn btn-warning'  data-toggle='modal' data-target='#details"+transportTotalDetails.id+"'>Select</button>&nbsp;&nbsp;</td></tr></table></div></td></tr><tr><td><div class='row-eq-height'>"+journeyDivider+"</div>";
 				
 				output = output + "<div class='modal fade modal-wide' id='details"+transportTotalDetails.id+"' role='dialog'><div class='modal-dialog'><div class='modal-content'><div class='modal-body'>"+getModalForTrains(transportList[i].parts,transportTotalDetails.id)+"</div></div></div></div></td></tr></div>";
 				

@@ -80,6 +80,7 @@ function showPlanner(plannerContainer){
 				  if (err != "success") {
 				  } else {
 					  newflightList = []
+					  flightRouteChecked=0
 					  flightList = data.flight
 					  routeFilter(flightList,"flight")
 					  flightList = routeMap["flight"][flightRouteList[0]]
@@ -214,6 +215,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 				  if (err != "success") {
 				  } else {
 					  newflightList = []
+					  flightRouteChecked=0
 					  flightList = data.flight
 					  routeFilter(flightList,"flight")
 					  flightList = routeMap["flight"][flightRouteList[0]]

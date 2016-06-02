@@ -30,6 +30,18 @@
 .divisionFlightSelected{
 	background-color:#067084;
 }
+
+.divisionTrainHover{
+	border-bottom-color:white !important;
+	background-color:#067084;
+	
+}
+.divisionTrainNotSelected{
+	background-color:#83c6d2;
+}
+.divisionTrainSelected{
+	background-color:#067084;
+}
 .divisionOtherHover{
 	border-bottom-color:white !important;
 	background-color:#067084;

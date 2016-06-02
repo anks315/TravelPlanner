@@ -1,6 +1,6 @@
 __author__ = 'ankur'
 
-from skyscanner import Flights
+from skyscannerEazzer import Flights
 import dateTimeUtility
 
 def getApiResults(sourcecity,destinationcity,journeyDate,id):
@@ -41,25 +41,30 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id):
                                  'J & K': 'SXR', 'Gujrat': 'STV', 'Assam': 'TEZ', 'Tamil Nadu': 'TRZ',
                                  'Andhra Pradesh': 'TIR', 'Kerala': 'TRV', 'Rajasthan': 'UDR', 'Gujarat': 'BDQ',
                                  'Uttar Pradesh': 'VNS', 'Andhra Pradesh': 'VGA', 'Andhra Pradesh': 'VTZ','Shimla':'SLV'}
-    nearestBigAirportMap = {'Jammu': 'Delhi', 'Mangalore': 'Bangalore', 'Delhi': 'Delhi'}
+    resultJson = {}
+    resultJson["flight"] = []
+    try:
+        source = cityAndStateToStationsMap[sourcecity]
 
-    source = cityAndStateToStationsMap[sourcecity]
+
+        destination = cityAndStateToStationsMap[destinationcity]
+        year = journeyDate.split("-")[2]
+        month = journeyDate.split("-")[1]
+        day = journeyDate.split("-")[0]
+        flights_service = Flights('ea816376821941695778768433999242')
 
 
-    destination = cityAndStateToStationsMap[destinationcity]
-    year = journeyDate.split("-")[2]
-    month = journeyDate.split("-")[1]
-    day = journeyDate.split("-")[0]
-    flights_service = Flights('ea816376821941695778768433999242')
-    result = flights_service.poll_session(flights_service.create_session( country='IN',
-        currency='INR',
-        locale='en-US',
-        originplace=source+'-sky',
-        destinationplace=destination+'-sky',
-        outbounddate=str(year)+'-'+str(month)+'-'+str(day),
-        adults=1), initial_delay = 3, delay = 1, tries = 100).parsed
-
-    resultJson=parseFlightAndReturnFare(result,id, sourcecity, destinationcity,journeyDate)
+        result = flights_service.poll_session(flights_service.create_session( country='IN',
+            currency='INR',
+            locale='en-US',
+            originplace=source+'-sky',
+            destinationplace=destination+'-sky',
+            outbounddate=str(year)+'-'+str(month)+'-'+str(day),
+            adults=1), initial_delay = 3, delay = 1, tries = 100).parsed
+        if result:
+            resultJson = parseFlightAndReturnFare(result, id, sourcecity, destinationcity, journeyDate)
+    except:
+        pass
     return resultJson
 
 
@@ -71,7 +76,7 @@ def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate):
     resultJsonData["flight"]=[]
     partNo = 0
     if len(returnedFareData["Itineraries"])==0:
-        return
+        return resultJsonData
     flightCounter=-1
 
     for itinerary in returnedFareData["Itineraries"]:
@@ -138,6 +143,7 @@ def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate):
                 part["subParts"].append(subpart)
 
             resultJsonData["flight"].append(route)
+
     return resultJsonData
 
 
