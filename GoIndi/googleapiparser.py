@@ -4,6 +4,9 @@ import trainConstants
 import json
 import models
 from sets import Set
+import calendar
+import time
+import concurrent.futures
 
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
 
@@ -67,26 +70,40 @@ def getdestinationcity(routedestinationstation, logger):
     return routedestinationstation # return same value if not mapped to any station
 
 
-def getPossibleBreakingPlacesForTrain(source,destination, logger):
+def getPossibleBreakingPlacesForTrain(source,destination, logger, journeydate):
 
     """
     To get possible stations to break journey between source & destination stations
     :param source: source of the journey
     :param destination: destination of the journey
     :param logger: to log actions
+    :param journeydate date of journey
     :return: list of breaking cities between source & destination
     """
+
+    epochjourneytime = calendar.timegm(time.strptime(journeydate, '%d-%m-%Y'))
+    epochtime = int(time.time())
+    epochs = [epochtime, epochjourneytime]
+    futures = []
     possiblebreakage = []
-    try:
-        logger.info("Getting breaking station in journey from source[%s] to destination[%s]", source, destination)
-        jsontransitroute = urllib.urlopen("https://maps.googleapis.com/maps/api/directions/json?origin="+ source +",IN&destination="+ destination +",IN&mode=transit&alternatives=true&key="+ trainConstants.GOOGLE_API_KEY).read()
-    except:
-        logger.error("Error in getting breaking station between source[%s] and destination[%s]", source, destination)
-    if not jsontransitroute:
-        logger.warning("No breaking journey between source[%s] and destination[%s]", source, destination)
-        return possiblebreakage
-    logger.debug("Breaking journey between source[%s] and destination[%s] is [%s]", source, destination, jsontransitroute)
-    possiblebreakage = parseTransitRoutes(jsontransitroute,destination, logger)
-    logger.debug("Breaking journey stations between source[%s] and destination[%s] are [%s]", source, destination, possiblebreakage)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        for epoch in epochs:
+            logger.info("Getting breaking station in journey from source[%s] to destination[%s]", source, destination)
+            futures.append(executor.submit(getBreakingCityList, source, destination, epoch, logger))
+    for future in futures:
+        if future:
+            possiblebreakage.extend(future.result())
+            logger.debug("Breaking journey stations between source[%s] and destination[%s] are [%s]", source, destination, possiblebreakage)
+        else:
+            logger.warning("No breaking station between source[%s] and destination[%s]", source, destination)
     return possiblebreakage
 
+
+def getBreakingCityList(source, destination, epoch, logger):
+    url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ source +",IN&destination="+ destination +",IN&mode=transit&transit_mode=train&departure_time=" + str(epoch) +"&alternatives=true&key="+ trainConstants.GOOGLE_API_KEY
+    try:
+        jsontransitroute = urllib.urlopen(url).read()
+    except Exception as e:
+        logger.error("Error in getting breaking station between source[%s] and destination[%s], reson [%s]", source, destination, e.message)
+
+    return parseTransitRoutes(jsontransitroute,destination, logger)

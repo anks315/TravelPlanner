@@ -226,7 +226,7 @@ class TrainController:
             return {"train": []}
         trainCounter =[0]
         directjson = self.findTrainsBetweenStations(source, destinationStationSet,journeyDate,trainCounter)
-        breakingstationlist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger)
+        breakingstationlist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger, journeyDate)
         if len(breakingstationlist) > 0:
             breakingcitylist = self.convertBreakingStationToCity(self.getBreakingStation(breakingstationlist))
             if len(breakingcitylist) > 0:
@@ -242,13 +242,13 @@ class TrainController:
                         if len(breakingToDestinationJson["train"]) > 0 and len(sourceToBreakingStationJson["train"])>0:
                             combinedJson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson, trainCounter)
                             if len(combinedJson["train"])>0:
-                                directjson["train"].append(combinedJson["train"])
+                                directjson["train"].extend(combinedJson["train"])
                         if len(sourceToBreakingStationBusJson["bus"])>0 and len(breakingToDestinationJson["train"]) >0:
                             combinedJson = self.combineBusAndTrainInit(sourceToBreakingStationBusJson, breakingToDestinationJson)
-                            directjson["train"].append(combinedJson["train"])
+                            directjson["train"].extend(combinedJson["train"])
                         if len(sourceToBreakingStationJson["train"])>0 and  len(breakingToDestinationBusJson["bus"]) >0:
                             combinedJson = self.combineBusAndTrainEnd(sourceToBreakingStationJson, breakingToDestinationBusJson)
-                            directjson["train"].append(combinedJson["train"])
+                            directjson["train"].extend(combinedJson["train"])
 
         return directjson
     
@@ -272,6 +272,8 @@ class TrainController:
 
     def combineBusAndTrainInit(self,sourceToBreakingBusJson,breakingToDestinationJson):
 
+        combinedjson = {"train" : []}
+
         for j in range(len(breakingToDestinationJson["train"])):
             trainPart = breakingToDestinationJson["train"][j]["parts"][0]
             subParts = []
@@ -280,19 +282,19 @@ class TrainController:
                 if dateTimeUtility.checkIfApplicable(subPart["arrival"],subPart["arrivalDate"],trainPart["departure"],trainPart["departureDate"],3):
                     subPart["waitingTime"] = dateTimeUtility.getWaitingTime(subPart["arrival"],trainPart["departure"],subPart["arrivalDate"],trainPart["departureDate"])
                     subParts.append(subPart)
-            if subParts!=[]:
-                newPart = {}
-                newPart["subParts"]=subParts
-                newPart["mode"]="bus"
-                newPart["id"]=breakingToDestinationJson["train"][j]["full"][0]["id"]+str(0)
-                newPart["destination"] = subParts[0]["destination"]
-                newPart["source"] = subParts[0]["source"]
-                newPart["carrierName"] = subParts[0]["carrierName"]
+            if subParts:
+                newPart = {"subParts": subParts, "mode": "bus",
+                           "id": breakingToDestinationJson["train"][j]["full"][0]["id"] + str(0),
+                           "destination": subParts[0]["destination"], "source": subParts[0]["source"],
+                           "carrierName": subParts[0]["carrierName"]}
                 breakingToDestinationJson["train"][j]["parts"].insert(0,newPart)
 
-        breakingToDestinationJson["train"] = [x for x in breakingToDestinationJson["train"] if len(x["parts"]) == 2]
+        combinedjson["train"] = [x for x in breakingToDestinationJson["train"] if len(x["parts"]) == 2]
+        return combinedjson
 
     def combineBusAndTrainEnd(self,sourceToBreakingJson,breakingToDestinationBusJson):
+
+        combinedjson = {"train" : []}
 
         for j in range(len(sourceToBreakingJson["train"])):
             trainPart = sourceToBreakingJson["train"][j]["parts"][0]
@@ -302,14 +304,12 @@ class TrainController:
                 if dateTimeUtility.checkIfApplicable(trainPart["arrival"],trainPart["arrivalDate"],subPart["departure"],subPart["departureDate"],3):
                     subPart["waitingTime"] = dateTimeUtility.getWaitingTime(trainPart["arrival"],subPart["departure"],trainPart["arrivalDate"],subPart["departureDate"])
                     subParts.append(subPart)
-            if subParts!=[]:
-                newPart = {}
-                newPart["subParts"]=subParts
-                newPart["mode"]="bus"
-                newPart["id"]=sourceToBreakingJson["train"][j]["full"][0]["id"]+str(2)
-                newPart["destination"] = subParts[0]["destination"]
-                newPart["source"] = subParts[0]["source"]
-                newPart["carrierName"] = subParts[0]["carrierName"]
+            if subParts:
+                newPart = {"subParts": subParts, "mode": "bus",
+                           "id": sourceToBreakingJson["train"][j]["full"][0]["id"] + str(2),
+                           "destination": subParts[0]["destination"], "source": subParts[0]["source"],
+                           "carrierName": subParts[0]["carrierName"]}
                 sourceToBreakingJson["train"][j]["parts"].append(newPart)
 
-        sourceToBreakingJson["train"] = [x for x in sourceToBreakingJson["train"] if len(x["parts"]) == 2]
+        combinedjson["train"] = [x for x in sourceToBreakingJson["train"] if len(x["parts"]) == 2]
+        return combinedjson
