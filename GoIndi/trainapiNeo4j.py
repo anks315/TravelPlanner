@@ -96,8 +96,7 @@ def convertsPartsToFullJson(part_1, part_2,trainCounter):
         part["subParts"][1]["id"]="train"+str(trainCounter[0])+str(1)+str(2)
         route["parts"].append(part)
         route["full"]=[]
-        full ={}
-        full["id"]="train"+str(trainCounter[0])
+        full = {"id": "train" + str(trainCounter[0])}
         route["full"].append(full)
     except ValueError:
         logger.error("Error while combining data for Train[%s] and Train[%s]", part_1["full"]["id"], part_2["full"]["id"])

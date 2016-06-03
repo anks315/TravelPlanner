@@ -11,7 +11,7 @@ def demo():
 
 # = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="ankurjain")
 
-DATABASE_CONNECTION=GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="shekhar")
+DATABASE_CONNECTION=GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
 
 
 
@@ -80,7 +80,7 @@ def getDuration(sourceDepartureTime, sourceDay, destinationArrivalTime, destinat
     destinationArrivalTimeIntoMinutes=int(destinationArrivalTimeSplit[0])*60 + int(destinationArrivalTimeSplit[1])
     sourceDepartureTimeSplit = sourceDepartureTime.split(':')
     sourceDepartureTimeIntoMinutes = int(sourceDepartureTimeSplit[0])*60 + int(sourceDepartureTimeSplit[1])
-    duration = (destinationDay * 24 + destinationArrivalTimeIntoMinutes) - (sourceDay * 24 + sourceDepartureTimeIntoMinutes)
+    duration = (destinationDay * 24 * 60 + destinationArrivalTimeIntoMinutes) - (sourceDay * 24 * 60 + sourceDepartureTimeIntoMinutes)
     durationHours=duration/60
     durationMinutes=duration%60
     return str(durationHours) + ':' + str(durationMinutes)
