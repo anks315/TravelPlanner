@@ -46,8 +46,9 @@ from sets import Set
 def getDay():
     journeydate = '24-01-1991'
     diff = 2
-    t = (datetime.strptime(journeydate, '%d-%m-%Y') - timedelta(days=diff)).weekday()
-    day = calendar.day_name[t].upper()
-    print day
+    t = (datetime.strptime(journeydate, '%d-%m-%Y') - timedelta(days=1))
+    print t.strftime('%d-%m-%Y')
+    #day = calendar.day_name[t].upper()
+    #print day
 
 getDay()

@@ -13,10 +13,10 @@ def demo():
 
 # = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="ankurjain")
 
-DATABASE_CONNECTION=GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="shekhar")
+DATABASE_CONNECTION=GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
 
 
-def getTrainsBetweenStation(sourcecity, destinationStationSet, logger, journeydate):
+def getTrainsBetweenStation(sourcecity, destinationStationSet, logger, journeydate, destinationcity):
     """
     :param sourcecity: source of the journey
     :param destinationStationSet: destination cities station set
@@ -43,7 +43,10 @@ def getTrainsBetweenStation(sourcecity, destinationStationSet, logger, journeyda
             trainoption.trainNumber = results.elements[i][1]['data']['NUMBER']
             trainoption.destArrivalTime = results.elements[i][2]['data']['DESTINATIONARRIVALTIME']
             trainoption.srcDepartureTime = results.elements[i][2]['data']['SOURCEDEPARTURETIME']
-            trainoption.srcStation = results.elements[i][0]['data']['NAME']
+            trainoption.srcStation = str(results.elements[i][0]['data']['CITY']).title()
+            trainoption.srcStationCode = results.elements[i][0]['data']['CODE']
+            trainoption.destStationCode = results.elements[i][2]['type']
+            trainoption.destStation = str(destinationcity).title()
             trainoption.duration =  getDuration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
             if 'FARE_1A' in results.elements[i][2]['data']:
                 trainoption.fare_1A = results.elements[i][2]['data']['FARE_1A']
@@ -63,7 +66,6 @@ def getTrainsBetweenStation(sourcecity, destinationStationSet, logger, journeyda
                 trainoption.fare_SL = results.elements[i][2]['data']['FARE_SL']
             if 'FARE_GN' in results.elements[i][2]['data']:
                 trainoption.fare_GN = results.elements[i][2]['data']['FARE_GN']
-            trainoption.destStation = results.elements[i][2]['type']
             trains.append(trainoption)
     return trains
 

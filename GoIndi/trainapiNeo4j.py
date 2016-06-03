@@ -9,6 +9,7 @@ import dateTimeUtility
 import busapi
 import copy
 import datetime
+from datetime import timedelta
 
 today = datetime.date.today().strftime("%Y-%m-%d")
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
@@ -36,12 +37,13 @@ def parseandreturnroute(trainroutes, logger, journeyDate, trainCounter):
 
     for trainRoute in trainroutes:
         route = {"full": [], "parts": []}
-        trainCounter[0] = trainCounter[0] + 1
+        trainCounter[0] += 1
         try:
             full = {"carrierName": trainRoute.trainName, "duration": trainRoute.duration,
                     "id": "train" + str(trainCounter[0]), "mode": "train", "site": "IRCTC",
                     "source": trainRoute.srcStation,
                     "destination": trainRoute.destStation, "arrival": trainRoute.destArrivalTime,
+                    "sourceStation" : trainRoute.srcStationCode, "destinationStation": trainRoute.destStationCode,
                     "arrivalDate": dateTimeUtility.calculateArrivalTimeAndDate(journeyDate, trainRoute.srcDepartureTime,
                                                                                trainRoute.duration)["arrivalDate"],
                     "departure": trainRoute.srcDepartureTime, "departureDate": journeyDate,
@@ -130,7 +132,7 @@ class TrainController:
     """Entry point to get all routes with train as the major mode of transport"""
     placetoStationCodesCache = PlaceToStationCodesCache()
 
-    def gettrainroutes(self, sourcecity, destinationstationset, journeydate, trainCounter):
+    def gettrainroutes(self, sourcecity, destinationstationset, journeydate, trainCounter, destinationcity):
 
         """
         to get list of all possible routes along with fare between all stations of source city and destination stations
@@ -143,12 +145,12 @@ class TrainController:
         logger.info("Fetching train routes between sourcecity[%s] and destination Stations[%s]", sourcecity,
                     destinationstationset)
         start = time.time()
-        trains = models.getTrainsBetweenStation(sourcecity, destinationstationset, logger, journeydate)
+        trains = models.getTrainsBetweenStation(sourcecity, destinationstationset, logger, journeydate, destinationcity)
         routedata = parseandreturnroute(trains, logger, journeydate, trainCounter)
         logger.info("Time taken [%s]", time.time() - start)
         return routedata
 
-    def findTrainsBetweenStations(self, sourcecity, destinationstationset, journeyDate, trainCounter):
+    def findTrainsBetweenStations(self, sourcecity, destinationstationset, journeyDate, trainCounter, destinationcity):
 
         """
         find the trains between the sourcecity & destination cities stations
@@ -158,7 +160,7 @@ class TrainController:
         :return:
         """
         resultjsondata = {"train": []}
-        routedata = self.gettrainroutes(sourcecity, destinationstationset, journeyDate, trainCounter)
+        routedata = self.gettrainroutes(sourcecity, destinationstationset, journeyDate, trainCounter, destinationcity)
         if len(routedata) > 0:
             resultjsondata["train"].extend(routedata)
         return resultjsondata
@@ -212,7 +214,7 @@ class TrainController:
                     logger.error("Error getting city for breakingstation[%s]", possiblecity.upper())
         return breakingcitylist
 
-    def getRoutes(self, source, destination, journeyDate, isOnlyDirect=1):
+    def getRoutes(self, source, destination, journeydate, isOnlyDirect=1):
 
         """
         This method is used to fetch all possible route between source & destination stations via train and train/bus combined.
@@ -225,30 +227,33 @@ class TrainController:
         source = str(source).upper()
         destination = str(destination).upper()
 
-        destinationStationSet = self.placetoStationCodesCache.getStationsByCityName(destination)
-        trainCounter = [0]
-        directjson = self.findTrainsBetweenStations(source, destinationStationSet, journeyDate, trainCounter)
+        destinationstationset = self.placetoStationCodesCache.getStationsByCityName(destination)
+        traincounter = [0]
+        directjson = self.findTrainsBetweenStations(source, destinationstationset, journeydate, traincounter, destination)
         if isOnlyDirect == 1:
             return directjson
-        breakingcitieslist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger, journeyDate)
+        breakingcitieslist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger, journeydate)
         if len(breakingcitieslist) > 0:
             breakingcityset = (self.getBreakingCitySet(breakingcitieslist))
             if len(breakingcityset) > 0:
                 for breakingcity in breakingcityset:
                     breakingcitystationset = self.placetoStationCodesCache.getStationsByCityName(breakingcity)
                     sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingcitystationset,
-                                                                                 journeyDate, trainCounter)
+                                                                                 journeydate, traincounter, breakingcity)
                     busController = busapi.BusController()
-                    sourceToBreakingStationBusJson = busController.getResults(source, breakingcity, journeyDate)
+                    sourceToBreakingStationBusJson = busController.getResults(source, breakingcity, journeydate)
 
                     if len(sourceToBreakingStationJson["train"]) > 0 or len(sourceToBreakingStationBusJson["bus"]) > 0:
-                        breakingToDestinationJson = self.findTrainsBetweenStations(breakingcity, destinationStationSet,
-                                                                                   journeyDate, trainCounter)
-                        breakingToDestinationBusJson = busController.getResults(breakingcity, destination, journeyDate)
+                        breakingToDestinationJson = self.findTrainsBetweenStations(breakingcity, destinationstationset,
+                                                                                   journeydate, traincounter, destination)
+                        nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
+                        breakingToDestinationJson["train"].extend(self.findTrainsBetweenStations(breakingcity, destinationstationset, nextday, traincounter, destination)["train"])
+                        breakingToDestinationBusJson = busController.getResults(breakingcity, destination, journeydate)
+                        breakingToDestinationBusJson["bus"].extend(busController.getResults(breakingcity, destination, nextday)["bus"])
                         if len(breakingToDestinationJson["train"]) > 0 and len(
                                 sourceToBreakingStationJson["train"]) > 0:
                             combinedjson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson,
-                                                            trainCounter)
+                                                            traincounter)
                             if len(combinedjson["train"]) > 0:
                                 directjson["train"].extend(combinedjson["train"])
                         if len(sourceToBreakingStationBusJson["bus"]) > 0 and len(

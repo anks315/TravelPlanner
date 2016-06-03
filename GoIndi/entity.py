@@ -4,7 +4,9 @@ class TrainOption:
     """Entity Defining all properties of a Train Option
        Note:A Journey can have a train option for a particular segment of a journey"""
     srcStation=""
+    srcStationCode=""
     destStation=""
+    destStationCode=""
     srcDepartureTime=time.time()
     destArrivalTime=time.time()
     fare_1A=0.0
