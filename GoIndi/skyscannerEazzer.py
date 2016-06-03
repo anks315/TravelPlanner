@@ -3,23 +3,21 @@ import sys
 import time
 import logging
 import requests
+import datetime
 try:
     import lxml.etree as etree
 except ImportError:
     import xml.etree.ElementTree as etree
 
 
-def configure_logger(log_level=logging.WARN):
-    logger = logging.getLogger(__name__)
-    logger.setLevel(log_level)
-    try:
-        sa = logging.StreamHandler(stream=sys.stdout)
-    except TypeError:
-        sa = logging.StreamHandler()
-    formatter = logging.Formatter(
-        '%(asctime)s - %(filename)s:%(lineno)d - %(levelname)s - %(message)s')
-    sa.setFormatter(formatter)
-    logger.addHandler(sa)
+def configure_logger():
+    logger = logging.getLogger("TravelPlanner.SkyScannerLib")
+    today = datetime.date.today().strftime("%Y-%m-%d")
+    fileHandler = logging.FileHandler('./' + today + '.log')
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    fileHandler.setFormatter(formatter)
+    logger.addHandler(fileHandler)
+    logger.setLevel(logging.INFO)
     return logger
 
 log = configure_logger()
@@ -77,7 +75,7 @@ class Transport(object):
         return self.poll_session(self.create_session(**params), errors=errors)
 
     def make_request(self, service_url, method='get', headers=None, data=None,
-                     callback=None, errors=STRICT, **params):
+                     callback=None, errors=GRACEFUL, **params):
         """
         Reusable method for performing requests.
 
@@ -159,7 +157,7 @@ class Transport(object):
 
         while time_end > time.time():
             pass
-    def poll_session(self, poll_url, initial_delay=3, delay=1, tries=20, errors=STRICT, **params):
+    def poll_session(self, poll_url, initial_delay=1, delay=1, tries=20, errors=GRACEFUL, **params):
         """
         Poll the URL
         :param poll_url - URL to poll, should be returned by 'create_session' call
@@ -169,6 +167,7 @@ class Transport(object):
         :param errors - errors handling mode, see corresponding parameter in 'make_request' method
         :param params - additional query params for each poll request
         """
+
         self.wait(initial_delay)
         poll_response = None
         for n in range(tries):
