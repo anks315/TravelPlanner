@@ -4,15 +4,10 @@ from skyscannerEazzer import Flights
 import dateTimeUtility
 import logging
 import datetime
+import loggerUtil
 
 
-logger = logging.getLogger("TravelPlanner.FlightSkyScanner")
-today = datetime.date.today().strftime("%Y-%m-%d")
-fileHandler = logging.FileHandler('./' + today + '.log')
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-fileHandler.setFormatter(formatter)
-logger.addHandler(fileHandler)
-logger.setLevel(logging.DEBUG)
+logger = loggerUtil.getLogger("FlighSkyScanner",logging.DEBUG)
 
 def getApiResults(sourcecity,destinationcity,journeyDate,id):
     cityAndStateToStationsMap = {'Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
@@ -57,7 +52,7 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id):
     try:
         source = cityAndStateToStationsMap[sourcecity]
         destination = cityAndStateToStationsMap[destinationcity]
-        logger.info("Get Results From SkyScanner for Source:[%s]-[%s] and Destination:[%s]-[%s],JourneyDate:[%s] ",sourcecity,source,destinationcity,destination,journeyDate)
+        logger.info("[START]-Get Results From SkyScanner for Source:[%s]-[%s] and Destination:[%s]-[%s],JourneyDate:[%s] ",sourcecity,source,destinationcity,destination,journeyDate)
         year = journeyDate.split("-")[2]
         month = journeyDate.split("-")[1]
         day = journeyDate.split("-")[0]
@@ -79,6 +74,9 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id):
             retries=retries-1
     except:
         pass
+
+    logger.info("[END]-Get Results From SkyScanner for Source:[%s]-[%s] and Destination:[%s]-[%s],JourneyDate:[%s] ",sourcecity,source,destinationcity,destination,journeyDate)
+
     return resultJson
 
 
@@ -96,6 +94,7 @@ def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate):
 
     for itinerary in returnedFareData["Itineraries"]:
             route ={}
+
             full={}
             full["id"]=str(id)+str(flightCounter)
             part={}

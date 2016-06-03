@@ -9,17 +9,13 @@ import dateTimeUtility
 import busapi
 import copy
 import datetime
+import loggerUtil
 from datetime import timedelta
 
 today = datetime.date.today().strftime("%Y-%m-%d")
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
 
-logger = logging.getLogger("TravelPlanner.TrainController.Routes")
-# fileHandler = logging.FileHandler('/home/ankur/TrainRoutes_' + today + '.log')
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-# fileHandler.setFormatter(formatter)
-# logger.addHandler(fileHandler)
-logger.setLevel(logging.INFO)
+logger = loggerUtil.getLogger("TrainApi",logging.DEBUG)
 
 trainNumberstoDurationMap = {}
 
@@ -222,6 +218,7 @@ class TrainController:
         :param dateofjourney: date of the journey
         :return: all possible routes from source to destination via direct train or combination of train-bus
         """
+        logger.debug("[START]-Get Results From TrainApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeydate)
         source = str(source).upper()
         destination = str(destination).upper()
 
@@ -230,7 +227,10 @@ class TrainController:
         directjson = self.findTrainsBetweenStations(source, destinationstationset, journeydate, traincounter, destination)
         if isOnlyDirect == 1 or len(directjson["train"]) > 6: # return in case we have more than 8 direct trains
             return directjson
+        logger.debug("Calling google api parser for Source[%s] an Destination[%s],journeyDate",source,destination,journeydate)
         breakingcitieslist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger, journeydate)
+        logger.debug("Call To google api parser successful for Source[%s] and Destination[%s]",source,destination)
+      
         if len(breakingcitieslist) > 0:
             breakingcityset = (self.getBreakingCitySet(breakingcitieslist))
             if len(breakingcityset) > 0:
@@ -264,6 +264,8 @@ class TrainController:
                             combinedjson = self.combineBusAndTrainEnd(sourceToBreakingStationJson,
                                                                       breakingToDestinationBusJson)
                             directjson["train"].extend(combinedjson["train"])
+
+        logger.debug("[END]-Get Results From FlightApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination)
 
         return directjson
 

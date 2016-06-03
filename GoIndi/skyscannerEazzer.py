@@ -4,23 +4,17 @@ import time
 import logging
 import requests
 import datetime
+import loggerUtil
 try:
     import lxml.etree as etree
 except ImportError:
     import xml.etree.ElementTree as etree
 
 
-def configure_logger():
-    logger = logging.getLogger("TravelPlanner.SkyScannerLib")
-    today = datetime.date.today().strftime("%Y-%m-%d")
-    fileHandler = logging.FileHandler('./' + today + '.log')
-    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-    fileHandler.setFormatter(formatter)
-    logger.addHandler(fileHandler)
-    logger.setLevel(logging.INFO)
-    return logger
 
-log = configure_logger()
+
+log = loggerUtil.getLogger("SkyScannerLib",logging.DEBUG)
+
 STRICT, GRACEFUL, IGNORE = 'strict', 'graceful', 'ignore'
 
 
@@ -168,13 +162,16 @@ class Transport(object):
         :param params - additional query params for each poll request
         """
 
-        self.wait(initial_delay)
+        #self.wait(initial_delay)
         poll_response = None
+        log.debug("Polling Session Begins")
         for n in range(tries):
+            log.debug("Polling Session Retry")
             poll_response = self.make_request(poll_url, headers=self._headers(),
                                               errors=errors, **params)
 
             if self.is_poll_complete(poll_response):
+                log.debug("Polling Session Successfull")
                 return poll_response
             else:
                 self.wait(delay)
@@ -183,6 +180,7 @@ class Transport(object):
             raise ExceededRetries(
                 "Failed to poll within {0} tries.".format(tries))
         else:
+            log.debug("Exceeded Number of Try")
             return poll_response
 
     def is_poll_complete(self, poll_resp):

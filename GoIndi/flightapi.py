@@ -11,12 +11,21 @@ import miscUtility
 import distanceutil
 import trainapiNeo4j
 import mimMaxUtil
+import logging
+import loggerUtil
+
+
+logger = loggerUtil.getLogger("FlightApi",logging.DEBUG)
+
+
 class FlightController:
     """Class returns all stations corresponding to a city"""
 
     stationToCityMap = {'KUU':'Kullu','SLV':'Shimla','IXA':'Agartala','AGR':'Agra','AMD':'Ahmedabad','IXD':'Allahabad','ATQ':'Amritsar','IXU':'Aurangabad','IXB':'Bagdogra','BLR':'Bangalore','BHU':'Bhavnagar','BHO':'Bhopal','BBI':'Bhubaneswar','BHJ':'Bhuj','CCU':'Kolkata','IXC':'Chandigarh','MAA':'Chennai','COK':'Cochin','CJB':'Coimbatore','NMB':'Daman','DED':'Dehradun','DIB':'Dibrugarh','DMU':'Dimapur','DIU':'Diu','GAU':'Gauhati','GOI':'Goa','GWL':'Gwalior','HBX':'Hubli','HYD':'Hyderabad','IMF':'Imphal','IDR':'Indore','JAI':'Jaipur','IXJ':'Jammu','JGA':'Jamnagar','IXW':'Jamshedpur','JDH':'Jodhpur','JRH':'Jorhat','KNU':'Kanpur','HJR':'Khajuraho','CCJ':'Kozhikode','IXL':'Leh','LKO':'Lucknow','LUH':'Ludhiana','IXM':'Madurai','IXE':'Mangalore','BOM':'Mumbai','BOM':'Mumbai','NAG':'Nagpur','NDC':'Nanded','ISK':'Nasik','DEL':'Delhi','PAT':'Patna','PNY':'Pondicherry','PNQ':'Poona','PNQ':'Pune','PBD':'Porbandar','IXZ':'Port Blair','PUT':'PuttasubParthi','BEK':'Rae Bareli','RAJ':'Rajkot','IXR':'Ranchi','SHL':'Shillong','IXS':'Silchar','SXR':'Srinagar','STV':'Surat','TEZ':'Tezpur','TRZ':'Tiruchirapally','TIR':'Tirupati','TRV':'Trivandrum','UDR':'Udaipur','BDQ':'Vadodara','VNS':'Varanasi','VGA':'Vijayawada','VTZ': 'Vishakhapatnam'}
 
     def getResults(self, sourcecity,sourcestate, destinationcity,destinationstate, journeyDate):
+
+        logger.debug("[START]-Get Results From FlightApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",sourcecity,destinationcity,journeyDate)
         with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
             flightCounter = 0
             source = sourcecity
@@ -151,18 +160,27 @@ class FlightController:
                     onlyFlight = self.mixAndMatchInit(onlyFlight, otherModesSmEnd, otherModesSmEnd2)
 
                 finalList["flight"] = onlyFlight["flight"]
+            logger.debug("[END]-Get Results From FlightApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",sourcecity,destinationcity,journeyDate)
             return finalList
 
     def getOtherModes(self, source,destination, journeyDate):
+
         trainControllerneo = trainapiNeo4j.TrainController()
+        logger.debug("[START] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source,destination,journeyDate)
         resultJsonData = trainControllerneo.getRoutes(source, destination, journeyDate)["train"]
         if(resultJsonData==[]):
+            logger.debug("No Data From Train,Retrieving From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeyDate)
             busController = busapi.BusController()
             resultJsonData = busController.getResults(source, destination, journeyDate)["bus"]
+        if(resultJsonData==[]):
+            logger.debug("No Data From Train and Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeyDate)
+
+        logger.debug("[END] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source,destination,journeyDate)
+
         return resultJsonData
 
     def mixAndMatch(self, mixedFlight,otherModesInit,otherModesInit2,otherModesEnd,otherModesEnd2):
-        mixedFlight = miscUtility.limitResults(mixedFlight, "flight")
+        logger.debug("[START]")
         otherModesEnd = otherModesEnd + otherModesEnd2
         otherModesInit = otherModesInit + otherModesInit2
 
@@ -235,10 +253,11 @@ class FlightController:
                     mixedFlight["flight"][j]["full"][0]["minArrival"] = minMax2["minArr"]
                     mixedFlight["flight"][j]["full"][0]["maxArrival"] = minMax2["maxArr"]
         mixedFlight["flight"] = [x for x in mixedFlight["flight"] if len(x["parts"]) == 3]
-
+        logger.debug("[END]")
         return mixedFlight
 
     def mixAndMatchInit(self, mixedFlightInit, otherModesEnd,otherModesEnd2):
+        logger.debug("[START]")
         mixedFlightInit = miscUtility.limitResults(mixedFlightInit,"flight")
         otherModesEnd=otherModesEnd+otherModesEnd2
 
@@ -277,9 +296,11 @@ class FlightController:
                 mixedFlightInit["flight"][j]["full"][0]["minArrival"] = minMax["minArr"]
                 mixedFlightInit["flight"][j]["full"][0]["maxArrival"] = minMax["maxArr"]
         mixedFlightInit["flight"] = [x for x in mixedFlightInit["flight"] if len(x["parts"]) == 2]
+        logger.debug("[FlightApi.mixAndMatchInit]-[END]")
         return mixedFlightInit
 
     def mixAndMatchEnd(self, mixedFlightEnd, otherModesInit,otherModesInit2):
+        logger.debug("[START]")
         mixedFlightEnd = miscUtility.limitResults(mixedFlightEnd, "flight")
         otherModesInit=otherModesInit+otherModesInit2
         for j in range(len(mixedFlightEnd["flight"])):
@@ -320,112 +341,7 @@ class FlightController:
                 mixedFlightEnd["flight"][j]["full"][0]["minDeparture"] = minMax["minDep"]
                 mixedFlightEnd["flight"][j]["full"][0]["maxDeparture"] = minMax["maxDep"]
         mixedFlightEnd["flight"] = [x for x in mixedFlightEnd["flight"] if len(x["parts"]) == 2]
+        logger.debug("[END]")
         return mixedFlightEnd
 
-    def flightApiCallResults(self, sourcecity, sourcestate, destinationcity, destinationstate, journeyDate, flightCounter):
 
-        if sourcecity in FlightController.cityAndStateToStationsMap:
-            source = FlightController.cityAndStateToStationsMap[sourcecity]
-        elif sourcestate in FlightController.cityAndStateToStationsMap:
-            source = FlightController.cityAndStateToStationsMap[sourcestate]
-
-        if destinationcity in FlightController.cityAndStateToStationsMap:
-            destination = FlightController.cityAndStateToStationsMap[destinationcity]
-        elif destinationstate in FlightController.cityAndStateToStationsMap:
-            destination = FlightController.cityAndStateToStationsMap[destinationstate]
-
-        api_key = "AIzaSyAgFB2oxb44p3tgUM-baPQsT2eN_Vz1TVQ"
-        url = "https://www.googleapis.com/qpxExpress/v1/trips/search?key=" + api_key
-        headers = {'content-type': 'application/json'}
-        params = {
-            "request": {
-                "slice": [
-                    {
-                        "origin": source,
-                        "destination": destination,
-                        "date": "2016-07-20"
-                    }
-                ],
-                "passengers": {
-                    "adultCount": 1
-                },
-                "solutions": 10
-            }
-        }
-
-        jsonreq = json.dumps(params, encoding='utf-8')
-
-        req = urllib2.Request(url, jsonreq, {'Content-Type': 'application/json'})
-        flight = urllib2.urlopen(req)
-        response = flight.read()
-        flight.close()
-        onlyFlight = self.parseFlightAndReturnFare(response, flightCounter)
-        return onlyFlight
-
-    def parseFlightAndReturnFare(self,jsonData,flightCounter):
-        returnedFareData = json.loads(jsonData)
-
-        resultJsonData = {}
-        resultJsonData["flight"]=[]
-        partNo = 0
-        if len(returnedFareData["trips"]["tripOption"])==0:
-            return
-        flightCounter=flightCounter
-        citiesMap={}
-        carrierMap = {}
-        for cities in returnedFareData["trips"]["data"]["city"]:
-            citiesMap[cities["code"]]=cities["name"]
-        for carrier in returnedFareData["trips"]["data"]["carrier"]:
-            carrierMap[carrier["code"]] = carrier["name"]
-        for tripOption in returnedFareData["trips"]["tripOption"]:
-            full={}
-            part={}
-            flightCounter=flightCounter+1
-
-            part["price"]=tripOption["saleTotal"][3:]
-            duration = tripOption["slice"][0]["duration"]
-            hours = int(duration)/60
-            minutes = int(duration)%60
-            part["duration"]= str(hours)+":"+str(minutes)
-
-            part["id"]= "flight"+str(flightCounter)+str(partNo)
-            part["mode"]="flight"
-            part["site"]="QPX"
-            route = {}
-            route["full"] = []
-            route["parts"] = []
-            subParts = []
-            segmentNumber=1
-            for segment in tripOption["slice"][0]["segment"]:
-                legNumber = 1
-                for leg in segment["leg"]:
-                    subPart={}
-                    subPart["flightId"]=segment["flight"]["carrier"]+"-"+segment["flight"]["number"]
-                    subPart["carrierName"] = carrierMap[segment["flight"]["carrier"]]
-                    duration = leg["duration"]
-                    hours = int(duration) / 60
-                    minutes = int(duration) % 60
-                    subPart["duration"] = str(hours) + ":" + str(minutes)
-                    subPart["source"] = leg["origin"]
-                    subPart["destination"]= leg["destination"]
-                    subPart["arrival"]=leg["arrivalTime"][11:16]
-                    subPart["departure"]=leg["departureTime"][11:16]
-                    subPart["mode"] = "flight"
-                    subPart["id"]="flight"+str(flightCounter)+ str(segmentNumber) + str(legNumber)
-                    subParts.append(subPart)
-                    legNumber = legNumber+1
-                segmentNumber= segmentNumber+1
-
-            part["subParts"]=subParts
-            part["source"] = citiesMap[subParts[0]["source"]]
-            part["destination"] = citiesMap[subParts[int(segmentNumber - 2)]["destination"]]
-            part["arrival"] = subParts[0]["arrival"]
-            part["departure"] = subParts[int(segmentNumber - 2)]["departure"]
-            part["carrierName"] = subParts[0]["carrierName"]
-            full = part
-            full["id"] = "flight" + str(flightCounter)
-            route["parts"].append(part);
-            route["full"].append(full)
-
-            resultJsonData["flight"].append(route)
-        return resultJsonData
