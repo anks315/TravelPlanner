@@ -211,7 +211,7 @@ def istrainrunningonjourneydate(train, journeydate, sourcecity, logger):
     :param logger: to logger information
     :return: true if train runs else false
     """
-    sourcedaynumber = train[1]['data']['SOURCEDAYNUMBER']
+    sourcedaynumber = train[2]['data']['SOURCEDAYNUMBER']
     day = getDayFromDate(journeydate, sourcedaynumber - 1)
 
     if train[1]['data'][day] == 'N':

@@ -123,7 +123,7 @@ class PlaceToStationCodesCache:
             stationList = models.getStationCodesByCityName(cityname, logger)
             if stationList:
                 PlaceToStationCodesCache.cityToStationsMap[cityname] = stationList
-            return stationList
+            return Set(stationList)
 
 
 class TrainController:
@@ -225,11 +225,7 @@ class TrainController:
         source = str(source).upper()
         destination = str(destination).upper()
 
-        sourceStations = self.placetoStationCodesCache.getStationsByCityName(source)
-        destinationStations = self.placetoStationCodesCache.getStationsByCityName(destination)
-        destinationStationSet = Set(destinationStations)
-        if not sourceStations or not destinationStations:
-            return {"train": []}
+        destinationStationSet = self.placetoStationCodesCache.getStationsByCityName(destination)
         trainCounter = [0]
         directjson = self.findTrainsBetweenStations(source, destinationStationSet, journeyDate, trainCounter)
         if isOnlyDirect == 1:
@@ -239,32 +235,32 @@ class TrainController:
             breakingcityset = (self.getBreakingCitySet(breakingcitieslist))
             if len(breakingcityset) > 0:
                 for breakingcity in breakingcityset:
-                    breakingcitystations = self.placetoStationCodesCache.getStationsByCityName(breakingcity)
-                    sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingcitystations,
+                    breakingcitystationset = self.placetoStationCodesCache.getStationsByCityName(breakingcity)
+                    sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingcitystationset,
                                                                                  journeyDate, trainCounter)
                     busController = busapi.BusController()
                     sourceToBreakingStationBusJson = busController.getResults(source, breakingcity, journeyDate)
 
                     if len(sourceToBreakingStationJson["train"]) > 0 or len(sourceToBreakingStationBusJson["bus"]) > 0:
-                        breakingToDestinationJson = self.findTrainsBetweenStations(breakingcity, destinationStations,
+                        breakingToDestinationJson = self.findTrainsBetweenStations(breakingcity, destinationStationSet,
                                                                                    journeyDate, trainCounter)
                         breakingToDestinationBusJson = busController.getResults(breakingcity, destination, journeyDate)
                         if len(breakingToDestinationJson["train"]) > 0 and len(
                                 sourceToBreakingStationJson["train"]) > 0:
-                            combinedJson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson,
+                            combinedjson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson,
                                                             trainCounter)
-                            if len(combinedJson["train"]) > 0:
-                                directjson["train"].extend(combinedJson["train"])
+                            if len(combinedjson["train"]) > 0:
+                                directjson["train"].extend(combinedjson["train"])
                         if len(sourceToBreakingStationBusJson["bus"]) > 0 and len(
                                 breakingToDestinationJson["train"]) > 0:
-                            combinedJson = self.combineBusAndTrainInit(sourceToBreakingStationBusJson,
+                            combinedjson = self.combineBusAndTrainInit(sourceToBreakingStationBusJson,
                                                                        breakingToDestinationJson)
-                            directjson["train"].extend(combinedJson["train"])
+                            directjson["train"].extend(combinedjson["train"])
                         if len(sourceToBreakingStationJson["train"]) > 0 and len(
                                 breakingToDestinationBusJson["bus"]) > 0:
-                            combinedJson = self.combineBusAndTrainEnd(sourceToBreakingStationJson,
+                            combinedjson = self.combineBusAndTrainEnd(sourceToBreakingStationJson,
                                                                       breakingToDestinationBusJson)
-                            directjson["train"].extend(combinedJson["train"])
+                            directjson["train"].extend(combinedjson["train"])
 
         return directjson
 
