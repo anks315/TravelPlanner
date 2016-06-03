@@ -43,14 +43,11 @@ def parseandreturnroute(trainroutes, logger, journeyDate, trainCounter):
                     "id": "train" + str(trainCounter[0]), "mode": "train", "site": "IRCTC",
                     "source": trainRoute.srcStation,
                     "destination": trainRoute.destStation, "arrival": trainRoute.destArrivalTime,
-                    "sourceStation" : trainRoute.srcStationCode, "destinationStation": trainRoute.destStationCode,
+                    "sourceStation": trainRoute.srcStationCode, "destinationStation": trainRoute.destStationCode,
                     "arrivalDate": dateTimeUtility.calculateArrivalTimeAndDate(journeyDate, trainRoute.srcDepartureTime,
                                                                                trainRoute.duration)["arrivalDate"],
                     "departure": trainRoute.srcDepartureTime, "departureDate": journeyDate,
-                    "fare_1A": trainRoute.fare_1A, "fare_2A": trainRoute.fare_2A,
-                    "fare_3A": trainRoute.fare_3A, "fare_3E": trainRoute.fare_3E, "fare_FC": trainRoute.fare_FC,
-                    "fare_CC": trainRoute.fare_CC, "fare_2S": trainRoute.fare_2S, "fare_SL": trainRoute.fare_SL,
-                    "fare_GN": trainRoute.fare_GN, "price": trainRoute.fare_1A}
+                    "prices": trainRoute.prices, "price": trainRoute.price, "priceClass": trainRoute.priceClass}
             part = copy.deepcopy(full)
             part["id"] = "train" + str(trainCounter[0]) + str(1)
             part["subParts"] = []
@@ -81,16 +78,17 @@ def convertsPartsToFullJson(part_1, part_2, trainCounter):
                 "site": "IRCTC", "source": part_1["full"][0]["source"], "destination": part_2["full"][0]["destination"],
                 "arrival": part_1["full"][0]["arrival"], "departure": part_1["full"][0]["departure"],
                 "departureDate": part_1["full"][0]["departureDate"], "arrivalDate": part_2["full"][0]["arrivalDate"],
-                "fare_1A": part_1["full"][0]["fare_1A"] + part_2["full"][0]["fare_1A"],
-                "fare_2A": part_1["full"][0]["fare_2A"] + part_2["full"][0]["fare_2A"],
-                "fare_3A": part_1["full"][0]["fare_3A"] + part_2["full"][0]["fare_3A"],
-                "fare_3E": part_1["full"][0]["fare_3E"] + part_2["full"][0]["fare_3E"],
-                "fare_FC": part_1["full"][0]["fare_FC"] + part_2["full"][0]["fare_FC"],
-                "fare_CC": part_1["full"][0]["fare_CC"] + part_2["full"][0]["fare_CC"],
-                "fare_SL": part_1["full"][0]["fare_SL"] + part_2["full"][0]["fare_SL"],
-                "fare_2S": part_1["full"][0]["fare_2S"] + part_2["full"][0]["fare_2S"],
-                "fare_GN": part_1["full"][0]["fare_GN"] + part_2["full"][0]["fare_GN"],
-                "price": part_1["full"][0]["price"] + part_2["full"][0]["price"], "subParts": []}
+                "prices": {"1A": part_1["full"][0]["prices"]["1A"] + part_2["full"][0]["prices"]["1A"],
+                           "2A": part_1["full"][0]["prices"]["2A"] + part_2["full"][0]["prices"]["2A"],
+                           "3A": part_1["full"][0]["prices"]["3A"] + part_2["full"][0]["prices"]["3A"],
+                           "3E": part_1["full"][0]["prices"]["3E"] + part_2["full"][0]["prices"]["3E"],
+                           "FC": part_1["full"][0]["prices"]["FC"] + part_2["full"][0]["prices"]["FC"],
+                           "CC": part_1["full"][0]["prices"]["CC"] + part_2["full"][0]["prices"]["CC"],
+                           "SL": part_1["full"][0]["prices"]["SL"] + part_2["full"][0]["prices"]["SL"],
+                           "2S": part_1["full"][0]["prices"]["2S"] + part_2["full"][0]["prices"]["2S"],
+                           "GN": part_1["full"][0]["prices"]["GN"] + part_2["full"][0]["prices"]["GN"]},
+                "price": part_1["full"][0]["price"] + part_2["full"][0]["price"],
+                "priceClass": part_1["full"][0]["priceClass"], "subParts": []}
         part["subParts"].append(copy.deepcopy(part_1["parts"][0]["subParts"][0]))
         part["subParts"][0]["id"] = "train" + str(trainCounter[0]) + str(1) + str(1)
 
@@ -241,15 +239,15 @@ class TrainController:
                     sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingcitystationset,
                                                                                  journeydate, traincounter, breakingcity)
                     busController = busapi.BusController()
-                    sourceToBreakingStationBusJson = busController.getResults(source, breakingcity, journeydate)
+                    sourceToBreakingStationBusJson = busController.getResults(source.title(), breakingcity.title(), journeydate)
 
                     if len(sourceToBreakingStationJson["train"]) > 0 or len(sourceToBreakingStationBusJson["bus"]) > 0:
                         breakingToDestinationJson = self.findTrainsBetweenStations(breakingcity, destinationstationset,
                                                                                    journeydate, traincounter, destination)
                         nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
                         breakingToDestinationJson["train"].extend(self.findTrainsBetweenStations(breakingcity, destinationstationset, nextday, traincounter, destination)["train"])
-                        breakingToDestinationBusJson = busController.getResults(breakingcity, destination, journeydate)
-                        breakingToDestinationBusJson["bus"].extend(busController.getResults(breakingcity, destination, nextday)["bus"])
+                        breakingToDestinationBusJson = busController.getResults(breakingcity.title(), destination.title(), journeydate)
+                        breakingToDestinationBusJson["bus"].extend(busController.getResults(breakingcity.title(), destination.title(), nextday)["bus"])
                         if len(breakingToDestinationJson["train"]) > 0 and len(
                                 sourceToBreakingStationJson["train"]) > 0:
                             combinedjson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson,

@@ -47,25 +47,36 @@ def getTrainsBetweenStation(sourcecity, destinationStationSet, logger, journeyda
             trainoption.srcStationCode = results.elements[i][0]['data']['CODE']
             trainoption.destStationCode = results.elements[i][2]['type']
             trainoption.destStation = str(destinationcity).title()
+            trainoption.prices = {"1A": 0, "2A": 0, "3A": 0, "3E": 0, "FC": 0, "CC": 0, "SL": 0, "2S": 0, "GN": 0} #empty dictionary
+            trainoption.price = 0
             trainoption.duration =  getDuration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
             if 'FARE_1A' in results.elements[i][2]['data']:
-                trainoption.fare_1A = results.elements[i][2]['data']['FARE_1A']
+                trainoption.prices["1A"] = int(results.elements[i][2]['data']['FARE_1A'])
             if 'FARE_2A' in results.elements[i][2]['data']:
-                trainoption.fare_2A = results.elements[i][2]['data']['FARE_2A']
+                trainoption.prices["2A"] = int(results.elements[i][2]['data']['FARE_2A'])
             if 'FARE_3A' in results.elements[i][2]['data']:
-                trainoption.fare_3A = results.elements[i][2]['data']['FARE_3A']
+                trainoption.prices["3A"] = int(results.elements[i][2]['data']['FARE_3A'])
+                if trainoption.prices["3A"] != 0:
+                    trainoption.price = trainoption.prices["3A"]
+                    trainoption.priceClass = "3A"
             if 'FARE_3E' in results.elements[i][2]['data']:
-                trainoption.fare_3E = results.elements[i][2]['data']['FARE_3E']
+                trainoption.prices["3E"] = int(results.elements[i][2]['data']['FARE_3E'])
             if 'FARE_FC' in results.elements[i][2]['data']:
-                trainoption.fare_FC = results.elements[i][2]['data']['FARE_FC']
+                trainoption.prices["FC"] = int(results.elements[i][2]['data']['FARE_FC'])
             if 'FARE_CC' in results.elements[i][2]['data']:
-                trainoption.fare_CC = results.elements[i][2]['data']['FARE_CC']
-            if 'FARE_2S' in results.elements[i][2]['data']:
-                trainoption.fare_2S = results.elements[i][2]['data']['FARE_2S']
+                trainoption.prices["CC"] = int(results.elements[i][2]['data']['FARE_CC'])
+                if trainoption.prices["3A"] == 0 and trainoption.prices["CC"] != 0:
+                    trainoption.price = trainoption.prices["CC"]
+                    trainoption.priceClass = "CC"
             if 'FARE_SL' in results.elements[i][2]['data']:
-                trainoption.fare_SL = results.elements[i][2]['data']['FARE_SL']
+                trainoption.prices["SL"] = int(results.elements[i][2]['data']['FARE_SL'])
+                if trainoption.prices["3A"] == 0 and trainoption.prices["CC"] == 0 and trainoption.prices["SL"] != 0:
+                    trainoption.price = trainoption.prices["SL"]
+                    trainoption.priceClass = "SL"
+            if 'FARE_2S' in results.elements[i][2]['data']:
+                trainoption.prices["2S"] = int(results.elements[i][2]['data']['FARE_2S'])
             if 'FARE_GN' in results.elements[i][2]['data']:
-                trainoption.fare_GN = results.elements[i][2]['data']['FARE_GN']
+                trainoption.prices["GN"] = int(results.elements[i][2]['data']['FARE_GN'])
             trains.append(trainoption)
     return trains
 
