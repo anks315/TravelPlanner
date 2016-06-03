@@ -19,7 +19,6 @@ logger = loggerUtil.getLogger("TrainApi",logging.DEBUG)
 
 trainNumberstoDurationMap = {}
 
-
 def parseandreturnroute(trainroutes, logger, journeyDate, trainCounter):
     """
     to return map of train routes in either full or by parts journey
@@ -52,7 +51,8 @@ def parseandreturnroute(trainroutes, logger, journeyDate, trainCounter):
 
             route["full"].append(full)
             route["parts"].append(part)
-            routes.append(route)
+            if hasprice(route):
+                routes.append(route)
         except ValueError as e:
             logger.error("Error while route map with full & parts journey, reason [%s]", e.message)
             return routes
@@ -225,7 +225,7 @@ class TrainController:
         destinationstationset = self.placetoStationCodesCache.getStationsByCityName(destination)
         traincounter = [0]
         directjson = self.findTrainsBetweenStations(source, destinationstationset, journeydate, traincounter, destination)
-        if isOnlyDirect == 1 or len(directjson["train"]) > 6: # return in case we have more than 8 direct trains
+        if isOnlyDirect == 1 or len(directjson["train"]) > 8: # return in case we have more than 8 direct trains
             return directjson
         logger.debug("Calling google api parser for Source[%s] an Destination[%s],journeyDate",source,destination,journeydate)
         breakingcitieslist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger, journeydate)
@@ -343,3 +343,19 @@ class TrainController:
 
         combinedjson["train"] = [x for x in sourceToBreakingJson["train"] if len(x["parts"]) == 2]
         return combinedjson
+
+
+def hasprice(route):
+    """
+    Check whether any price exists for the train or not. Ignore train if no price data is present
+    :param route: train route
+    :return: True if price exists else False
+    """
+
+    prices = route["full"][0]["prices"]
+    trainname = route["full"][0]["carrierName"]
+
+    if prices["1A"] == 0 and prices["2A"] == 0 and prices["3A"] == 0 and prices["3E"] == 0 and prices["FC"] == 0 and prices["CC"] == 0 and prices["SL"] == 0 and prices["2S"] == 0 and prices["GN"] == 0:
+        logger.warning("Ignoring train [%s] since all prices are 0", trainname)
+        return False
+    return True

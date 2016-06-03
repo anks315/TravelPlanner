@@ -18,7 +18,7 @@ class BusController:
 
 
     def getResults(self, source, destination, journeyDate):
-        response ={}
+        response = {"bus": []}
         try:
             logger.debug("[START]-Get Results From BusApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeyDate)
             jdList = journeyDate.split("-")
@@ -32,8 +32,7 @@ class BusController:
         return response
 
     def parseResultAndReturnFare(self, jsonData, source, destination,journeyDate):
-            resultJsonData={}
-            resultJsonData["bus"]=[]
+            resultjsondata= {"bus": []}
             try:
                 counter = 1
                 if jsonData["apiAvailableBuses"]:
@@ -92,10 +91,10 @@ class BusController:
 
                         route["full"].append(full)
 
-                        resultJsonData["bus"].append(route)
+                        resultjsondata["bus"].append(route)
                 else:
                     logger.debug("Empty Results From BusApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeyDate)
             except:
                 logger.info("Parsing Error for Source:[%s] and Destination:[%s],JourneyDate:[%s]",source,destination,journeyDate)
 
-            return resultJsonData
+            return resultjsondata
