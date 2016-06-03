@@ -2,6 +2,17 @@ __author__ = 'ankur'
 
 from skyscannerEazzer import Flights
 import dateTimeUtility
+import logging
+import datetime
+
+
+logger = logging.getLogger("TravelPlanner.FlightSkyScanner")
+today = datetime.date.today().strftime("%Y-%m-%d")
+fileHandler = logging.FileHandler('./' + today + '.log')
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+fileHandler.setFormatter(formatter)
+logger.addHandler(fileHandler)
+logger.setLevel(logging.DEBUG)
 
 def getApiResults(sourcecity,destinationcity,journeyDate,id):
     cityAndStateToStationsMap = {'Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
@@ -45,24 +56,27 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id):
     resultJson["flight"] = []
     try:
         source = cityAndStateToStationsMap[sourcecity]
-
-
         destination = cityAndStateToStationsMap[destinationcity]
+        logger.info("Get Results From SkyScanner for Source:[%s]-[%s] and Destination:[%s]-[%s],JourneyDate:[%s] ",sourcecity,source,destinationcity,destination,journeyDate)
         year = journeyDate.split("-")[2]
         month = journeyDate.split("-")[1]
         day = journeyDate.split("-")[0]
         flights_service = Flights('ea816376821941695778768433999242')
-
-
-        result = flights_service.poll_session(flights_service.create_session( country='IN',
-            currency='INR',
-            locale='en-US',
-            originplace=source+'-sky',
-            destinationplace=destination+'-sky',
-            outbounddate=str(year)+'-'+str(month)+'-'+str(day),
-            adults=1), initial_delay = 3, delay = 1, tries = 100).parsed
-        if result:
-            resultJson = parseFlightAndReturnFare(result, id, sourcecity, destinationcity, journeyDate)
+        logger.debug("Polling Session for Source:[%s] and Destination:[%s],JourneyDate:[%s]",source,destination,journeyDate)
+        retries=3
+        while retries!=0:
+            result = flights_service.poll_session(flights_service.create_session( country='IN',
+                currency='INR',
+                locale='en-US',
+                originplace=source+'-sky',
+                destinationplace=destination+'-sky',
+                outbounddate=str(year)+'-'+str(month)+'-'+str(day),
+                adults=1), initial_delay = 1, delay = 1, tries = 100).parsed
+            if result:
+                resultJson = parseFlightAndReturnFare(result, id, sourcecity, destinationcity, journeyDate)
+                break
+            logger.debug("Retrying... Empty Response From SkyScanner for Source:[%s] and Destination:[%s],journeyDate:[%s]",source,destination,journeyDate)
+            retries=retries-1
     except:
         pass
     return resultJson
@@ -70,12 +84,13 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id):
 
 
 def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate):
+    logger.info("Parsing SkyScanner Final Result for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeyDate)
     returnedFareData = apiresult
-
     resultJsonData = {}
     resultJsonData["flight"]=[]
     partNo = 0
     if len(returnedFareData["Itineraries"])==0:
+        logger.warn("Skyscanner responded no Data for Source:[%s] and Destination:[%s],JourneyDate:[%s]",source,destination,journeyDate)
         return resultJsonData
     flightCounter=-1
 
