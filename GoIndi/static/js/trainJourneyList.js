@@ -115,6 +115,20 @@ function showTrainJourneyList(transportList){
 			getTotalPrice(id);
 		});
 	}
+	
+		$(".dropdown-menu li a").click(function(){
+			
+			  var selText = $(this).text();
+			  var price = $(this).attr('price');
+			  $(this).parents('.btn-group').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
+			  var selectedPrice = document.getElementById($(this).attr("trainClassId"))
+			  selectedPrice.innerHTML = "&#8377 "+price+"/-";
+			  selectedPrice.setAttribute('price',price);
+			  var className = selectedPrice.getAttribute('trainclass');
+			  changePrice(className);
+			
+		});
+			
 		$("#trainBox").fadeIn();
 		//setting action on mode menu box
 		$(".divisionTrainBox").mouseover(function() {

@@ -33,6 +33,17 @@ function getTotalPrice(id){
 	});
 	document.getElementById("totalPrice"+id).innerHTML = price;
 }
+function changePrice(trainClass){
+	var price = 0;
+	$("."+trainClass+"").each(function() {
+			price = price + ($(this).attr('price'))*1
+	});
+	inputId = "radio"+trainClass.split("trainClass")[1]
+	var inputElement = document.getElementById(inputId)
+	var className = inputElement.className
+	inputElement.value = price
+	getTotalPrice(className)
+}
 function getTrainPart(train,id){
 	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td valign='center' style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke'><img src='/static/images/"+train.mode+"2.png'>&nbsp;&nbsp;"+train.source+"&nbsp;&#8594;&nbsp"+train.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success'>Book</button>&nbsp;&nbsp;</td></tr></table><table width='100%'><tr><td width=50%>"
 	var first = 1;
@@ -40,7 +51,7 @@ function getTrainPart(train,id){
 			var transportDetails = train.subParts[j];
 			if(j==0){
 				//source and details of begining station
-				details = details + "<table width='100%' style='color:grey'><tr><td><table width='100%'><tr><td width='20%'>"+transportDetails.source+"&nbsp;&nbsp;</td><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(transportDetails.departure)+"</td></tr></table></td></tr>";
+				details = details + "<table width='100%' style='color:grey'><tr><td><table width='100%'><tr><td width='20%'>"+transportDetails.source+"("+transportDetails.sourceStation+")&nbsp;&nbsp;</td><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(transportDetails.departure)+"</td></tr></table></td></tr>";
 			}
 
 			var siteName = "";
@@ -48,22 +59,29 @@ function getTrainPart(train,id){
 			
 			
 			transportCarrier = "<font color = '#056273'><b>"+transportDetails.carrierName+"</b></font><br/>";
+			var classList = ''
+			for (var prop in transportDetails.prices) {
+				classList =classList+"<li><a href='#' price='"+transportDetails.prices[prop]+"' trainClassId='"+j+"trainClass"+train.id+"'>"+prop+"</a></li><li>"
+			}
+			
+			var classSelector = "<div class='btn-group'><a class='btn dropdown-toggle trainModalClass'  data-toggle='dropdown' href='#'>"+transportDetails.priceClass+"<span class='caret'></span></a><ul class='dropdown-menu'>"+classList+"</ul></div>"
 
 			//details of the transportation mode
-			details = details + "<tr><td><table width='100%'><td width='5%'><table><tr><td style='white-space: nowrap;'>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div style='border-left:1px solid #808080;border-left-style:dotted;height:150px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;<b class='detailsMode'>"+transportCarrier+"</b><div class='detailsDuration'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Duration : </b>"+transportDetails.duration+" hrs</div></td></tr></table></td><td width='95%' style='text-align:right'></td></tr></table></td></tr>";
+			details = details + "<tr><td><table width='100%'><td width='5%'><table><tr><td style='white-space: nowrap;'>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div style='border-left:1px solid #808080;border-left-style:dotted;height:150px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;<b class='detailsMode'>"+transportCarrier+"</b><div class='detailsDuration'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Duration : </b>"+transportDetails.duration+" hrs</div></td></tr></table></td><td width='95%' style='text-align:right'>"+classSelector+"<div class = 'detailsPrice sameLine trainClass"+train.id+"' id='"+j+"trainClass"+train.id+"' price="+transportDetails.price+" trainClass='trainClass"+train.id+"'>&#8377 "+transportDetails.price+"/-</div></td></tr></table></td></tr>";
 			
 			if(j==train.subParts.length-1){
 				//details of last station
-				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"&nbsp;&nbsp;</td><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(transportDetails.arrival)+"</td></tr></table></td></tr></table>";
+				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"("+transportDetails.destinationStation+")&nbsp;&nbsp;</td><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(transportDetails.arrival)+"</td></tr></table></td></tr></table>";
 			} else {
 				//datails of intermediate station
 				k=j+1;
-				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"&nbsp;&nbsp;</td><td><table><tr><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(transportDetails.arrival)+"</td></tr><tr><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(transportDetails.departure)+"</td></tr></table></td></tr></table></td></tr></td>"
+				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"("+transportDetails.destinationStation+")&nbsp;&nbsp;</td><td><table><tr><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(transportDetails.arrival)+"</td></tr><tr><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(train.subParts[j+1].departure)+"</td></tr></table></td></tr></table></td></tr></td>"
 			}
 			
 	
 	}
-	details=details+"<td width=50% style='text-align:center' ><input type='radio' value = '"+train.price+"' class = '"+id+" ' name='radio"+train.id+"' checked>&nbsp;&nbsp;<div class = 'detailsPrice sameLine'>&#8377 "+train.price+"/-</div></tr></table>";
+
+	details=details+"<td width=10% style='text-align:center' ><input type='radio' value = '"+train.price+"' class = '"+id+"' name='radio"+train.id+"' id = 'radio"+train.id+"' checked hidden></input></tr></table>";
 	return details;
 	
 }
