@@ -11,7 +11,7 @@ def demo():
 
 # = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="ankurjain")
 
-DATABASE_CONNECTION=GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
+DATABASE_CONNECTION=GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="shekhar")
 
 
 

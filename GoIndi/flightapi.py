@@ -9,6 +9,7 @@ import concurrent.futures
 import dateTimeUtility
 import miscUtility
 import distanceutil
+import trainapiNeo4j
 class FlightController:
     """Class returns all stations corresponding to a city"""
 
@@ -152,20 +153,23 @@ class FlightController:
             return finalList
 
     def getOtherModes(self, source,destination, journeyDate):
-        busController = busapi.BusController()
-        resultJsonData = busController.getResults(source, destination, journeyDate)
+        trainControllerneo = trainapiNeo4j.TrainController()
+        resultJsonData = trainControllerneo.getRoutes(source, destination, journeyDate)["train"]
+        if(resultJsonData==[]):
+            busController = busapi.BusController()
+            resultJsonData = busController.getResults(source, destination, journeyDate)["bus"]
         return resultJsonData
 
     def mixAndMatch(self, mixedFlight,otherModesInit,otherModesInit2,otherModesEnd,otherModesEnd2):
         mixedFlight = miscUtility.limitResults(mixedFlight, "flight")
-        otherModesEnd["bus"] = otherModesEnd["bus"] + otherModesEnd2["bus"]
-        otherModesInit["bus"] = otherModesInit["bus"] + otherModesInit2["bus"]
+        otherModesEnd = otherModesEnd + otherModesEnd2
+        otherModesInit = otherModesInit + otherModesInit2
 
         for j in range(len(mixedFlight["flight"])):
                 flightPart = mixedFlight["flight"][j]["parts"][0]
                 subParts = []
-                for k in range(len(otherModesInit["bus"])):
-                    subPart = otherModesInit["bus"][k]["parts"][0]
+                for k in range(len(otherModesInit)):
+                    subPart = otherModesInit[k]["parts"][0]
                     if dateTimeUtility.checkIfApplicable(subPart["arrival"], subPart["arrivalDate"],
                                                          flightPart["departure"], flightPart["departureDate"], 3):
                         subPart["waitingTime"] = dateTimeUtility.getWaitingTime(subPart["arrival"],
@@ -179,17 +183,17 @@ class FlightController:
                 if subParts != []:
                     newPart = {}
                     newPart["subParts"] = subParts
-                    newPart["mode"] = "bus"
+                    newPart["mode"] = subParts[0]["mode"]
                     newPart["id"] = mixedFlight["flight"][j]["full"][0]["id"] + str(0)
                     newPart["destination"] = subParts[0]["destination"]
                     newPart["source"] = subParts[0]["source"]
                     newPart["carrierName"] = subParts[0]["carrierName"]
                     flightPart["id"] = mixedFlight["flight"][j]["full"][0]["id"] + str(1)
                     mixedFlight["flight"][j]["parts"].insert(0, newPart)
-                    mixedFlight["flight"][j]["full"][0]["route"] = newPart["source"] + ",bus," + newPart["destination"] + ",flight," + flightPart["destination"]
+                    mixedFlight["flight"][j]["full"][0]["route"] = newPart["source"] + ","+newPart["mode"]+"," + newPart["destination"] + ",flight," + flightPart["destination"]
                 subParts = []
-                for k in range(len(otherModesEnd["bus"])):
-                    subPart = otherModesEnd["bus"][k]["parts"][0]
+                for k in range(len(otherModesEnd)):
+                    subPart = otherModesEnd[k]["parts"][0]
                     if dateTimeUtility.checkIfApplicable(flightPart["arrival"], flightPart["arrivalDate"],
                                                          subPart["departure"], subPart["departureDate"], 3):
                         subPart["waitingTime"] = dateTimeUtility.getWaitingTime(flightPart["arrival"], subPart["departure"],
@@ -202,7 +206,7 @@ class FlightController:
                 if subParts != []:
                     newPart = {}
                     newPart["subParts"] = subParts
-                    newPart["mode"] = "bus"
+                    newPart["mode"] =  subParts[0]["mode"]
                     newPart["id"] = mixedFlight["flight"][j]["full"][0]["id"] + str(2)
                     newPart["destination"] = subParts[0]["destination"]
                     newPart["source"] = subParts[0]["source"]
@@ -216,12 +220,12 @@ class FlightController:
 
     def mixAndMatchInit(self, mixedFlightInit, otherModesEnd,otherModesEnd2):
         mixedFlightInit = miscUtility.limitResults(mixedFlightInit,"flight")
-        otherModesEnd["bus"]=otherModesEnd["bus"]+otherModesEnd2["bus"]
+        otherModesEnd=otherModesEnd+otherModesEnd2
         for j in range(len(mixedFlightInit["flight"])):
             flightPart = mixedFlightInit["flight"][j]["parts"][0]
             subParts = []
-            for k in range(len(otherModesEnd["bus"])):
-                subPart = otherModesEnd["bus"][k]["parts"][0]
+            for k in range(len(otherModesEnd)):
+                subPart = otherModesEnd[k]["parts"][0]
                 if dateTimeUtility.checkIfApplicable(flightPart["arrival"],flightPart["arrivalDate"],subPart["departure"],subPart["departureDate"],3):
                     subPart["waitingTime"] = dateTimeUtility.getWaitingTime(flightPart["arrival"],subPart["departure"],flightPart["arrivalDate"],subPart["departureDate"])
                     subParts.append(subPart)
@@ -231,7 +235,7 @@ class FlightController:
             if subParts!=[]:
                 newPart = {}
                 newPart["subParts"]=subParts
-                newPart["mode"]="bus"
+                newPart["mode"]= subParts[0]["mode"]
                 newPart["id"]=mixedFlightInit["flight"][j]["full"][0]["id"]+str(1)
                 newPart["destination"] = subParts[0]["destination"]
                 newPart["source"] = subParts[0]["source"]
@@ -244,12 +248,12 @@ class FlightController:
 
     def mixAndMatchEnd(self, mixedFlightEnd, otherModesInit,otherModesInit2):
         mixedFlightEnd = miscUtility.limitResults(mixedFlightEnd, "flight")
-        otherModesInit["bus"]=otherModesInit["bus"]+otherModesInit2["bus"]
+        otherModesInit=otherModesInit+otherModesInit2
         for j in range(len(mixedFlightEnd["flight"])):
             flightPart = mixedFlightEnd["flight"][j]["parts"][0]
             subParts = []
-            for k in range(len(otherModesInit["bus"])):
-                subPart = otherModesInit["bus"][k]["parts"][0]
+            for k in range(len(otherModesInit)):
+                subPart = otherModesInit[k]["parts"][0]
                 if dateTimeUtility.checkIfApplicable(subPart["arrival"], subPart["arrivalDate"],
                                                      flightPart["departure"], flightPart["departureDate"], 3):
                     subPart["waitingTime"] = dateTimeUtility.getWaitingTime(subPart["arrival"], flightPart["departure"],
@@ -264,7 +268,7 @@ class FlightController:
                 parts = []
                 newPart = {}
                 newPart["subParts"] = subParts
-                newPart["mode"] = "bus"
+                newPart["mode"] =  subParts[0]["mode"]
                 newPart["id"] = mixedFlightEnd["flight"][j]["full"][0]["id"] + str(0)
                 newPart["destination"] = subParts[0]["destination"]
                 newPart["source"] = subParts[0]["source"]

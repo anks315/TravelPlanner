@@ -58,7 +58,7 @@ def trainapi(request):
     journeyDate = request.GET['journeyDate']
     #request.session['source']=source
     #request.session['destination']=destination
-    resultJsonData = trainControllerneo.getRoutes(source,destination,journeyDate)
+    resultJsonData = trainControllerneo.getRoutes(source,destination,journeyDate,0)
     return HttpResponse(json.dumps(resultJsonData), content_type='application/json')
 
 def busapi(request):

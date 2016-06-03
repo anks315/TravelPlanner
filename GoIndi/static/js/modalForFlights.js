@@ -11,13 +11,17 @@ function getModalForFlights(transportParts, id){
 		if(transportParts[i].mode == 'flight'){
 			price = price + transportParts[i].price*1
 			part=getFlightPart(transportParts[i], id)
-		} else{
+		} else if(transportParts[i].mode == 'bus'){
 			part=getOtherPart(transportParts[i], id)
 			var priceList = transportParts[i]['subParts'][0].price;
 			var priceArr = priceList.split(",");
 			var subprice = priceArr[0]
 			price = price + subprice*1
-		}
+		} else{
+			part=getTrainOptionsPart(transportParts[i], id)
+
+			price = transportParts[i]['subParts'][0].price + subprice*1
+		}		
 		partOutput = partOutput+"<div class='col-sm-"+colWidth+" col-height col-middle nopadding'>"+part+"</div>"
 		
 	}
@@ -89,5 +93,29 @@ function getOtherPart(other, id){
 	details = details+"</table>";
 	var length =  radionames.length
 	radionames[length] = "radio"+other.id
+	return details;
+}
+
+function getTrainOptionsPart(train, id){
+	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+train.mode+"2.png'>&nbsp;&nbsp;"+train.source+"&nbsp;&#8594;&nbsp"+train.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success'>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
+	var first = 1;
+	for ( var j = 0; j < train.subParts.length;j++ ){
+			var isChecked = '';
+			if (j==0){
+				 isChecked = 'checked';
+			}
+			var transportDetails = train.subParts[j];
+			
+			var price = transportDetails.price;
+			
+			if(train.mode=='bus'){
+				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+train.id+"' "+isChecked+" value = '"+price+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
+			} else {
+				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+train.id+"' "+isChecked+" value = '"+price+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.seatType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"<br/>"+transportDetails.source+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"<br/>"+transportDetails.destination+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
+			}
+	}
+	details = details+"</table>";
+	var length =  radionames.length
+	radionames[length] = "radio"+train.id
 	return details;
 }

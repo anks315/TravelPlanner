@@ -71,7 +71,7 @@ function showFlightJourneyList(transportList){
 				
 				individualJourneyDetails = individualJourneyDetails+"<div class='"+transportDetails.id+"divBox detailsBox"+i+"'> <table width='100%'><tr ><td ><div class='row-eq-height'><div class='col-sm-3 col-height col-middle' style ='text-align:left'><font color = 'grey'>"+numberOfChangesView+"<br/>&nbsp;</div><div class='col-sm-6 col-height col-middle' style ='text-align:center'>"+travelSpecificWid+"</div></font><div class='col-sm-3 col-height col-middle'><table width = '100%' style ='text-align:right'><tr><td><h4 style='white-space: nowrap;'><font color='green'>&#8377 "+transportDetails.price+"/-</font><h4></td></tr></table></div></div></tr></table></div>"
 			
-			}else{
+			}else if (transportDetails.mode == "bus"){
 				individualJourneyDetails = individualJourneyDetails + "<div class='"+transportDetails.id+"divBox detailsBox"+i+"' hidden>"
 				for(k=0;k<transportDetails.subParts.length;k++){
 					var transportOptionDetails = transportDetails.subParts[k];
@@ -89,6 +89,21 @@ function showFlightJourneyList(transportList){
 					var travelSpecificWid = travelSpecificsWidget(transportDetails.source,transportDetails.destination,transportOptionDetails.arrival,transportOptionDetails.departure,transportOptionDetails.duration);
 					
 					individualJourneyDetails = individualJourneyDetails+"<table width='100%'><tr ><td ><div class='row-eq-height'><div class='col-sm-3 col-height col-middle' style ='text-align:left'><font color = '#056273'><b>"+transportOptionDetails.carrierName+"</b>&nbsp;</div><div class='col-sm-6 col-height col-middle' style ='text-align:center'>"+travelSpecificWid+"</div></font><div class='col-sm-3 col-height col-middle'><table width = '100%' style ='text-align:right'><tr><td><font color='grey' size='1'>"+startingFrom+"</font><h4 style='white-space: nowrap;'><font color='green'>&#8377 "+price+"/-</font><h4></td></tr></table></div></div></tr></table>"
+					if (k!=(transportDetails.subParts.length-1)){
+						individualJourneyDetails = individualJourneyDetails + '<hr/>'
+					}
+				}
+			}else {
+				individualJourneyDetails = individualJourneyDetails + "<div class='"+transportDetails.id+"divBox detailsBox"+i+"' hidden>"
+				for(k=0;k<transportDetails.subParts.length;k++){
+					var transportOptionDetails = transportDetails.subParts[k];
+					
+					
+					var price = transportOptionDetails.price;
+					
+					var travelSpecificWid = travelSpecificsWidget(transportDetails.source,transportDetails.destination,transportOptionDetails.arrival,transportOptionDetails.departure,transportOptionDetails.duration);
+					
+					individualJourneyDetails = individualJourneyDetails+"<table width='100%'><tr ><td ><div class='row-eq-height'><div class='col-sm-3 col-height col-middle' style ='text-align:left'><font color = '#056273'><b>"+transportOptionDetails.carrierName+"</b>&nbsp;</div><div class='col-sm-6 col-height col-middle' style ='text-align:center'>"+travelSpecificWid+"</div></font><div class='col-sm-3 col-height col-middle'><table width = '100%' style ='text-align:right'><tr><td><h4 style='white-space: nowrap;'><font color='green'>&#8377 "+price+"/-</font><h4></td></tr></table></div></div></tr></table>"
 					if (k!=(transportDetails.subParts.length-1)){
 						individualJourneyDetails = individualJourneyDetails + '<hr/>'
 					}

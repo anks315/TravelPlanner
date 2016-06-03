@@ -206,7 +206,7 @@ class TrainController:
                     logger.error("Error getting city for breakingstation[%s]", possiblecity.upper())
         return breakingcitylist
 
-    def getRoutes(self, source, destination,journeyDate):
+    def getRoutes(self, source, destination,journeyDate,isOnlyDirect=1):
 
         """
         This method is used to fetch all possible route between source & destination stations via train and train/bus combined.
@@ -226,7 +226,9 @@ class TrainController:
             return {"train": []}
         trainCounter =[0]
         directjson = self.findTrainsBetweenStations(source, destinationStationSet,journeyDate,trainCounter)
-        breakingstationlist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger, journeyDate)
+        if isOnlyDirect==1:
+            return directjson
+        breakingstationlist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger,journeyDate)
         if len(breakingstationlist) > 0:
             breakingcitylist = self.convertBreakingStationToCity(self.getBreakingStation(breakingstationlist))
             if len(breakingcitylist) > 0:
