@@ -4,11 +4,12 @@ import time
 import logging
 import models
 import googleapiparser
-import datetime
+import calendar
 from sets import Set
 import dateTimeUtility
 import busapi
 import copy
+from datetime import datetime
 
 today = datetime.date.today().strftime("%Y-%m-%d")
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
@@ -129,19 +130,21 @@ class TrainController:
     """Entry point to get all routes with train as the major mode of transport"""
     placetoStationCodesCache = PlaceToStationCodesCache()
 
-    def gettrainroutes(self, sourcecity, destinationstationset,journeyDate,trainCounter):
+    def gettrainroutes(self, sourcecity, destinationstationset,journeydate,trainCounter):
 
         """
         to get list of all possible routes along with fare between all stations of source city and destination stations
         :param sourcecity: source of the journey
         :param destinationstationset: set of destination city's stations
+        :param journeydate: journey date in 'dd-mm-yyyy' format
+        :param trainCounter: global train counter used for id generation
         :return: list of all possible routes with fare
         """
         logger.info("Fetching train routes between sourcecity[%s] and destination Stations[%s]", sourcecity,
                     destinationstationset)
         start = time.time()
-        trains = models.getTrainsBetweenStation(sourcecity, destinationstationset, logger)
-        routedata = parseandreturnroute(trains, logger,journeyDate,trainCounter)
+        trains = models.getTrainsBetweenStation(sourcecity, destinationstationset, logger, journeydate)
+        routedata = parseandreturnroute(trains, logger,journeydate,trainCounter)
         logger.info("Time taken [%s]", time.time() - start)
         return routedata
 

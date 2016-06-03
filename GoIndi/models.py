@@ -1,8 +1,10 @@
 
 from neo4jrestclient.client import GraphDatabase
 import logging
-from entity import TrainOption, StationToTrainRelation
+from entity import TrainOption
 import time
+from datetime import datetime, timedelta
+import calendar
 
 
 def demo():
@@ -14,56 +16,55 @@ def demo():
 DATABASE_CONNECTION=GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
 
 
-
-def getTrainsBetweenStation(sourceCity, destinationStationSet, logger):
+def getTrainsBetweenStation(sourcecity, destinationStationSet, logger, journeydate):
     """
-    :param sourceCity: source of the journey
+    :param sourcecity: source of the journey
     :param destinationStationSet: destination cities station set
     :param logger: to log information
     :return: all possible routes along with fare between source and destination stations
     """
 
-    logger.debug("Fetching train routes between source[%s] and destination stations[%s]", sourceCity,
-                 destinationStationSet)
-    start = time.time()
-    q = """MATCH (a:TRAINSTATION {CITY : '""" + sourceCity + """'})-[r:""" + '|'.join(
+    logger.debug("Fetching train routes between source[%s] and destination stations[%s] on [%s]", sourcecity,
+                 destinationStationSet, journeydate)
+    q = """MATCH (a:TRAINSTATION {CITY : '""" + sourcecity + """'})-[r:""" + '|'.join(
         destinationStationSet) + """]->(b:TRAIN) RETURN a,b,r"""
     results = DATABASE_CONNECTION.query(q)
     trains = []
 
     if len(results.elements) == 0:
-        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourceCity,
+        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity,
                        destinationStationSet)
         return trains
 
     for i in range(len(results.elements)):
-        trainoption = TrainOption()
-        trainoption.trainName = results.elements[i][1]['data']['NAME']
-        trainoption.trainNumber = results.elements[i][1]['data']['NUMBER']
-        trainoption.destArrivalTime = results.elements[i][2]['data']['DESTINATIONARRIVALTIME']
-        trainoption.srcDepartureTime = results.elements[i][2]['data']['SOURCEDEPARTURETIME']
-        trainoption.srcStation = results.elements[i][0]['data']['NAME']
-        trainoption.duration =  getDuration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
-        if 'FARE_1A' in results.elements[i][2]['data']:
-            trainoption.fare_1A = results.elements[i][2]['data']['FARE_1A']
-        if 'FARE_2A' in results.elements[i][2]['data']:
-            trainoption.fare_2A = results.elements[i][2]['data']['FARE_2A']
-        if 'FARE_3A' in results.elements[i][2]['data']:
-            trainoption.fare_3A = results.elements[i][2]['data']['FARE_3A']
-        if 'FARE_3E' in results.elements[i][2]['data']:
-            trainoption.fare_3E = results.elements[i][2]['data']['FARE_3E']
-        if 'FARE_FC' in results.elements[i][2]['data']:
-            trainoption.fare_FC = results.elements[i][2]['data']['FARE_FC']
-        if 'FARE_CC' in results.elements[i][2]['data']:
-            trainoption.fare_CC = results.elements[i][2]['data']['FARE_CC']
-        if 'FARE_2S' in results.elements[i][2]['data']:
-            trainoption.fare_2S = results.elements[i][2]['data']['FARE_2S']
-        if 'FARE_SL' in results.elements[i][2]['data']:
-            trainoption.fare_SL = results.elements[i][2]['data']['FARE_SL']
-        if 'FARE_GN' in results.elements[i][2]['data']:
-            trainoption.fare_GN = results.elements[i][2]['data']['FARE_GN']
-        trainoption.destStation = results.elements[i][2]['type']
-        trains.append(trainoption)
+        if istrainrunningonjourneydate(results.elements[i], journeydate, sourcecity, logger):
+            trainoption = TrainOption()
+            trainoption.trainName = results.elements[i][1]['data']['NAME']
+            trainoption.trainNumber = results.elements[i][1]['data']['NUMBER']
+            trainoption.destArrivalTime = results.elements[i][2]['data']['DESTINATIONARRIVALTIME']
+            trainoption.srcDepartureTime = results.elements[i][2]['data']['SOURCEDEPARTURETIME']
+            trainoption.srcStation = results.elements[i][0]['data']['NAME']
+            trainoption.duration =  getDuration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
+            if 'FARE_1A' in results.elements[i][2]['data']:
+                trainoption.fare_1A = results.elements[i][2]['data']['FARE_1A']
+            if 'FARE_2A' in results.elements[i][2]['data']:
+                trainoption.fare_2A = results.elements[i][2]['data']['FARE_2A']
+            if 'FARE_3A' in results.elements[i][2]['data']:
+                trainoption.fare_3A = results.elements[i][2]['data']['FARE_3A']
+            if 'FARE_3E' in results.elements[i][2]['data']:
+                trainoption.fare_3E = results.elements[i][2]['data']['FARE_3E']
+            if 'FARE_FC' in results.elements[i][2]['data']:
+                trainoption.fare_FC = results.elements[i][2]['data']['FARE_FC']
+            if 'FARE_CC' in results.elements[i][2]['data']:
+                trainoption.fare_CC = results.elements[i][2]['data']['FARE_CC']
+            if 'FARE_2S' in results.elements[i][2]['data']:
+                trainoption.fare_2S = results.elements[i][2]['data']['FARE_2S']
+            if 'FARE_SL' in results.elements[i][2]['data']:
+                trainoption.fare_SL = results.elements[i][2]['data']['FARE_SL']
+            if 'FARE_GN' in results.elements[i][2]['data']:
+                trainoption.fare_GN = results.elements[i][2]['data']['FARE_GN']
+            trainoption.destStation = results.elements[i][2]['type']
+            trains.append(trainoption)
     return trains
 
 
@@ -140,14 +141,14 @@ def addStationToRouteMapping(relationInformation):
     pass
 
 
-def addRunningDaysToTrain(runningDays, trainNumber):
-    q = """match (a:TRAIN) where a.NUMBER = '""" + trainNumber + """' set a.SUNDAY = '""" + runningDays[
-        "SUN"] + """', a.MONDAY = '""" + runningDays["MON"]
-    q = q + """', a.TUESDAY = '""" + runningDays["TUE"] + """', a.WEDNESDAY = '""" + runningDays[
-        "WED"] + """', a.THRUSDAY = '""" + runningDays["THU"]
-    q = q + """', a.FRIDAY = '""" + runningDays["FRI"] + """', a.SATURDAY = '""" + runningDays["SAT"] + """'"""
+def addRunningDaysToTrain(runningdays, trainnumber):
+    q = """match (a:TRAIN) where a.NUMBER = '""" + trainnumber + """' set a.SUNDAY = '""" + runningdays[
+        "SUN"] + """', a.MONDAY = '""" + runningdays["MON"]
+    q = q + """', a.TUESDAY = '""" + runningdays["TUE"] + """', a.WEDNESDAY = '""" + runningdays[
+        "WED"] + """', a.THRUSDAY = '""" + runningdays["THU"]
+    q = q + """', a.FRIDAY = '""" + runningdays["FRI"] + """', a.SATURDAY = '""" + runningdays["SAT"] + """'"""
 
-    results = DATABASE_CONNECTION.query(q)
+    DATABASE_CONNECTION.query(q)
     pass
 
 
@@ -169,22 +170,51 @@ def checkStationExists(stations):
     pass
 
 
-def getBreakingCity(possibleCity, logger):
+def getBreakingCity(possiblecity, logger):
     """
     To get name of the city from where we can split journey between source & destination
-    :param possibleCity: possible city or station name
+    :param possiblecity: possible city or station name
     :param logger: logger to log events
     :return: breaking city name
     """
-    logger.info("Fetching matching city from breaking city/station[%s]", possibleCity)
-    start = time.time()
-    q = """MATCH (a:TRAINSTATION) where a.NAME = '""" + possibleCity + """' OR a.NAME STARTS WITH '""" + possibleCity + """ ' OR a.NAME ENDS WITH ' """ + possibleCity + """' OR a.CITY = '""" + possibleCity + """' OR a.CITY STARTS WITH '""" + possibleCity + """ ' OR a.CITY ENDS WITH ' """ + possibleCity + """' return a"""
+    logger.info("Fetching matching city from breaking city/station[%s]", possiblecity)
+    q = """MATCH (a:TRAINSTATION) where a.NAME = '""" + possiblecity + """' OR a.NAME STARTS WITH '""" + possiblecity + """ ' OR a.NAME ENDS WITH ' """ + possiblecity + """' OR a.CITY = '""" + possiblecity + """' OR a.CITY STARTS WITH '""" + possiblecity + """ ' OR a.CITY ENDS WITH ' """ + possiblecity + """' return a"""
     logger.debug("Fetch matching city query [%s]", q)
     try:
         result = DATABASE_CONNECTION.query(q)
     except:
-        logger.error("Error while fetching breaking city for [%s]", possibleCity)
+        logger.error("Error while fetching breaking city for [%s]", possiblecity)
     if len(result.elements) == 0:
-        logger.warning("No Breaking city present for [%s]", possibleCity)
+        logger.warning("No Breaking city present for [%s]", possiblecity)
         return
     return result.elements[0][0]['data']['CITY']
+
+
+def getDayFromDate(journeydate, diff):
+
+    """
+    this method is used to get day of the week(uppercase) on journeydate
+    :param journeydate: date of the journey
+    :param diff: difference in number of days from starting point of train into reaching the station
+    """
+    t = (datetime.strptime(journeydate, '%d-%m-%Y') - timedelta(days=diff)).weekday()
+    return calendar.day_name[t].upper()
+
+
+def istrainrunningonjourneydate(train, journeydate, sourcecity, logger):
+
+    """
+    Checks whether train runs from given station on particular date or not
+    :param train: train information
+    :param journeydate: date of journey
+    :param sourcecity: source station
+    :param logger: to logger information
+    :return: true if train runs else false
+    """
+    sourcedaynumber = train[1]['data']['SOURCEDAYNUMBER']
+    day = getDayFromDate(journeydate, sourcedaynumber - 1)
+
+    if train[1]['data'][day] == 'N':
+        logger.warning("Skipping train since it doesn't run from [%s] on [%s]", sourcecity, journeydate)
+        return
+    pass
