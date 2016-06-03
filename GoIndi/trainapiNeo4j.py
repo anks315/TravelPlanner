@@ -228,7 +228,7 @@ class TrainController:
         destinationstationset = self.placetoStationCodesCache.getStationsByCityName(destination)
         traincounter = [0]
         directjson = self.findTrainsBetweenStations(source, destinationstationset, journeydate, traincounter, destination)
-        if isOnlyDirect == 1:
+        if isOnlyDirect == 1 or len(directjson["train"]) > 6: # return in case we have more than 8 direct trains
             return directjson
         breakingcitieslist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger, journeydate)
         if len(breakingcitieslist) > 0:
