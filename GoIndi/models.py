@@ -13,7 +13,7 @@ def demo():
 
 # = GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="ankurjain")
 
-DATABASE_CONNECTION=GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
+DATABASE_CONNECTION=GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="shekhar")
 
 
 def getTrainsBetweenStation(sourcecity, destinationStationSet, logger, journeydate):
@@ -213,8 +213,9 @@ def istrainrunningonjourneydate(train, journeydate, sourcecity, logger):
     """
     sourcedaynumber = train[2]['data']['SOURCEDAYNUMBER']
     day = getDayFromDate(journeydate, sourcedaynumber - 1)
-
+    if day == 'THURSDAY':
+        day = 'THRUSDAY'
     if train[1]['data'][day] == 'N':
         logger.warning("Skipping train since it doesn't run from [%s] on [%s]", sourcecity, journeydate)
-        return
-    pass
+        return False
+    return True

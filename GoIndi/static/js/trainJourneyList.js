@@ -12,8 +12,9 @@ function showTrainJourneyList(transportList){
 		for (j = 0; j < transportList[i].parts.length;j++ ){
 			var transportDetails = transportList[i].parts[j];
 			if(transportDetails.mode == 'train'){
+				var first = 1;
 				for(var q=0;q<transportDetails.subParts.length;q++){
-					var first = 1;
+					
 					if(first==1 ){
 						transportTotaljourney = transportTotaljourney +transportDetails.subParts[q].carrierName
 						first = 0;

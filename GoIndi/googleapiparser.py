@@ -31,10 +31,10 @@ def parseTransitRoutes(jsontransitroute,destination, logger):
                         routedestinationstation = str(step["transit_details"]["arrival_stop"]["name"]).upper()
                         destinationcity = getcityfromstation(routedestinationstation, logger)
                         if counter == 1 and destination in destinationcity:
-                            possiblebreak.add(getcityfromstation(step["transit_details"]["departure_stop"]["name"].upper(), logger))
+                            possiblebreak.add(getcityfromstation(str(step["transit_details"]["departure_stop"]["name"]).upper(), logger))
 
                         if counter != 0 and destination not in destinationcity:
-                            possiblebreak.add(getcityfromstation(step["transit_details"]["departure_stop"]["name"].upper(), logger))
+                            possiblebreak.add(getcityfromstation(str(step["transit_details"]["departure_stop"]["name"]).upper(), logger))
                             possiblebreak.add(destinationcity)
                         counter += 1
                 possiblebreaklist.append(possiblebreak)
@@ -101,6 +101,7 @@ def getPossibleBreakingPlacesForTrain(source,destination, logger, journeydate):
 
 
 def getBreakingCities(source, destination, epoch, logger):
+    jsontransitroute = ''
     url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ source +",IN&destination="+ destination +",IN&mode=transit&transit_mode=train&departure_time=" + str(epoch) +"&alternatives=true&key="+ trainConstants.GOOGLE_API_KEY
     try:
         jsontransitroute = urllib.urlopen(url).read()

@@ -89,3 +89,30 @@ def checkIfApplicable(arrivalTime,arrivalDate,depTime,depDate,bufferHrs):
             return 0
     else:
         return 0
+
+def addDurations(dur1,dur2):
+    dur1Hr = int(dur1.split(":")[0])
+    dur1Min = int(dur1.split(":")[1])
+    dur2Hr = int(dur2.split(":")[0])
+    dur2Min = int(dur2.split(":")[1])
+    resMin = (dur1Min + dur2Min)%60
+    carry = (dur1Min + dur2Min)//60
+    resHr = dur1Hr + dur2Hr + carry
+    return str(resHr)+":"+str(resMin)
+
+def compareTime(dur1,dur2):
+    dur1Hr = int(dur1.split(":")[0])
+    dur1Min = int(dur1.split(":")[1])
+    dur2Hr = int(dur2.split(":")[0])
+    dur2Min = int(dur2.split(":")[1])
+    if dur1Hr>dur2Hr:
+        return 1
+    elif dur1Hr == dur2Hr:
+        if dur1Min>dur2Min:
+            return 1
+        elif dur1Min<dur2Min:
+            return -1
+        else:
+            return 0
+    else:
+        return -1

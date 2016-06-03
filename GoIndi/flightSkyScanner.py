@@ -109,6 +109,7 @@ def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate):
             minutes = int(duration)%60
             part["duration"]= str(hours)+":"+str(minutes)
             part["arrivalDate"] = dateTimeUtility.calculateArrivalTimeAndDate(journeyDate, part["departure"],part["duration"])["arrivalDate"]
+            full["duration"]=str(hours)+":"+str(minutes)
             full["minDuration"]=str(hours)+":"+str(minutes)
             full["maxDuration"]=str(hours)+":"+str(minutes)
             full["route"]=part["source"]+",flight,"+part["destination"]

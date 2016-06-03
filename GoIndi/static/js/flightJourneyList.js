@@ -13,8 +13,9 @@ function showFlightJourneyList(transportList){
 			
 
 			if(transportDetails.mode == 'flight'){
+				var first = 1;
 				for(var q=0;q<transportDetails.subParts.length;q++){
-					var first = 1;
+					
 					if(first==1 ){
 						transportTotaljourney = transportTotaljourney + "<img height='40' width='70' src='"+transportDetails.subParts[q].carrierName+"'></img>"
 						first = 0;
