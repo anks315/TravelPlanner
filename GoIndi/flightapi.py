@@ -181,8 +181,10 @@ class FlightController:
                 if len(subParts) > 5:
                     subParts.sort(miscUtility.sortOnWaitingTime)
                     subParts = subParts[0:5]
-                minMax1  = mimMaxUtil.getMinMaxValues(subParts)
+                continueFurther = 0;
                 if subParts != []:
+                    continueFurther=1
+                    minMax1 = mimMaxUtil.getMinMaxValues(subParts)
                     newPart = {}
                     newPart["subParts"] = subParts
                     newPart["mode"] = subParts[0]["mode"]
@@ -205,8 +207,9 @@ class FlightController:
                 if len(subParts) > 5:
                     subParts.sort(miscUtility.sortOnWaitingTime)
                     subParts = subParts[0:5]
-                minMax2 = mimMaxUtil.getMinMaxValues(subParts)
-                if subParts != []:
+
+                if subParts != [] and continueFurther==1:
+                    minMax2 = mimMaxUtil.getMinMaxValues(subParts)
                     newPart = {}
                     newPart["subParts"] = subParts
                     newPart["mode"] =  subParts[0]["mode"]
@@ -216,11 +219,11 @@ class FlightController:
                     newPart["carrierName"] = subParts[0]["carrierName"]
                     mixedFlight["flight"][j]["parts"].append(newPart)
                     mixedFlight["flight"][j]["full"][0]["route"] = mixedFlight["flight"][j]["full"][0]["route"] + ",bus," + newPart["destination"]
-                    mixedFlight["flight"][j]["full"][0]["price"] = int(mixedFlight["flight"][j]["full"][0]["price"]) + int(minMax1["minPrice"]) + minMax2["minPrice"]
+                    mixedFlight["flight"][j]["full"][0]["price"] = int(mixedFlight["flight"][j]["full"][0]["price"]) + int(minMax1["minPrice"]) + int(minMax2["minPrice"])
                     mixedFlight["flight"][j]["full"][0]["minPrice"] = int(mixedFlight["flight"][j]["full"][0][
                                                                           "minPrice"]) + int(minMax1["minPrice"]) + int(minMax2["minPrice"])
                     mixedFlight["flight"][j]["full"][0]["maxPrice"] = int(mixedFlight["flight"][j]["full"][0][
-                                                                          "maxPrice"]) + int(minMax1["maxPrice"] * 1 + minMax2["maxPrice"])
+                                                                          "maxPrice"]) + int(minMax1["maxPrice"]) + int(minMax2["maxPrice"])
                     mixedFlight["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(
                         mixedFlight["flight"][j]["full"][0]["duration"], minMax1["minDuration"]),minMax2["minDuration"])
                     mixedFlight["flight"][j]["full"][0]["minDuration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(
@@ -250,8 +253,9 @@ class FlightController:
             if len(subParts) > 5:
                 subParts.sort(miscUtility.sortOnWaitingTime)
                 subParts = subParts[0:5]
-            minMax = mimMaxUtil.getMinMaxValues(subParts)
+
             if subParts!=[]:
+                minMax = mimMaxUtil.getMinMaxValues(subParts)
                 newPart = {}
                 newPart["subParts"]=subParts
                 newPart["mode"]= subParts[0]["mode"]
@@ -293,8 +297,9 @@ class FlightController:
             if len(subParts) > 5:
                 subParts.sort(miscUtility.sortOnWaitingTime)
                 subParts = subParts[0:5]
-            minMax = mimMaxUtil.getMinMaxValues(subParts)
+
             if subParts != []:
+                minMax = mimMaxUtil.getMinMaxValues(subParts)
                 parts = []
                 newPart = {}
                 newPart["subParts"] = subParts
