@@ -45,7 +45,7 @@ def parseandreturnroute(trainroutes, logger, journeyDate, trainCounter):
                     "sourceStation": trainRoute.srcStationCode, "destinationStation": trainRoute.destStationCode,
                     "arrivalDate": dateTimeUtility.calculateArrivalTimeAndDate(journeyDate, trainRoute.srcDepartureTime,trainRoute.duration)["arrivalDate"],
                     "departure": trainRoute.srcDepartureTime, "departureDate": journeyDate, "prices": trainRoute.prices, "price": trainRoute.price,
-                    "priceClass": trainRoute.priceClass
+                    "priceClass": trainRoute.priceClass, "route": trainRoute.srcStation + ",train," + trainRoute.destStation
                     }
             part = copy.deepcopy(full)
             part["id"] = "train" + str(trainCounter[0]) + str(1)
@@ -81,10 +81,9 @@ def convertsPartsToFullJson(part_1, part_2, trainCounter):
     try:
         duration = dateTimeUtility.gettotalduration(part_2["full"][0]["arrival"],part_1["full"][0]["departure"],part_2["full"][0]["arrivalDate"],part_1["full"][0]["departureDate"])
         price = part_1["full"][0]["price"] + part_2["full"][0]["price"]
-        part = {"carrierName": "Train","duration": duration,"id": "train" + str(trainCounter[0]) + str(1), "mode": "train",
-                "site": "IRCTC", "source": part_1["full"][0]["source"], "destination": part_2["full"][0]["destination"],
-                "arrival": part_2["full"][0]["arrival"], "departure": part_1["full"][0]["departure"],
-                "departureDate": part_1["full"][0]["departureDate"], "arrivalDate": part_2["full"][0]["arrivalDate"],
+        part = {"carrierName": "Train","duration": duration,"id": "train" + str(trainCounter[0]) + str(1), "mode": "train", "site": "IRCTC", "source": part_1["full"][0]["source"],
+                "destination": part_2["full"][0]["destination"], "arrival": part_2["full"][0]["arrival"], "departure": part_1["full"][0]["departure"], "departureDate": part_1["full"][0]["departureDate"],
+                "arrivalDate": part_2["full"][0]["arrivalDate"], "route" : part_1["full"][0]["source"] + ",train," + part_2["full"][0]["destination"],
                 "prices": {"1A": part_1["full"][0]["prices"]["1A"] + part_2["full"][0]["prices"]["1A"],
                            "2A": part_1["full"][0]["prices"]["2A"] + part_2["full"][0]["prices"]["2A"],
                            "3A": part_1["full"][0]["prices"]["3A"] + part_2["full"][0]["prices"]["3A"],
@@ -102,8 +101,8 @@ def convertsPartsToFullJson(part_1, part_2, trainCounter):
         part["subParts"][1]["id"] = "train" + str(trainCounter[0]) + str(1) + str(2)
         route["parts"].append(part)
         route["full"] = []
-        full = {"id": "train" + str(trainCounter[0]), "minPrice": price, "maxPrice": price, "minDuration": duration, "maxDuration": duration,
-                "minArrival": part_2["full"][0]["arrival"], "maxArrival": part_2["full"][0]["arrival"], "minDeparture": part_1["full"][0]["departure"], "maxDeparture": part_1["full"][0]["departure"]}
+        full = {"id": "train" + str(trainCounter[0]), "minPrice": price, "maxPrice": price, "minDuration": duration, "maxDuration": duration, "minArrival": part_2["full"][0]["arrival"],
+                "maxArrival": part_2["full"][0]["arrival"], "minDeparture": part_1["full"][0]["departure"], "maxDeparture": part_1["full"][0]["departure"], "route": part["route"]}
         route["full"].append(full)
     except Exception as e:
         logger.error("Error while combining data for Train[%s] and Train[%s], reason [%s]", part_1["full"]["id"], part_2["full"]["id"], e.message)
@@ -361,6 +360,7 @@ class TrainController:
                 newpart = {"subParts": subparts, "mode": "bus","id": breakingToDestinationJson["train"][j]["full"][0]["id"] + str(0),
                            "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"]}
                 breakingToDestinationJson["train"][j]["parts"].insert(0, newpart)
+                breakingToDestinationJson["train"][j]["full"][0]["route"] = newpart["source"] + ","+subparts[0]["mode"]+"," + newpart["destination"] + ",train," + breakingToDestinationJson["train"][j]["full"][0]["destination"]
                 breakingToDestinationJson["train"][j]["full"][0]["price"] = int(breakingToDestinationJson["train"][j]["full"][0]["price"]) + int(minmax["minPrice"])
                 breakingToDestinationJson["train"][j]["full"][0]["minPrice"] = int(breakingToDestinationJson["train"][j]["full"][0]["minPrice"]) + int(minmax["minPrice"])
                 breakingToDestinationJson["train"][j]["full"][0]["maxPrice"] = int(breakingToDestinationJson["train"][j]["full"][0]["maxPrice"]) + int(minmax["maxPrice"])
@@ -392,9 +392,10 @@ class TrainController:
 
             if subparts:
                 minmax = minMaxUtil.getMinMaxValues(subparts)
-                newPart = {"subParts": subparts, "mode": "bus", "id": sourceToBreakingJson["train"][j]["full"][0]["id"] + str(2),
+                newpart = {"subParts": subparts, "mode": "bus", "id": sourceToBreakingJson["train"][j]["full"][0]["id"] + str(2),
                            "destination": subparts[0]["destination"], "source": subparts[0]["source"], "carrierName": subparts[0]["carrierName"]}
-                sourceToBreakingJson["train"][j]["parts"].append(newPart)
+                sourceToBreakingJson["train"][j]["parts"].append(newpart)
+                sourceToBreakingJson["train"][j]["full"][0]["route"] = sourceToBreakingJson["train"][j]["full"][0]["source"] + ",train," + newpart["source"] + ","+subparts[0]["mode"]+"," + newpart["destination"]
                 sourceToBreakingJson["train"][j]["full"][0]["price"] = int(sourceToBreakingJson["train"][j]["full"][0]["price"]) + int(minmax["minPrice"])
                 sourceToBreakingJson["train"][j]["full"][0]["minPrice"] = int(sourceToBreakingJson["train"][j]["full"][0]["minPrice"]) + int(minmax["minPrice"])
                 sourceToBreakingJson["train"][j]["full"][0]["maxPrice"] = int(sourceToBreakingJson["train"][j]["full"][0]["maxPrice"]) + int(minmax["maxPrice"])
