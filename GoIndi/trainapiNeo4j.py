@@ -51,8 +51,11 @@ def parseandreturnroute(trainroutes, logger, journeyDate, trainCounter):
             part["subParts"].append(copy.deepcopy(full))
             part["subParts"][0]["id"] = "train" + str(trainCounter[0]) + str(1) + str(1)
 
+            # this min/max data only in full journey for filtering purpose
             full["minPrice"] = full["maxPrice"] = trainRoute.price
             full["minDuration"] = full["maxDuration"] = trainRoute.duration
+            full["minArrivalTime"] = full["maxArrivalTime"] = trainRoute.destArrivalTime
+            full["minDepartureTime"] = full["maxDepartureTime"] = trainRoute.srcDepartureTime
             route["full"].append(full)
             route["parts"].append(part)
             if hasprice(route):
@@ -97,7 +100,8 @@ def convertsPartsToFullJson(part_1, part_2, trainCounter):
         part["subParts"][1]["id"] = "train" + str(trainCounter[0]) + str(1) + str(2)
         route["parts"].append(part)
         route["full"] = []
-        full = {"id": "train" + str(trainCounter[0]), "minPrice": price, "maxPrice": price, "minDuration": duration, "maxDuration": duration}
+        full = {"id": "train" + str(trainCounter[0]), "minPrice": price, "maxPrice": price, "minDuration": duration, "maxDuration": duration,
+                "minArrivalTime": part_2["full"][0]["arrival"], "maxArrivalTime": part_2["full"][0]["arrival"], "minDepartureTime": part_1["full"][0]["departure"], "maxDepartureTime": part_1["full"][0]["departure"]}
         route["full"].append(full)
     except Exception as e:
         logger.error("Error while combining data for Train[%s] and Train[%s], reason [%s]", part_1["full"]["id"], part_2["full"]["id"], e.message)
