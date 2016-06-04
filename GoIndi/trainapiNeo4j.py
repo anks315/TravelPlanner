@@ -163,7 +163,11 @@ class TrainController:
         :return:
         """
         resultjsondata = {"train": []}
-        routedata = self.gettrainroutes(sourcecity, destinationstationset, journeyDate, trainCounter, destinationcity)
+        try:
+            routedata = self.gettrainroutes(sourcecity, destinationstationset, journeyDate, trainCounter, destinationcity)
+        except Exception as e:
+            logger.error("Error while fetching train data from db for source [%s] and destination [%s], reason [%s]", sourcecity, destinationcity, e.message)
+            return resultjsondata
         if len(routedata) > 0:
             resultjsondata["train"].extend(routedata)
         return resultjsondata
@@ -232,20 +236,24 @@ class TrainController:
 
         destinationstationset = self.placetoStationCodesCache.getStationsByCityName(destination)
         traincounter = [0]
-        directjson = self.findTrainsBetweenStations(source, destinationstationset, journeydate, traincounter,destination)
+        if len(destinationstationset) != 0:
+            directjson = self.findTrainsBetweenStations(source, destinationstationset, journeydate, traincounter,destination)
+        else:
+            directjson = {"train": []}
         if isOnlyDirect == 1 or len(directjson["train"]) > 8:  # return in case we have more than 8 direct trains
             return directjson
         logger.debug("Calling google api parser for Source[%s] an Destination[%s],journeyDate", source, destination,journeydate)
         breakingcitieslist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger, journeydate)
         logger.debug("Call To google api parser successful for Source[%s] and Destination[%s]", source, destination)
 
+        breakingcityset = Set()
         if len(breakingcitieslist) > 0:
             breakingcityset = (self.getBreakingCitySet(breakingcitieslist))
             if len(breakingcityset) > 0:
                 for breakingcity in breakingcityset:
                     self.fetchtraindatafrombreakingcities(breakingcity, destination, destinationstationset, journeydate,
                                                           source, traincounter, directjson)
-        elif len(breakingcitieslist) == 0:
+        if len(breakingcitieslist) == 0 or len(breakingcityset) == 0:
             try:
                 logger.info("Getting nearest railway station to [%s]", source)
                 url = 'https://maps.googleapis.com/maps/api/geocode/json?address='+ source.title()
