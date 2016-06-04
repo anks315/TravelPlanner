@@ -236,7 +236,7 @@ class FlightController:
                     newPart["source"] = subParts[0]["source"]
                     newPart["carrierName"] = subParts[0]["carrierName"]
                     mixedFlight["flight"][j]["parts"].append(newPart)
-                    mixedFlight["flight"][j]["full"][0]["route"] = mixedFlight["flight"][j]["full"][0]["route"] + ",bus," + newPart["destination"]
+                    mixedFlight["flight"][j]["full"][0]["route"] = mixedFlight["flight"][j]["full"][0]["route"] + ","+subParts[0]["mode"]+"," + newPart["destination"]
                     mixedFlight["flight"][j]["full"][0]["price"] = int(mixedFlight["flight"][j]["full"][0]["price"]) + int(minMax1["minPrice"]) + int(minMax2["minPrice"])
                     mixedFlight["flight"][j]["full"][0]["minPrice"] = int(mixedFlight["flight"][j]["full"][0][
                                                                           "minPrice"]) + int(minMax1["minPrice"]) + int(minMax2["minPrice"])
@@ -283,7 +283,7 @@ class FlightController:
                 newPart["source"] = subParts[0]["source"]
                 newPart["carrierName"] = subParts[0]["carrierName"]
                 mixedFlightInit["flight"][j]["parts"].append(newPart)
-                mixedFlightInit["flight"][j]["full"][0]["route"]=flightPart["source"]+",flight,"+flightPart["destination"]+",bus,"+newPart["destination"]
+                mixedFlightInit["flight"][j]["full"][0]["route"]=flightPart["source"]+",flight,"+flightPart["destination"]+","+subParts[0]["mode"]+","+newPart["destination"]
                 mixedFlightInit["flight"][j]["full"][0]["price"] = int(mixedFlightInit["flight"][j]["full"][0]["price"]) + int(minMax["minPrice"])
                 mixedFlightInit["flight"][j]["full"][0]["minPrice"] = int(mixedFlightInit["flight"][j]["full"][0]["minPrice"]) + int(minMax["minPrice"])
                 mixedFlightInit["flight"][j]["full"][0]["maxPrice"] = int(mixedFlightInit["flight"][j]["full"][0]["maxPrice"]) + int(minMax["maxPrice"])
@@ -331,7 +331,7 @@ class FlightController:
                 newPart["carrierName"] = subParts[0]["carrierName"]
                 flightPart["id"]=mixedFlightEnd["flight"][j]["full"][0]["id"] + str(1)
                 mixedFlightEnd["flight"][j]["parts"].insert(0,newPart)
-                mixedFlightEnd["flight"][j]["full"][0]["route"] = newPart["source"] + ",bus," + newPart["destination"] + ",flight," + flightPart["destination"]
+                mixedFlightEnd["flight"][j]["full"][0]["route"] = newPart["source"] + ","+subParts[0]["mode"]+"," + newPart["destination"] + ",flight," + flightPart["destination"]
                 mixedFlightEnd["flight"][j]["full"][0]["price"] = int(mixedFlightEnd["flight"][j]["full"][0]["price"]) + int(minMax["minPrice"])
                 mixedFlightEnd["flight"][j]["full"][0]["minPrice"] = int(mixedFlightEnd["flight"][j]["full"][0]["minPrice"]) +  int(minMax["minPrice"])
                 mixedFlightEnd["flight"][j]["full"][0]["maxPrice"] = int(mixedFlightEnd["flight"][j]["full"][0]["maxPrice"] ) + int(minMax["maxPrice"])

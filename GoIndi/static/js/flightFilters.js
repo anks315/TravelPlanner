@@ -153,7 +153,7 @@ function flightFilter(){
 	var j=0;
 		newflightList = new Array();
 		for (i = 0; i < flightList.length; i++) { 
-		durationArr = flightList[i].full[0].maxDuration.split(":");
+		durationArr = flightList[i].full[0].minDuration.split(":");
 		durationVal = durationArr[0]*60 + 1*durationArr[1];
 		minArrivalArr = flightList[i].full[0].minArrival.split(":");
 		minArrivalVal = minArrivalArr[0]*60 + 1*minArrivalArr[1];
@@ -163,7 +163,7 @@ function flightFilter(){
 		minDepartureVal = minDepartureArr[0]*60 + 1*minDepartureArr[1];
 		maxDepartureArr = flightList[i].full[0].maxDeparture.split(":");
 		maxDepartureVal = maxDepartureArr[0]*60 + 1*maxDepartureArr[1];
-		if((flightList[i].full[0].maxPrice <=filterflightPrice)&&(durationVal <= filterflightDuration)&&(maxArrivalVal <= filterflightMaxArrival)&&(minArrivalVal >= filterflightMinArrival)&&(maxDepartureVal <= filterflightMaxDeparture)&&(minDepartureVal >= filterflightMinDeparture)){
+		if((flightList[i].full[0].minPrice <=filterflightPrice)&&(durationVal <= filterflightDuration)&&(maxArrivalVal >= filterflightMinArrival)&&(minArrivalVal <= filterflightMaxArrival)&&(maxDepartureVal >= filterflightMinDeparture)&&(minDepartureVal <= filterflightMaxDeparture)){
 			newflightList[j]=flightList[i];
 			j++;
 		}
