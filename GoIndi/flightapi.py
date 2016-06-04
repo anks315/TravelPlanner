@@ -2,8 +2,6 @@ __author__ = 'ankur'
 import busapi
 import json
 import urllib2
-from django.http import HttpResponse
-import time
 import flightSkyScanner
 import concurrent.futures
 import dateTimeUtility

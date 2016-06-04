@@ -1,6 +1,7 @@
 # from django.test import TestCase
 
 # Create your tests here.
+import dateTimeUtility
 import calendar
 from datetime import datetime, timedelta
 import time
@@ -43,12 +44,14 @@ from sets import Set
 #
 # populateDB()
 
-def getDay():
-    journeydate = '24-01-1991'
-    diff = 2
-    t = (datetime.strptime(journeydate, '%d-%m-%Y') - timedelta(days=1))
-    print t.strftime('%d-%m-%Y')
-    #day = calendar.day_name[t].upper()
-    #print day
+# def getDay():
+#     journeydate = '24-01-1991'
+#     diff = 2
+#     t = (datetime.strptime(journeydate, '%d-%m-%Y') - timedelta(days=1))
+#     print t.strftime('%d-%m-%Y')
+#     #day = calendar.day_name[t].upper()
+#     #print day
+#
+# getDay()
 
-getDay()
+print dateTimeUtility.getduration('04:35', '09:12','16-02-2016','14-02-2016')

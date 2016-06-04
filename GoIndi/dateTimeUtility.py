@@ -1,4 +1,5 @@
 import datetime
+from dateutil import relativedelta
 def getDateArray(date):
     dateDic = {};
     dateDic["day"] = int(date.split("-")[0])
@@ -116,3 +117,32 @@ def compareTime(dur1,dur2):
             return 0
     else:
         return -1
+
+def gettotalduration(arrivaltime, departuretime, arrivaldate, departuredate):
+
+    """
+    To calculate duration of journey from departure to arrival
+    :param arrivaltime: arrival time at destination station
+    :param departuretime: departure from source station station
+    :param arrivaldate: date on arrival
+    :param departuredate: date o departure
+    :return: duration of journey
+    """
+
+    arrivaltime = datetime.datetime.strptime(arrivaldate + ", " + arrivaltime, '%d-%m-%Y, %H:%M')
+    departuretime = datetime.datetime.strptime(departuredate + ", " + departuretime, '%d-%m-%Y, %H:%M')
+    diff =relativedelta.relativedelta(arrivaltime, departuretime)
+    return str(diff.days * 24 + diff.hours) + ":" + str(diff.minutes)
+
+
+def gettimedifference(arrivaltime, departuretime, arrivaldate, departuredate):
+
+    """
+    To calculate waiting time between train
+    :param arrivaltime:
+    :param departuretime:
+    :param arrivaldate:
+    :param departuredate:
+    :return:
+    """
+    return
