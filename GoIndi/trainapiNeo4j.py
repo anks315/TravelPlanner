@@ -43,8 +43,7 @@ def parseandreturnroute(trainroutes, logger, journeyDate, trainCounter):
                     "sourceStation": trainRoute.srcStationCode, "destinationStation": trainRoute.destStationCode,
                     "arrivalDate": dateTimeUtility.calculateArrivalTimeAndDate(journeyDate, trainRoute.srcDepartureTime,trainRoute.duration)["arrivalDate"],
                     "departure": trainRoute.srcDepartureTime, "departureDate": journeyDate, "prices": trainRoute.prices, "price": trainRoute.price,
-                    "priceClass": trainRoute.priceClass, "minPrice": trainRoute.price, "maxPrice": trainRoute.price,
-                    "minDuration": trainRoute.duration, "maxDuration": trainRoute.duration
+                    "priceClass": trainRoute.priceClass
                     }
             part = copy.deepcopy(full)
             part["id"] = "train" + str(trainCounter[0]) + str(1)
@@ -52,6 +51,8 @@ def parseandreturnroute(trainroutes, logger, journeyDate, trainCounter):
             part["subParts"].append(copy.deepcopy(full))
             part["subParts"][0]["id"] = "train" + str(trainCounter[0]) + str(1) + str(1)
 
+            full["minPrice"] = full["maxPrice"] = trainRoute.price
+            full["minDuration"] = full["maxDuration"] = trainRoute.duration
             route["full"].append(full)
             route["parts"].append(part)
             if hasprice(route):
