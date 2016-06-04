@@ -92,6 +92,14 @@ def checkIfApplicable(arrivalTime,arrivalDate,depTime,depDate,bufferHrs):
         return 0
 
 def addDurations(dur1,dur2):
+
+    """
+    To add two time durations
+    :param dur1: first time duration
+    :param dur2: second time duration
+    :return: sum of durations
+    """
+
     dur1Hr = int(dur1.split(":")[0])
     dur1Min = int(dur1.split(":")[1])
     dur2Hr = int(dur2.split(":")[0])
@@ -146,3 +154,4 @@ def gettimedifference(arrivaltime, departuretime, arrivaldate, departuredate):
     :return:
     """
     return
+
