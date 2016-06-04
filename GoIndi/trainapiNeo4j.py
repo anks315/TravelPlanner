@@ -243,22 +243,31 @@ class TrainController:
         elif len(breakingcitieslist) == 0:
             try:
                 logger.info("Getting nearest railway station to [%s]", source)
-                response = urllib2.urlopen('https://maps.googleapis.com/maps/api/geocode/json?address=' + source)
-                logger.debug("Nearest railway station to [%s]'s co-ordinates are")
+                url = 'https://maps.googleapis.com/maps/api/geocode/json?address='+ source.title()
+                url = url.replace(' ', '%20')
+                response = urllib2.urlopen(url)
                 sourcelatlong = json.loads(response.read())
                 response.close()
                 sourcelat = sourcelatlong["results"][0]["geometry"]["location"]["lat"]
                 sourcelong = sourcelatlong["results"][0]["geometry"]["location"]["lng"]
-                breakingcity = distanceutil.findnearestrailwaystation(sourcelat, sourcelong)
-                logger.info("Breaking city from co-ordinate is [%s]", breakingcity)
+                logger.debug("Co-ordinates for source [%s] are Lat[%s]-Long[%s]", source, sourcelat, sourcelong)
+                breakingcity = distanceutil.findnearestrailwaystation(sourcelat, sourcelong).upper()
+                if breakingcity == source or breakingcity in source or source in breakingcity:
+                    logger.warning("Breaking city is same as source [%s], calculating breaking city from destination [%s] co-ordinates", source, destination)
+                    response = urllib2.urlopen('https://maps.googleapis.com/maps/api/geocode/json?address='+ destination.title())
+                    destlatlong = json.loads(response.read())
+                    response.close()
+                    destlat = destlatlong["results"][0]["geometry"]["location"]["lat"]
+                    destlong = destlatlong["results"][0]["geometry"]["location"]["lng"]
+                    logger.debug("Co-ordinates for destination [%s] are Lat[%s]-Long[%s]", destination, destlat, destlong)
+                    breakingcity = distanceutil.findnearestrailwaystation(destlat, destlong).upper()
+                    if breakingcity == destination or breakingcity in destination or destination in breakingcity:
+                        logger.warning("No breaking journey city possible between source [%s] and destination [%s]", source, destination)
+                        return
+                logger.info("Breaking city is [%s]", breakingcity.upper())
+                self.fetchtraindatafrombreakingcities(breakingcity.upper(), destination, destinationstationset, journeydate,source, traincounter, directjson)
             except Exception as e:
-                logger.error("Error in fetching longitude and latitude for [%s]", source)
-
-            if breakingcity:
-                self.fetchtraindatafrombreakingcities(breakingcity.upper(), destination, destinationstationset, journeydate,
-                                                      source, traincounter, directjson)
-            # find nearest big railway stations
-            logger.warning("No breaking city between source [%s] and destination [%s]", source, destination)
+                logger.error("Error in fetching longitude and latitude for [%s], reason [%s]", source, e.message)
 
         logger.debug("[END]-Get Results From FlightApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ", source,destination)
 
