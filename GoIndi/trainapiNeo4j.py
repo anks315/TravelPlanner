@@ -15,9 +15,10 @@ from datetime import timedelta
 today = datetime.date.today().strftime("%Y-%m-%d")
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
 
-logger = loggerUtil.getLogger("TrainApi",logging.DEBUG)
+logger = loggerUtil.getLogger("TrainApi", logging.DEBUG)
 
 trainNumberstoDurationMap = {}
+
 
 def parseandreturnroute(trainroutes, logger, journeyDate, trainCounter):
     """
@@ -70,9 +71,13 @@ def convertsPartsToFullJson(part_1, part_2, trainCounter):
     route = {"full": {}, "parts": []}
     trainCounter[0] += 1
     try:
-        part = {"carrierName": "Train", "duration": "", "id": "train" + str(trainCounter[0]) + str(1), "mode": "train",
+        part = {"carrierName": "Train",
+                "duration": dateTimeUtility.gettotalduration(part_2["full"][0]["arrival"], part_1["full"][0]["departure"],
+                                                           part_2["full"][0]["arrivalDate"],
+                                                           part_1["full"][0]["departureDate"]),
+                "id": "train" + str(trainCounter[0]) + str(1), "mode": "train",
                 "site": "IRCTC", "source": part_1["full"][0]["source"], "destination": part_2["full"][0]["destination"],
-                "arrival": part_1["full"][0]["arrival"], "departure": part_1["full"][0]["departure"],
+                "arrival": part_2["full"][0]["arrival"], "departure": part_1["full"][0]["departure"],
                 "departureDate": part_1["full"][0]["departureDate"], "arrivalDate": part_2["full"][0]["arrivalDate"],
                 "prices": {"1A": part_1["full"][0]["prices"]["1A"] + part_2["full"][0]["prices"]["1A"],
                            "2A": part_1["full"][0]["prices"]["2A"] + part_2["full"][0]["prices"]["2A"],
@@ -218,36 +223,47 @@ class TrainController:
         :param dateofjourney: date of the journey
         :return: all possible routes from source to destination via direct train or combination of train-bus
         """
-        logger.debug("[START]-Get Results From TrainApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeydate)
+        logger.debug("[START]-Get Results From TrainApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ", source,
+                     destination, journeydate)
         source = str(source).upper()
         destination = str(destination).upper()
 
         destinationstationset = self.placetoStationCodesCache.getStationsByCityName(destination)
         traincounter = [0]
-        directjson = self.findTrainsBetweenStations(source, destinationstationset, journeydate, traincounter, destination)
-        if isOnlyDirect == 1 or len(directjson["train"]) > 8: # return in case we have more than 8 direct trains
+        directjson = self.findTrainsBetweenStations(source, destinationstationset, journeydate, traincounter,
+                                                    destination)
+        if isOnlyDirect == 1 or len(directjson["train"]) > 8:  # return in case we have more than 8 direct trains
             return directjson
-        logger.debug("Calling google api parser for Source[%s] an Destination[%s],journeyDate",source,destination,journeydate)
+        logger.debug("Calling google api parser for Source[%s] an Destination[%s],journeyDate", source, destination,
+                     journeydate)
         breakingcitieslist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger, journeydate)
-        logger.debug("Call To google api parser successful for Source[%s] and Destination[%s]",source,destination)
-      
+        logger.debug("Call To google api parser successful for Source[%s] and Destination[%s]", source, destination)
+
         if len(breakingcitieslist) > 0:
             breakingcityset = (self.getBreakingCitySet(breakingcitieslist))
             if len(breakingcityset) > 0:
                 for breakingcity in breakingcityset:
                     breakingcitystationset = self.placetoStationCodesCache.getStationsByCityName(breakingcity)
                     sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingcitystationset,
-                                                                                 journeydate, traincounter, breakingcity)
+                                                                                 journeydate, traincounter,
+                                                                                 breakingcity)
                     busController = busapi.BusController()
-                    sourceToBreakingStationBusJson = busController.getResults(source.title(), breakingcity.title(), journeydate)
+                    sourceToBreakingStationBusJson = busController.getResults(source.title(), breakingcity.title(),
+                                                                              journeydate)
 
                     if len(sourceToBreakingStationJson["train"]) > 0 or len(sourceToBreakingStationBusJson["bus"]) > 0:
                         breakingToDestinationJson = self.findTrainsBetweenStations(breakingcity, destinationstationset,
-                                                                                   journeydate, traincounter, destination)
-                        nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
-                        breakingToDestinationJson["train"].extend(self.findTrainsBetweenStations(breakingcity, destinationstationset, nextday, traincounter, destination)["train"])
-                        breakingToDestinationBusJson = busController.getResults(breakingcity.title(), destination.title(), journeydate)
-                        breakingToDestinationBusJson["bus"].extend(busController.getResults(breakingcity.title(), destination.title(), nextday)["bus"])
+                                                                                   journeydate, traincounter,
+                                                                                   destination)
+                        nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime(
+                            '%d-%m-%Y')
+                        breakingToDestinationJson["train"].extend(
+                            self.findTrainsBetweenStations(breakingcity, destinationstationset, nextday, traincounter,
+                                                           destination)["train"])
+                        breakingToDestinationBusJson = busController.getResults(breakingcity.title(),
+                                                                                destination.title(), journeydate)
+                        breakingToDestinationBusJson["bus"].extend(
+                            busController.getResults(breakingcity.title(), destination.title(), nextday)["bus"])
                         if len(breakingToDestinationJson["train"]) > 0 and len(
                                 sourceToBreakingStationJson["train"]) > 0:
                             combinedjson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson,
@@ -265,7 +281,8 @@ class TrainController:
                                                                       breakingToDestinationBusJson)
                             directjson["train"].extend(combinedjson["train"])
 
-        logger.debug("[END]-Get Results From FlightApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination)
+        logger.debug("[END]-Get Results From FlightApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ", source,
+                     destination)
 
         return directjson
 
@@ -355,7 +372,8 @@ def hasprice(route):
     prices = route["full"][0]["prices"]
     trainname = route["full"][0]["carrierName"]
 
-    if prices["1A"] == 0 and prices["2A"] == 0 and prices["3A"] == 0 and prices["3E"] == 0 and prices["FC"] == 0 and prices["CC"] == 0 and prices["SL"] == 0 and prices["2S"] == 0 and prices["GN"] == 0:
+    if prices["1A"] == 0 and prices["2A"] == 0 and prices["3A"] == 0 and prices["3E"] == 0 and prices["FC"] == 0 and \
+                    prices["CC"] == 0 and prices["SL"] == 0 and prices["2S"] == 0 and prices["GN"] == 0:
         logger.warning("Ignoring train [%s] since all prices are 0", trainname)
         return False
     return True
