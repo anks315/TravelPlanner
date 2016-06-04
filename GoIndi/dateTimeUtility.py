@@ -133,3 +133,16 @@ def gettotalduration(arrivaltime, departuretime, arrivaldate, departuredate):
     departuretime = datetime.datetime.strptime(departuredate + ", " + departuretime, '%d-%m-%Y, %H:%M')
     diff =relativedelta.relativedelta(arrivaltime, departuretime)
     return str(diff.days * 24 + diff.hours) + ":" + str(diff.minutes)
+
+
+def gettimedifference(arrivaltime, departuretime, arrivaldate, departuredate):
+
+    """
+    To calculate waiting time between train
+    :param arrivaltime:
+    :param departuretime:
+    :param arrivaldate:
+    :param departuredate:
+    :return:
+    """
+    return
