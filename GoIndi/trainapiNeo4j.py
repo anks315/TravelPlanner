@@ -11,6 +11,9 @@ import copy
 import datetime
 import loggerUtil
 from datetime import timedelta
+import json
+import urllib2
+import distanceutil
 
 today = datetime.date.today().strftime("%Y-%m-%d")
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
@@ -72,9 +75,10 @@ def convertsPartsToFullJson(part_1, part_2, trainCounter):
     trainCounter[0] += 1
     try:
         part = {"carrierName": "Train",
-                "duration": dateTimeUtility.gettotalduration(part_2["full"][0]["arrival"], part_1["full"][0]["departure"],
-                                                           part_2["full"][0]["arrivalDate"],
-                                                           part_1["full"][0]["departureDate"]),
+                "duration": dateTimeUtility.gettotalduration(part_2["full"][0]["arrival"],
+                                                             part_1["full"][0]["departure"],
+                                                             part_2["full"][0]["arrivalDate"],
+                                                             part_1["full"][0]["departureDate"]),
                 "id": "train" + str(trainCounter[0]) + str(1), "mode": "train",
                 "site": "IRCTC", "source": part_1["full"][0]["source"], "destination": part_2["full"][0]["destination"],
                 "arrival": part_2["full"][0]["arrival"], "departure": part_1["full"][0]["departure"],
@@ -243,48 +247,81 @@ class TrainController:
             breakingcityset = (self.getBreakingCitySet(breakingcitieslist))
             if len(breakingcityset) > 0:
                 for breakingcity in breakingcityset:
-                    breakingcitystationset = self.placetoStationCodesCache.getStationsByCityName(breakingcity)
-                    sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingcitystationset,
-                                                                                 journeydate, traincounter,
-                                                                                 breakingcity)
-                    busController = busapi.BusController()
-                    sourceToBreakingStationBusJson = busController.getResults(source.title(), breakingcity.title(),
-                                                                              journeydate)
+                    self.fetchtraindatafrombreakingcities(breakingcity, destination, destinationstationset, journeydate,
+                                                          source, traincounter, directjson)
+        elif len(breakingcitieslist) == 0:
+            try:
+                logger.info("Getting nearest railway station to [%s]", source)
+                response = urllib2.urlopen('https://maps.googleapis.com/maps/api/geocode/json?address=' + source)
+                logger.debug("Nearest railway station to [%s]'s co-ordinates are")
+                sourcelatlong = json.loads(response.read())
+                response.close()
+                sourcelat = sourcelatlong["results"][0]["geometry"]["location"]["lat"]
+                sourcelong = sourcelatlong["results"][0]["geometry"]["location"]["lng"]
+                breakingcity = distanceutil.findnearestrailwaystation(sourcelat, sourcelong)
+                logger.info("Breaking city from co-ordinate is [%s]", breakingcity)
+            except Exception as e:
+                logger.error("Error in fetching longitude and latitude for [%s]", source)
 
-                    if len(sourceToBreakingStationJson["train"]) > 0 or len(sourceToBreakingStationBusJson["bus"]) > 0:
-                        breakingToDestinationJson = self.findTrainsBetweenStations(breakingcity, destinationstationset,
-                                                                                   journeydate, traincounter,
-                                                                                   destination)
-                        nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime(
-                            '%d-%m-%Y')
-                        breakingToDestinationJson["train"].extend(
-                            self.findTrainsBetweenStations(breakingcity, destinationstationset, nextday, traincounter,
-                                                           destination)["train"])
-                        breakingToDestinationBusJson = busController.getResults(breakingcity.title(),
-                                                                                destination.title(), journeydate)
-                        breakingToDestinationBusJson["bus"].extend(
-                            busController.getResults(breakingcity.title(), destination.title(), nextday)["bus"])
-                        if len(breakingToDestinationJson["train"]) > 0 and len(
-                                sourceToBreakingStationJson["train"]) > 0:
-                            combinedjson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson,
-                                                            traincounter)
-                            if len(combinedjson["train"]) > 0:
-                                directjson["train"].extend(combinedjson["train"])
-                        if len(sourceToBreakingStationBusJson["bus"]) > 0 and len(
-                                breakingToDestinationJson["train"]) > 0:
-                            combinedjson = self.combineBusAndTrainInit(sourceToBreakingStationBusJson,
-                                                                       breakingToDestinationJson)
-                            directjson["train"].extend(combinedjson["train"])
-                        if len(sourceToBreakingStationJson["train"]) > 0 and len(
-                                breakingToDestinationBusJson["bus"]) > 0:
-                            combinedjson = self.combineBusAndTrainEnd(sourceToBreakingStationJson,
-                                                                      breakingToDestinationBusJson)
-                            directjson["train"].extend(combinedjson["train"])
+            if breakingcity:
+                self.fetchtraindatafrombreakingcities(breakingcity.upper(), destination, destinationstationset, journeydate,
+                                                      source, traincounter, directjson)
+            # find nearest big railway stations
+            logger.warning("No breaking city between source [%s] and destination [%s]", source, destination)
 
         logger.debug("[END]-Get Results From FlightApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ", source,
                      destination)
 
         return directjson
+
+    def fetchtraindatafrombreakingcities(self, breakingcity, destination, destinationstationset, journeydate, source,
+                                         traincounter, directjson):
+        """
+
+        :param breakingcity: city from where journey needs to be broken
+        :param destination: final destination
+        :param destinationstationset: set of all railway stations of destination city
+        :param journeydate: date of journey
+        :param source: source station of journey
+        :param traincounter: global train counter used for route ID generation
+        :param directjson: final result
+        """
+        breakingcitystationset = self.placetoStationCodesCache.getStationsByCityName(breakingcity)
+        sourceToBreakingStationJson = self.findTrainsBetweenStations(source, breakingcitystationset,
+                                                                     journeydate, traincounter,
+                                                                     breakingcity)
+        busController = busapi.BusController()
+        sourceToBreakingStationBusJson = busController.getResults(source.title(), breakingcity.title(),
+                                                                  journeydate)
+        if len(sourceToBreakingStationJson["train"]) > 0 or len(sourceToBreakingStationBusJson["bus"]) > 0:
+            breakingToDestinationJson = self.findTrainsBetweenStations(breakingcity, destinationstationset,
+                                                                       journeydate, traincounter,
+                                                                       destination)
+            nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime(
+                '%d-%m-%Y')
+            breakingToDestinationJson["train"].extend(
+                self.findTrainsBetweenStations(breakingcity, destinationstationset, nextday, traincounter,
+                                               destination)["train"])
+            breakingToDestinationBusJson = busController.getResults(breakingcity.title(),
+                                                                    destination.title(), journeydate)
+            breakingToDestinationBusJson["bus"].extend(
+                busController.getResults(breakingcity.title(), destination.title(), nextday)["bus"])
+            if len(breakingToDestinationJson["train"]) > 0 and len(
+                    sourceToBreakingStationJson["train"]) > 0:
+                combinedjson = self.combineData(sourceToBreakingStationJson, breakingToDestinationJson,
+                                                traincounter)
+                if len(combinedjson["train"]) > 0:
+                    directjson["train"].extend(combinedjson["train"])
+            if len(sourceToBreakingStationBusJson["bus"]) > 0 and len(
+                    breakingToDestinationJson["train"]) > 0:
+                combinedjson = self.combineBusAndTrainInit(sourceToBreakingStationBusJson,
+                                                           breakingToDestinationJson)
+                directjson["train"].extend(combinedjson["train"])
+            if len(sourceToBreakingStationJson["train"]) > 0 and len(
+                    breakingToDestinationBusJson["bus"]) > 0:
+                combinedjson = self.combineBusAndTrainEnd(sourceToBreakingStationJson,
+                                                          breakingToDestinationBusJson)
+                directjson["train"].extend(combinedjson["train"])
 
     def getBreakingCitySet(self, breakingcitieslist):
 
