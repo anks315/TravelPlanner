@@ -251,8 +251,7 @@ class TrainController:
             breakingcityset = (self.getBreakingCitySet(breakingcitieslist))
             if len(breakingcityset) > 0:
                 for breakingcity in breakingcityset:
-                    self.fetchtraindatafrombreakingcities(breakingcity, destination, destinationstationset, journeydate,
-                                                          source, traincounter, directjson)
+                    self.fetchtraindatafrombreakingcities(breakingcity, destination, destinationstationset, journeydate,source, traincounter, directjson)
         if len(breakingcitieslist) == 0 or len(breakingcityset) == 0:
             try:
                 logger.info("Getting nearest railway station to [%s]", source)
@@ -276,7 +275,7 @@ class TrainController:
                     breakingcity = distanceutil.findnearestrailwaystation(destlat, destlong).upper()
                     if breakingcity == destination or breakingcity in destination or destination in breakingcity:
                         logger.warning("No breaking journey city possible between source [%s] and destination [%s]", source, destination)
-                        return
+                        return directjson
                 logger.info("Breaking city is [%s]", breakingcity.upper())
                 self.fetchtraindatafrombreakingcities(breakingcity.upper(), destination, destinationstationset, journeydate,source, traincounter, directjson)
             except Exception as e:
