@@ -168,11 +168,18 @@ def getCityNameById(stationId,stationsList):
             return station["Name"]
 
 def getCarrierNameById(carrierId,carriersList):
+
     for carrier in carriersList:
         if carrier["Id"]==carrierId:
-            return carrier["ImageUrl"]
+            carrierName = carrier["Name"].split('.')
+            carrierFinalName = carrierName[0].replace(" ","_")
+            return "/static/images/" + carrierFinalName + ".png"
+
 
 def getAgentNameById(agentId,agentsList):
+
     for agent in agentsList:
         if agent["Id"]==agentId:
-            return agent["ImageUrl"]
+            agentName = agent["Name"].split('.')
+            agentFinalName = agentName[0].replace(" ","_")
+            return "/static/images/" + agentFinalName + ".png"
