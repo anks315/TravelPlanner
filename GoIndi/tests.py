@@ -5,6 +5,9 @@ import dateTimeUtility
 import calendar
 from datetime import datetime, timedelta
 import time
+import models
+import loggerUtil
+import logging
 from sets import Set
 #import trainapiNeo4j
 # import json
@@ -56,3 +59,4 @@ from sets import Set
 
 #print dateTimeUtility.getduration('04:35', '09:12','16-02-2016','14-02-2016')
 #dateTimeUtility.addduration('04:35', '24:20')
+models.loadtraindata(loggerUtil.getLogger('tmp',logging.DEBUG))

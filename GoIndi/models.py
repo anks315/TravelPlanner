@@ -1,10 +1,10 @@
 
 from neo4jrestclient.client import GraphDatabase
-import logging
-from entity import TrainOption
+from entity import TrainOption, TrainStation
 import time
 from datetime import datetime, timedelta
 import calendar
+import TravelPlanner.trainUtil
 
 
 def demo():
@@ -24,16 +24,13 @@ def getTrainsBetweenStation(sourcecity, destinationStationSet, logger, journeyda
     :return: all possible routes along with fare between source and destination stations
     """
 
-    logger.debug("Fetching train routes between source[%s] and destination stations[%s] on [%s]", sourcecity,
-                 destinationStationSet, journeydate)
-    q = """MATCH (a:TRAINSTATION {CITY : '""" + sourcecity + """'})-[r:""" + '|'.join(
-        destinationStationSet) + """]->(b:TRAIN) RETURN a,b,r"""
+    logger.debug("Fetching train routes between source[%s] and destination stations[%s] on [%s]", sourcecity,destinationStationSet, journeydate)
+    q = """MATCH (a:TRAINSTATION {CITY : '""" + sourcecity + """'})-[r:""" + '|'.join(destinationStationSet) + """]->(b:TRAIN) RETURN a,b,r"""
     results = DATABASE_CONNECTION.query(q)
     trains = []
 
     if len(results.elements) == 0:
-        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity,
-                       destinationStationSet)
+        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity,destinationStationSet)
         return trains
 
     for i in range(len(results.elements)):
@@ -99,29 +96,29 @@ def getDuration(sourceDepartureTime, sourceDay, destinationArrivalTime, destinat
     durationMinutes=duration%60
     return str(durationHours) + ':' + str(durationMinutes)
 
-def getStationCodesByCityName(cityName, logger):
+def getstationcodesbycityname(cityname, logger):
     """
     To fetch all nearby or in stations in the given city
-    :param cityName: city for which stations needs to be fetched
+    :param cityname: city for which stations needs to be fetched
     :param logger: to logger events
     :return: list of all stations that are either in the city or nearby
     """
-    logger.info("Fetching Station for City[%s]", cityName)
+    logger.info("Fetching Station for City[%s]", cityname)
     start = time.time()
-    q = """MATCH (a:TRAINSTATION) where a.NAME = '""" + cityName + """' OR a.NAME STARTS WITH '""" + cityName + """ ' OR a.NAME ENDS WITH ' """ + cityName + """' OR a.CITY = '""" + cityName + """' OR a.CITY STARTS WITH '""" + cityName + """ ' OR a.CITY ENDS WITH ' """ + cityName + """' return a.CODE"""
+    q = """MATCH (a:TRAINSTATION) where a.NAME = '""" + cityname + """' OR a.NAME STARTS WITH '""" + cityname + """ ' OR a.NAME ENDS WITH ' """ + cityname + """' OR a.CITY = '""" + cityname + """' OR a.CITY STARTS WITH '""" + cityname + """ ' OR a.CITY ENDS WITH ' """ + cityname + """' return a.CODE"""
     stationcodes = []
     try:
         results = DATABASE_CONNECTION.query(q)
     except:
-        logger.error("Error while fetching station codes for city[%s]", cityName)
+        logger.error("Error while fetching station codes for city[%s]", cityname)
         return stationcodes
     print("--- %s [MODELS] Stations By Code---" % (time.time() - start))
     if len(results.elements) == 0:
-        logger.warning("No Station for city[%s]", cityName)
+        logger.warning("No Station for city[%s]", cityname)
         return stationcodes
     for i in range(len(results.elements)):
         stationcodes.append(results.elements[i][0])
-    logger.info("Stations for City[%s] are [%s]", cityName, stationcodes)
+    logger.info("Stations for City[%s] are [%s]", cityname, stationcodes)
     return stationcodes
 
 
@@ -191,16 +188,18 @@ def getBreakingCity(possiblecity, logger):
     :return: breaking city name
     """
     logger.info("Fetching matching city from breaking city/station[%s]", possiblecity)
-    q = """MATCH (a:TRAINSTATION) where a.NAME = '""" + possiblecity + """' OR a.NAME STARTS WITH '""" + possiblecity + """ ' OR a.NAME ENDS WITH ' """ + possiblecity + """' OR a.CITY = '""" + possiblecity + """' OR a.CITY STARTS WITH '""" + possiblecity + """ ' OR a.CITY ENDS WITH ' """ + possiblecity + """' return a"""
-    logger.debug("Fetch matching city query [%s]", q)
-    try:
-        result = DATABASE_CONNECTION.query(q)
-    except:
-        logger.error("Error while fetching breaking city for [%s]", possiblecity)
-    if len(result.elements) == 0:
-        logger.warning("No Breaking city present for [%s]", possiblecity)
-        return
-    return result.elements[0][0]['data']['CITY']
+    return TravelPlanner.trainUtil.getcityfromstation(possiblecity, logger)
+
+    # q = """MATCH (a:TRAINSTATION) where a.NAME = '""" + possiblecity + """' OR a.NAME STARTS WITH '""" + possiblecity + """ ' OR a.NAME ENDS WITH ' """ + possiblecity + """' OR a.CITY = '""" + possiblecity + """' OR a.CITY STARTS WITH '""" + possiblecity + """ ' OR a.CITY ENDS WITH ' """ + possiblecity + """' return a"""
+    # logger.debug("Fetch matching city query [%s]", q)
+    # try:
+    #     result = DATABASE_CONNECTION.query(q)
+    # except:
+    #     logger.error("Error while fetching breaking city for [%s]", possiblecity)
+    # if len(result.elements) == 0:
+    #     logger.warning("No Breaking city present for [%s]", possiblecity)
+    #     return
+    # return result.elements[0][0]['data']['CITY']
 
 
 def getDayFromDate(journeydate, diff):
@@ -232,3 +231,25 @@ def istrainrunningonjourneydate(train, journeydate, sourcecity, logger):
         logger.warning("Skipping train since it doesn't run from [%s] on [%s]", sourcecity, journeydate)
         return False
     return True
+
+def loadtraindata():
+    """
+    To load train stations on startup
+    :param logger: logger to log
+    :return: Map of train stations with code as key and train station as value
+    """
+    trainstationsmap = {}
+    q = "MATCH (n:TRAINSTATION) return n"
+    trainstations = DATABASE_CONNECTION.query(q)
+
+    if len(trainstations.elements) == 0:
+        return trainstations
+
+    for i in range(len(trainstations.elements)):
+        trainstation = TrainStation()
+        trainstation.code = trainstations.elements[i][0]['data']['CODE']
+        trainstation.name = trainstations.elements[i][0]['data']['NAME']
+        trainstation.city = trainstations.elements[i][0]['data']['CITY']
+        trainstationsmap[trainstation.code]= trainstation
+
+    return trainstationsmap

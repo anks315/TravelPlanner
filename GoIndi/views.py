@@ -16,7 +16,7 @@ import busapi
 import models
 import trainapiNeo4j
 #import trainDBscript
-from googleapiparser import getPossibleBreakingPlacesForTrain
+from googleapiparser import getpossiblebreakingplacesfortrain
 from flightSkyScanner import getApiResults
 
 

@@ -8,7 +8,7 @@ import calendar
 import time
 import concurrent.futures
 
-skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
+skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN', 'ROAD'])
 
 def parseTransitRoutes(jsontransitroute,destination, logger):
 
@@ -71,7 +71,7 @@ def getcityfromstation(routedestinationstation, logger):
     return routedestinationstation # return same value if not mapped to any station
 
 
-def getPossibleBreakingPlacesForTrain(source,destination, logger, journeydate):
+def getpossiblebreakingplacesfortrain(source,destination, logger, journeydate):
 
     """
     To get possible stations to break journey between source & destination stations
@@ -90,7 +90,7 @@ def getPossibleBreakingPlacesForTrain(source,destination, logger, journeydate):
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
         for epoch in epochs:
             logger.info("Getting breaking station in journey from source[%s] to destination[%s]", source, destination)
-            futures.append(executor.submit(getBreakingCities, source, destination, epoch, logger))
+            futures.append(executor.submit(getbreakingcities, source, destination, epoch, logger))
     for future in futures:
         if future:
             possiblebreakage.extend(future.result())
@@ -100,7 +100,7 @@ def getPossibleBreakingPlacesForTrain(source,destination, logger, journeydate):
     return possiblebreakage
 
 
-def getBreakingCities(source, destination, epoch, logger):
+def getbreakingcities(source, destination, epoch, logger):
     jsontransitroute = ''
     url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ source +",IN&destination="+ destination +",IN&mode=transit&transit_mode=train&departure_time=" + str(epoch) +"&alternatives=true&key="+ trainConstants.GOOGLE_API_KEY
     try:
