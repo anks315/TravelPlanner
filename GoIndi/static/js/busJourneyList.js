@@ -1,4 +1,9 @@
 function showBusJourneyList(busList){
+	if(busList.length==0){
+		var noData = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Sorry! We could not find any Buses on this Route<br/>Check out Train or flight for more options</td></tr><tr><td><br/></td></tr></table></div>'
+		document.getElementById("busData").innerHTML = noData;
+		return;
+	}
 	var output = "<br/><div id='busBox' hidden><table width='100%'><tr>";
 	for (i = 0; i < busList.length; i++) { 
 		var busDetails = busList[i].parts[0];

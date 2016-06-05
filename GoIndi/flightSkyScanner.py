@@ -10,7 +10,7 @@ import loggerUtil
 logger = loggerUtil.getLogger("FlighSkyScanner",logging.DEBUG)
 
 def getApiResults(sourcecity,destinationcity,journeyDate,id):
-    cityAndStateToStationsMap = {'Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
+    cityAndStateToStationsMap = {'Pathankot':'IXP','Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
                                  'Amritsar': 'ATQ', 'Aurangabad': 'IXU', 'Bagdogra': 'IXB', 'Bangalore': 'BLR',
                                  'Bhavnagar': 'BHU', 'Bhopal': 'BHO', 'Bhubaneswar': 'BBI', 'Bhuj': 'BHJ',
                                  'Calcutta': 'CCU', 'Kolkata': 'CCU', 'Chandigarh': 'IXC', 'Chennai': 'MAA',
@@ -168,11 +168,18 @@ def getCityNameById(stationId,stationsList):
             return station["Name"]
 
 def getCarrierNameById(carrierId,carriersList):
+
     for carrier in carriersList:
         if carrier["Id"]==carrierId:
-            return carrier["ImageUrl"]
+            carrierName = carrier["Name"].split('.')
+            carrierFinalName = carrierName[0].replace(" ","_")
+            return "/static/images/" + carrierFinalName + ".png"
+
 
 def getAgentNameById(agentId,agentsList):
+
     for agent in agentsList:
         if agent["Id"]==agentId:
-            return agent["ImageUrl"]
+            agentName = agent["Name"].split('.')
+            agentFinalName = agentName[0].replace(" ","_")
+            return "/static/images/" + agentFinalName + ".png"
