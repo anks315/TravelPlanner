@@ -1,5 +1,6 @@
 var routeMap = {}
 var flightRouteList
+var trainRouteList
 function routeFilter(transportList,mode){
 	routeMap[mode] ={}
 	var routeList = new Array()
@@ -13,6 +14,8 @@ function routeFilter(transportList,mode){
 	}
 	if(mode=='flight'){
 		flightRouteList=routeList
+	} else if(mode == 'train'){
+		trainRouteList=routeList
 	}
 	 
 }

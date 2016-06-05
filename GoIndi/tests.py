@@ -54,4 +54,5 @@ from sets import Set
 #
 # getDay()
 
-print dateTimeUtility.getduration('04:35', '09:12','16-02-2016','14-02-2016')
+#print dateTimeUtility.getduration('04:35', '09:12','16-02-2016','14-02-2016')
+#dateTimeUtility.addduration('04:35', '24:20')

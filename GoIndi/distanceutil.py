@@ -367,7 +367,7 @@ airportList = [
     },
     {
         'City': 'Hissar',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Hissar',
         'IATA': 'HSS',

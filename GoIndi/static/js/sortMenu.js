@@ -39,22 +39,40 @@ function showSortMenuMain(){
 		});
 		
 	$( "#priceSort" ).click(function() {
-				SortListByPrice(newbusList);
-				showBusJourneyList(newbusList);
-				SortListByPrice(newtrainList);
-				showtransportJourneyList(newtrainList,"train");
+				if(flightList.length!=0){
+					resetSummary("flight","price");
+				}
 				SortListByPrice(newflightList);
 				showtransportJourneyList(newflightList,"flight");
-				showSummary();
+				if(busList.length!=0){
+					resetSummary("bus","price");
+				}
+				SortListByPrice(newbusList);
+				showBusJourneyList(newbusList);
+				if(trainList.length!=0){
+					resetSummary("train","price");
+				}
+				SortListByPrice(newtrainList);
+				showtransportJourneyList(newtrainList,"train");
+				
 		});
 	$( "#durationSort" ).click(function() {
-				SortListByDuration(newbusList);
-				showBusJourneyList(newbusList);
-				SortListByDuration(newtrainList);
-				showtransportJourneyList(newtrainList,"train");
+				if(flightList.length!=0){
+					resetSummary("flight","duration");
+				}
 				SortListByDuration(newflightList);
 				showtransportJourneyList(newflightList,"flight");
-				showSummary();
+				if(busList.length!=0){
+					resetSummary("bus","duration");
+				}
+				SortListByDuration(newbusList);
+				showBusJourneyList(newbusList);
+				if(trainList.length!=0){
+					resetSummary("train","duration");
+				}
+				SortListByDuration(newtrainList);
+				showtransportJourneyList(newtrainList,"train");
+				
 		});
 		
 	SortListByDuration

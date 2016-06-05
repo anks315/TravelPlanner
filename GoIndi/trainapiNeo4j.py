@@ -14,6 +14,8 @@ from datetime import timedelta
 import json
 import urllib2
 import distanceutil
+import minMaxUtil
+import miscUtility
 
 today = datetime.date.today().strftime("%Y-%m-%d")
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
@@ -43,7 +45,7 @@ def parseandreturnroute(trainroutes, logger, journeyDate, trainCounter):
                     "sourceStation": trainRoute.srcStationCode, "destinationStation": trainRoute.destStationCode,
                     "arrivalDate": dateTimeUtility.calculateArrivalTimeAndDate(journeyDate, trainRoute.srcDepartureTime,trainRoute.duration)["arrivalDate"],
                     "departure": trainRoute.srcDepartureTime, "departureDate": journeyDate, "prices": trainRoute.prices, "price": trainRoute.price,
-                    "priceClass": trainRoute.priceClass
+                    "priceClass": trainRoute.priceClass, "route": trainRoute.srcStation + ",train," + trainRoute.destStation
                     }
             part = copy.deepcopy(full)
             part["id"] = "train" + str(trainCounter[0]) + str(1)
@@ -54,8 +56,8 @@ def parseandreturnroute(trainroutes, logger, journeyDate, trainCounter):
             # this min/max data only in full journey for filtering purpose
             full["minPrice"] = full["maxPrice"] = trainRoute.price
             full["minDuration"] = full["maxDuration"] = trainRoute.duration
-            full["minArrivalTime"] = full["maxArrivalTime"] = trainRoute.destArrivalTime
-            full["minDepartureTime"] = full["maxDepartureTime"] = trainRoute.srcDepartureTime
+            full["minArrival"] = full["maxArrival"] = trainRoute.destArrivalTime
+            full["minDeparture"] = full["maxDeparture"] = trainRoute.srcDepartureTime
             route["full"].append(full)
             route["parts"].append(part)
             if hasprice(route):
@@ -79,10 +81,9 @@ def convertsPartsToFullJson(part_1, part_2, trainCounter):
     try:
         duration = dateTimeUtility.gettotalduration(part_2["full"][0]["arrival"],part_1["full"][0]["departure"],part_2["full"][0]["arrivalDate"],part_1["full"][0]["departureDate"])
         price = part_1["full"][0]["price"] + part_2["full"][0]["price"]
-        part = {"carrierName": "Train","duration": duration,"id": "train" + str(trainCounter[0]) + str(1), "mode": "train",
-                "site": "IRCTC", "source": part_1["full"][0]["source"], "destination": part_2["full"][0]["destination"],
-                "arrival": part_2["full"][0]["arrival"], "departure": part_1["full"][0]["departure"],
-                "departureDate": part_1["full"][0]["departureDate"], "arrivalDate": part_2["full"][0]["arrivalDate"],
+        part = {"carrierName": "Train","duration": duration,"id": "train" + str(trainCounter[0]) + str(1), "mode": "train", "site": "IRCTC", "source": part_1["full"][0]["source"],
+                "destination": part_2["full"][0]["destination"], "arrival": part_2["full"][0]["arrival"], "departure": part_1["full"][0]["departure"], "departureDate": part_1["full"][0]["departureDate"],
+                "arrivalDate": part_2["full"][0]["arrivalDate"], "route" : part_1["full"][0]["source"] + ",train," + part_2["full"][0]["destination"],
                 "prices": {"1A": part_1["full"][0]["prices"]["1A"] + part_2["full"][0]["prices"]["1A"],
                            "2A": part_1["full"][0]["prices"]["2A"] + part_2["full"][0]["prices"]["2A"],
                            "3A": part_1["full"][0]["prices"]["3A"] + part_2["full"][0]["prices"]["3A"],
@@ -100,8 +101,8 @@ def convertsPartsToFullJson(part_1, part_2, trainCounter):
         part["subParts"][1]["id"] = "train" + str(trainCounter[0]) + str(1) + str(2)
         route["parts"].append(part)
         route["full"] = []
-        full = {"id": "train" + str(trainCounter[0]), "minPrice": price, "maxPrice": price, "minDuration": duration, "maxDuration": duration,
-                "minArrivalTime": part_2["full"][0]["arrival"], "maxArrivalTime": part_2["full"][0]["arrival"], "minDepartureTime": part_1["full"][0]["departure"], "maxDepartureTime": part_1["full"][0]["departure"]}
+        full = {"id": "train" + str(trainCounter[0]), "minPrice": price, "maxPrice": price, "minDuration": duration, "maxDuration": duration, "minArrival": part_2["full"][0]["arrival"],"maxArrival": part_2["full"][0]["arrival"],
+                "minDeparture": part_1["full"][0]["departure"], "maxDeparture": part_1["full"][0]["departure"], "route": part["route"], "duration":duration, "price":price}
         route["full"].append(full)
     except Exception as e:
         logger.error("Error while combining data for Train[%s] and Train[%s], reason [%s]", part_1["full"]["id"], part_2["full"]["id"], e.message)
@@ -162,7 +163,11 @@ class TrainController:
         :return:
         """
         resultjsondata = {"train": []}
-        routedata = self.gettrainroutes(sourcecity, destinationstationset, journeyDate, trainCounter, destinationcity)
+        try:
+            routedata = self.gettrainroutes(sourcecity, destinationstationset, journeyDate, trainCounter, destinationcity)
+        except Exception as e:
+            logger.error("Error while fetching train data from db for source [%s] and destination [%s], reason [%s]", sourcecity, destinationcity, e.message)
+            return resultjsondata
         if len(routedata) > 0:
             resultjsondata["train"].extend(routedata)
         return resultjsondata
@@ -231,20 +236,23 @@ class TrainController:
 
         destinationstationset = self.placetoStationCodesCache.getStationsByCityName(destination)
         traincounter = [0]
-        directjson = self.findTrainsBetweenStations(source, destinationstationset, journeydate, traincounter,destination)
+        if len(destinationstationset) != 0:
+            directjson = self.findTrainsBetweenStations(source, destinationstationset, journeydate, traincounter,destination)
+        else:
+            directjson = {"train": []}
         if isOnlyDirect == 1 or len(directjson["train"]) > 8:  # return in case we have more than 8 direct trains
             return directjson
         logger.debug("Calling google api parser for Source[%s] an Destination[%s],journeyDate", source, destination,journeydate)
         breakingcitieslist = googleapiparser.getPossibleBreakingPlacesForTrain(source, destination, logger, journeydate)
         logger.debug("Call To google api parser successful for Source[%s] and Destination[%s]", source, destination)
 
+        breakingcityset = Set()
         if len(breakingcitieslist) > 0:
             breakingcityset = (self.getBreakingCitySet(breakingcitieslist))
             if len(breakingcityset) > 0:
                 for breakingcity in breakingcityset:
-                    self.fetchtraindatafrombreakingcities(breakingcity, destination, destinationstationset, journeydate,
-                                                          source, traincounter, directjson)
-        elif len(breakingcitieslist) == 0:
+                    self.fetchtraindatafrombreakingcities(breakingcity, destination, destinationstationset, journeydate,source, traincounter, directjson)
+        if len(breakingcitieslist) == 0 or len(breakingcityset) == 0:
             try:
                 logger.info("Getting nearest railway station to [%s]", source)
                 url = 'https://maps.googleapis.com/maps/api/geocode/json?address='+ source.title()
@@ -267,7 +275,7 @@ class TrainController:
                     breakingcity = distanceutil.findnearestrailwaystation(destlat, destlong).upper()
                     if breakingcity == destination or breakingcity in destination or destination in breakingcity:
                         logger.warning("No breaking journey city possible between source [%s] and destination [%s]", source, destination)
-                        return
+                        return directjson
                 logger.info("Breaking city is [%s]", breakingcity.upper())
                 self.fetchtraindatafrombreakingcities(breakingcity.upper(), destination, destinationstationset, journeydate,source, traincounter, directjson)
             except Exception as e:
@@ -349,12 +357,25 @@ class TrainController:
                 if dateTimeUtility.checkIfApplicable(subpart["arrival"], subpart["arrivalDate"], trainpart["departure"],trainpart["departureDate"], 3):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"], trainpart["departure"],subpart["arrivalDate"],trainpart["departureDate"])
                     subparts.append(subpart)
+
+            if len(subparts) > 5:
+                subparts.sort(miscUtility.sortOnWaitingTime)
+                subparts = subparts[0:5]
+
             if subparts:
-                newPart = {"subParts": subparts, "mode": "bus",
-                           "id": breakingToDestinationJson["train"][j]["full"][0]["id"] + str(0),
-                           "destination": subparts[0]["destination"], "source": subparts[0]["source"],
-                           "carrierName": subparts[0]["carrierName"]}
-                breakingToDestinationJson["train"][j]["parts"].insert(0, newPart)
+                minmax = minMaxUtil.getMinMaxValues(subparts)
+                newpart = {"subParts": subparts, "mode": "bus","id": breakingToDestinationJson["train"][j]["full"][0]["id"] + str(0),
+                           "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"]}
+                breakingToDestinationJson["train"][j]["parts"].insert(0, newpart)
+                breakingToDestinationJson["train"][j]["full"][0]["route"] = newpart["source"] + ","+subparts[0]["mode"]+"," + newpart["destination"] + ",train," + breakingToDestinationJson["train"][j]["full"][0]["destination"]
+                breakingToDestinationJson["train"][j]["full"][0]["price"] = int(breakingToDestinationJson["train"][j]["full"][0]["price"]) + int(minmax["minPrice"])
+                breakingToDestinationJson["train"][j]["full"][0]["minPrice"] = int(breakingToDestinationJson["train"][j]["full"][0]["minPrice"]) + int(minmax["minPrice"])
+                breakingToDestinationJson["train"][j]["full"][0]["maxPrice"] = int(breakingToDestinationJson["train"][j]["full"][0]["maxPrice"]) + int(minmax["maxPrice"])
+                breakingToDestinationJson["train"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(breakingToDestinationJson["train"][j]["full"][0]["duration"], minmax["minDuration"])
+                breakingToDestinationJson["train"][j]["full"][0]["minDuration"] = dateTimeUtility.addDurations(breakingToDestinationJson["train"][j]["full"][0]["minDuration"], minmax["minDuration"])
+                breakingToDestinationJson["train"][j]["full"][0]["maxDuration"] = dateTimeUtility.addDurations(breakingToDestinationJson["train"][j]["full"][0]["maxDuration"], minmax["maxDuration"])
+                breakingToDestinationJson["train"][j]["full"][0]["minDeparture"] = minmax["minDep"]
+                breakingToDestinationJson["train"][j]["full"][0]["maxDeparture"] = minmax["maxDep"]
 
         combinedjson["train"] = [x for x in breakingToDestinationJson["train"] if len(x["parts"]) == 2]
         return combinedjson
@@ -364,22 +385,32 @@ class TrainController:
         combinedjson = {"train": []}
 
         for j in range(len(sourceToBreakingJson["train"])):
-            trainPart = sourceToBreakingJson["train"][j]["parts"][0]
-            subParts = []
+            trainpart = sourceToBreakingJson["train"][j]["parts"][0]
+            subparts = []
             for k in range(len(breakingToDestinationBusJson["bus"])):
-                subPart = breakingToDestinationBusJson["bus"][k]["parts"][0]
-                if dateTimeUtility.checkIfApplicable(trainPart["arrival"], trainPart["arrivalDate"],
-                                                     subPart["departure"], subPart["departureDate"], 3):
-                    subPart["waitingTime"] = dateTimeUtility.getWaitingTime(trainPart["arrival"], subPart["departure"],
-                                                                            trainPart["arrivalDate"],
-                                                                            subPart["departureDate"])
-                    subParts.append(subPart)
-            if subParts:
-                newPart = {"subParts": subParts, "mode": "bus",
-                           "id": sourceToBreakingJson["train"][j]["full"][0]["id"] + str(2),
-                           "destination": subParts[0]["destination"], "source": subParts[0]["source"],
-                           "carrierName": subParts[0]["carrierName"]}
-                sourceToBreakingJson["train"][j]["parts"].append(newPart)
+                subpart = breakingToDestinationBusJson["bus"][k]["parts"][0]
+                if dateTimeUtility.checkIfApplicable(trainpart["arrival"], trainpart["arrivalDate"],subpart["departure"], subpart["departureDate"], 3):
+                    subpart["waitingTime"] = dateTimeUtility.getWaitingTime(trainpart["arrival"], subpart["departure"],trainpart["arrivalDate"],subpart["departureDate"])
+                    subparts.append(subpart)
+
+            if len(subparts) > 5:
+                subparts.sort(miscUtility.sortOnWaitingTime)
+                subparts = subparts[0:5]
+
+            if subparts:
+                minmax = minMaxUtil.getMinMaxValues(subparts)
+                newpart = {"subParts": subparts, "mode": "bus", "id": sourceToBreakingJson["train"][j]["full"][0]["id"] + str(2),
+                           "destination": subparts[0]["destination"], "source": subparts[0]["source"], "carrierName": subparts[0]["carrierName"]}
+                sourceToBreakingJson["train"][j]["parts"].append(newpart)
+                sourceToBreakingJson["train"][j]["full"][0]["route"] = sourceToBreakingJson["train"][j]["full"][0]["source"] + ",train," + newpart["source"] + ","+subparts[0]["mode"]+"," + newpart["destination"]
+                sourceToBreakingJson["train"][j]["full"][0]["price"] = int(sourceToBreakingJson["train"][j]["full"][0]["price"]) + int(minmax["minPrice"])
+                sourceToBreakingJson["train"][j]["full"][0]["minPrice"] = int(sourceToBreakingJson["train"][j]["full"][0]["minPrice"]) + int(minmax["minPrice"])
+                sourceToBreakingJson["train"][j]["full"][0]["maxPrice"] = int(sourceToBreakingJson["train"][j]["full"][0]["maxPrice"]) + int(minmax["maxPrice"])
+                sourceToBreakingJson["train"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(sourceToBreakingJson["train"][j]["full"][0]["duration"], minmax["minDuration"])
+                sourceToBreakingJson["train"][j]["full"][0]["minDuration"] = dateTimeUtility.addDurations(sourceToBreakingJson["train"][j]["full"][0]["minDuration"], minmax["minDuration"])
+                sourceToBreakingJson["train"][j]["full"][0]["maxDuration"] = dateTimeUtility.addDurations(sourceToBreakingJson["train"][j]["full"][0]["maxDuration"], minmax["maxDuration"])
+                sourceToBreakingJson["train"][j]["full"][0]["minArrival"] = minmax["minArr"]
+                sourceToBreakingJson["train"][j]["full"][0]["maxArrival"] = minmax["maxArr"]
 
         combinedjson["train"] = [x for x in sourceToBreakingJson["train"] if len(x["parts"]) == 2]
         return combinedjson

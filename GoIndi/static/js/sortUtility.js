@@ -1,12 +1,24 @@
 function SortListByPrice(list){
+			if(list.length==0){
+				return
+			}
 				function SortByPrice(a,b){
-					var aPrice = a.full[0].price.split(",")[0];
-					var bPrice = b.full[0].price.split(",")[0];
+					var aPrice = a.full[0].price
+					if(a.full[0].mode == "bus"){
+						 aPrice = aPrice.split(",")[0];
+					}
+					var bPrice = b.full[0].price
+					if(b.full[0].mode == "bus"){
+						 bPrice = bPrice.split(",")[0];
+					}
 					return (((aPrice*1)<(bPrice*1))?-1:(((aPrice*1)>(bPrice*1))?1:0));
 				}
 				list.sort(SortByPrice);
 }
 function SortListByDuration(list){
+			if(list.length==0){
+				return
+			}
 				function SortByDuration(a,b){
 					var aDuration = a.full[0].duration;
 					var bDuration = b.full[0].duration;
