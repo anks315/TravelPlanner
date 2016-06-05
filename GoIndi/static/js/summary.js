@@ -1,67 +1,109 @@
-var bus = [{"full":[{"id":"bus1","mode":"bus","price":"1000","duration":"10:15","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}],"parts":[{"id":"bus11","mode":"bus","price":"1000","duration":"12:35","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}]}]
-var bus2 = [{"full":[{"id":"bus1","mode":"bus","price":"7000","duration":"12:35","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}],"parts":[{"id":"bus11","mode":"bus","price":"1000","duration":"12:35","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}]}]
-var bus3 = [{"full":[{"id":"bus1","mode":"bus","price":"1200","duration":"12:50","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}],"parts":[{"id":"bus11","mode":"bus","price":"1000","duration":"12:35","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}]}]
 
-var busList = [{"full":[{"id":"bus1","mode":"bus","price":"6000","duration":"13:05","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}],"parts":[{"id":"bus11","mode":"bus","price":"6000","duration":"13:05","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}]},{"full":[{"id":"bus1","mode":"bus","price":"1200","duration":"12:35","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}],"parts":[{"id":"bus11","mode":"bus","price":"1200","duration":"12:35","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}]},{"full":[{"id":"bus1","mode":"bus","price":"7000","duration":"12:50","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}],"parts":[{"id":"bus11","mode":"bus","price":"7000","duration":"12:50","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}]}];
-
-
-var trainList = [{"full":[{"id":"train1","mode":"train","price":"1200","duration":"10:35","site":"irctc","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12"}],"parts":[{"id":"train11","mode":"train","price":"600","duration":"10:35","site":"irctc","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Sampark Kranti"},{"id":"train12","mode":"train","price":"600","duration":"10:35","site":"irctc","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Rajdhani"}]},{"full":[{"id":"train2","mode":"train","price":"1500","duration":"13:35","site":"irctc","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}],"parts":[{"id":"train21","mode":"train","price":"1000","duration":"12:35","site":"irctc","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Sampark Kranti"}]},{"full":[{"id":"train3","mode":"train","price":"1100","duration":"08:35","site":"irctc","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}],"parts":[{"id":"train31","mode":"train","price":"300","duration":"10:35","site":"irctc","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Sampark Kranti"},{"id":"train32","mode":"train","price":"800","duration":"08:35","site":"irctc","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Rajdhani"}]}]
-
-
-var flightList = [{"full":[{"id":"flight1","mode":"flight","price":"5000","duration":"10:00","site":"","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"SpiceJet"}],"parts":[{"id":"flight11","mode":"train","price":"300","duration":"2:30","site":"","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Sampark Kranti"},{"id":"flight12","mode":"flight","price":"4500","duration":"2:00","site":"makemytrip","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"SpiceJet","flightId":"GT-108"},{"id":"flight13","mode":"bus","price":"200","duration":"2:30","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}]},{"full":[{"id":"flight2","mode":"flight","price":"5000","duration":"10:00","site":"","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"SpiceJet"}],"parts":[{"id":"flight21","mode":"flight","price":"4500","duration":"2:00","site":"makemytrip","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"SpiceJet","flightId":"GT-108"}]},{"full":[{"id":"flight3","mode":"flight","price":"5000","duration":"10:00","site":"","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"SpiceJet"}],"parts":[{"id":"flight31","mode":"train","price":"300","duration":"2:30","site":"","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Sampark Kranti"},{"id":"flight32","mode":"flight","price":"4500","duration":"2:00","site":"makemytrip","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"SpiceJet","flightId":"GT-108"},{"id":"flight33","mode":"bus","price":"200","duration":"2:30","site":"travelyaari","source":"Delhi","destination":"Mumbai","departure":"00:12","arrival":"13:12","carrierName":"Vishal Travels"}]}]
 
 function showSummary(){
-	var options = new Array();
-		options[0]=busList[0];
-		options[1]=trainList[0];
-		options[2]=flightList[0];
-	var leastPrice = options[0].full[0].price;
-	var leastDuration = options[0].full[0].duration;
-	for (i = 1; i < options.length; i++) { 
-		var price = options[i].full[0].price;
-		if(price < leastPrice){
-			leastPrice = price;
-		}
-	}
-	for (i = 1; i < options.length; i++) { 
-		var duration = options[i].full[0].duration;
-		var durArr = duration.split(":");
-		var leastDurArr = leastDuration.split(":");
-		if(durArr[0] < leastDurArr[0]){
-			leastDuration = duration;
-		}
-		if(durArr[0] == leastDurArr[0]){
-			if(durArr[1] < leastDurArr[1]){
-				leastDuration = duration;
-			}
-		}
-		
-	}
-	var widlist = "";
-	for (i = 0; i < options.length; i++) { 
-
-		var wid = "";
-		var division = 100/options[i].parts.length;
-		for(j=0; j < options[i].parts.length; j++){
-			wid = wid+"<td width = \""+division+"%\"><table width = \"100%\"><tr><td width = \"10%\"><img src=\"/static/images/"+options[i].parts[j].mode+".png\"/></td><td width = \"90%\">&nbsp<hr width=\"100%\" style='margin-top:0em;margin-bottom:0em'/>&nbsp</td><tr></table></td>"
-		}
-		if(options[i].full[0].price == leastPrice){
-			var priceColor = "green";
-		} else {
-			var priceColor = "red";
-		}
-		
-		if(options[i].full[0].duration == leastDuration){
-			var durationColor = "green";
-		} else {
-			var durationColor = "red";
-		}
-		widlist = widlist + "<tr><td   style = 'text-align: center;white-space: nowrap'><font color='"+priceColor+"'>&#8377 "+options[i].full[0].price+"/-&nbsp;&nbsp</font></td><td><table width = '100%'><tr>"+wid+"</tr></table></td><td  style = 'text-align: center;white-space: nowrap'><font color='"+durationColor+"'>&nbsp;&nbsp"+options[i].full[0].duration+" Hr</font></td></tr>";
-	}
 	
-	 var output = "<div class='panel panel-default'><div class='panel-body'><table width = '100%'><tr><th  style = 'text-align: center'><font color='grey'>Price</font></th><th></th><th  style = 'text-align: center'><font color='grey'>Duration</font></th></tr>"+widlist+"</table></div></div>";
+	
+	 var output = "<div class='panel panel-default'><div class='panel-body'><br/><table width = '100%' style='text-align:center;'><tr><td valign='top' width = '5%'><div id = busSum></div></td><td width = '70%'><div id = busSumWid ></div></td><td valign='top'><div id = busSumPrice></div></td><td valign='top'><div id = busSumDur></div></td></tr><tr><td width = '5%' valign='top'><div id = trainSum></div></td><td width = '70%'><div id = trainSumWid ></div></td><td valign='top'><div id = trainSumPrice></div></td><td valign='top'><div id = trainSumDur></div></td></tr><tr><td width = '5%' valign='top'><div id = flightSum  ></div></td><td width = '70%'><div id = flightSumWid></div></td><td valign='top'><div id = flightSumPrice></div></td><td valign='top'><div id = flightSumDur></div></td></tr></table></div></div>";
 	 
 	 document.getElementById("summary").innerHTML = output;
+	 var progressBar = "<div class='progress'><div class='progress-bar progress-bar-warning progress-bar-striped active' role='progressbar' aria-valuenow='45' aria-valuemin='0' aria-valuemax='100' style='width: 100%'><span class='sr-only'>100% Complete</span></div></div>"
+	document.getElementById("busSumWid").innerHTML = progressBar;
+	document.getElementById("trainSumWid").innerHTML = progressBar;
+	document.getElementById("flightSumWid").innerHTML = progressBar;
+	document.getElementById("busSum").innerHTML = "<img  src='/static/images/bus.png'>";
+	document.getElementById("trainSum").innerHTML = "<img  src='/static/images/train.png'>";
+	document.getElementById("flightSum").innerHTML = "<img  src='/static/images/flight.png'>";
 	
 }
 
+function setSummary(list,mode,basedOn){
+	if(list.length==0){
+		setNotApplicable(mode,basedOn)
+		return
+	}
+	SortListByPrice(list);
+	var currentPrice =''
+	if(mode=="flight"){
+		flightPriceSum = list[0]
+		currentPrice = flightPriceSum
+	}else if(mode=="train") {
+		trainPriceSum = list[0]
+		currentPrice = trainPriceSum
+	}else{
+		busPriceSum = list[0]
+		currentPrice = busPriceSum
+	}
+	var currentDur =''
+	SortListByDuration(list);
+	if(mode=="flight"){
+		flightDurSum = list[0]
+		currentDur = flightDurSum
+	}else if(mode=="train") {
+		trainDurSum = list[0]
+		currentDur = trainDurSum
+	}else{
+		busDurSum = list[0]
+		currentDur = busDurSum
+	}
+	setSummaryDiv(currentPrice,mode);
+	
+}
+function setNotApplicable(mode,basedOn){
+	var output = "<table width='100%' style ='text-align:center' ><tr><td width='100%' style ='padding: 0px;' class = 'summaryNA'>&nbsp;<font color = 'white'>Not Available</font></td></tr></table><br/>";
+	document.getElementById(""+mode+"SumWid").innerHTML = output
+}
+function resetSummary(mode,basedOn){
+
+	if(basedOn=="duration"){
+		if(mode=="flight"){
+			setSummaryDiv(flightDurSum,mode);
+		}else if(mode=="train") {
+			setSummaryDiv(trainDurSum,mode);
+		}else{
+			setSummaryDiv(busDurSum,mode);
+		}
+	} else {
+		if(mode=="flight"){
+			setSummaryDiv(flightPriceSum,mode);
+		}else if(mode=="train") {
+			setSummaryDiv(trainPriceSum,mode);
+		}else{
+			setSummaryDiv(busPriceSum,mode);
+		}
+	}
+	
+}
+
+function setSummaryDiv(current,mode){
+	if(mode=="bus"){
+		var route = current.full[0].source + "," + current.full[0].mode + "," + current.full[0].destination
+		var price = current.full[0].price.split(",")[0]
+	} else {
+		var route = current.full[0].route
+		var price = current.full[0].price
+	}
+	var routeArr = route.split(",")
+	var routeLen = routeArr.length;
+	if(routeLen==7){
+		var percent = 12
+	} else if (routeLen==5){
+		var percent = 17
+	} else {
+		var percent = 1
+	}
+	var internals = "<td width='"+percent+"%' style ='padding: 0px;text-align:left' class = 'summaryBar'>&nbsp;<font color = 'white'>"+routeArr[0]+"</font></td>"
+	for (var j = 1 ; j < routeLen; j++){
+		
+		internals = internals + "<td style ='padding: 0px' class = 'summaryBar'><img  src='/static/images/"+routeArr[j]+"3.png'></td>"
+		j++;
+		if(j!=routeLen-1){
+			internals = internals + "<td style ='padding: 0px' class = 'summaryBar'><font color = 'white'>"+routeArr[j]+"</font</td>"
+		} else {
+			internals = internals + "<td width='"+percent+"%' style ='padding: 0px;text-align:right' class = 'summaryBar'><font color = 'white'>"+routeArr[j]+"</font>&nbsp;</td>"
+		}
+	}
+	var output = "<table width='100%' style ='text-align:center' ><tr>"+internals+"</tr></table><br/>"
+	document.getElementById(""+mode+"SumWid").innerHTML = output
+	document.getElementById(""+mode+"SumPrice").innerHTML = "<b><font color='green'>&#8377 "+price+"/-</font></b>"
+	document.getElementById(""+mode+"SumDur").innerHTML = "<font color='grey'>"+current.full[0].duration+" Hrs</font>"
+}

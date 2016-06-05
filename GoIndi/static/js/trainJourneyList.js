@@ -1,6 +1,11 @@
 var radionames = []
 var isSelected =0
 function showTrainJourneyList(transportList){
+	if(trainList.length==0){
+		var noData = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Sorry! We could not find any Trains on this Route<br/>Check out Flight or Bus for more options</td></tr><tr><td><br/></td></tr></table></div>'
+		document.getElementById("trainData").innerHTML = noData;
+		return;
+	}
 	var output = "<br/><div id='trainBox' hidden><table width='100%'><tr>";
 	for (i = 0; i < transportList.length; i++) { 
 		var transportTotalDetails = transportList[i].full[0];
@@ -8,6 +13,12 @@ function showTrainJourneyList(transportList){
 		
 		var journeyDividerContent = "";
 		var individualJourneyDetails = "";
+		var summary = "<br/>";
+		var fontSize = 'h4'
+		if(transportList[i].parts.length>1){
+			fontSize = 'h5'
+			summary="<table width = '100%'><tr><td style='text-align:left;padding: 5px;'><div class='journeyPriceSumLabel'>duration starts from</div><div class='journeyDuration sameLine'> <div class='sameLine'>"+transportTotalDetails.duration+" Hrs</div></div></td><td style='text-align:right;padding: 5px;'><div class='journeyPriceSumLabel'>price starts from</div><div class='journeyPrice sameLine'>  &#8377 <div class='sameLine'>"+transportTotalDetails.price+"</div>/-</div></td></tr></table>"
+		}
 		
 		for (j = 0; j < transportList[i].parts.length;j++ ){
 			var transportDetails = transportList[i].parts[j];
@@ -68,7 +79,7 @@ function showTrainJourneyList(transportList){
 				
 				var travelSpecificWid = travelSpecificsWidget(transportDetails.source,transportDetails.destination,transportDetails.arrival,transportDetails.departure,transportDetails.duration);
 				
-				individualJourneyDetails = individualJourneyDetails+"<div class='"+transportDetails.id+"divBox detailsBox"+i+"'> <table width='100%'><tr ><td ><div class='row-eq-height'><div class='col-sm-3 col-height col-middle' style ='text-align:left'><font color = 'grey'>"+numberOfChangesView+"<br/>&nbsp;</div><div class='col-sm-6 col-height col-middle' style ='text-align:center'>"+travelSpecificWid+"</div></font><div class='col-sm-3 col-height col-middle'><table width = '100%' style ='text-align:right'><tr><td><h4 style='white-space: nowrap;'><font color='green'>&#8377 "+transportDetails.price+"/-</font><h4></td></tr></table></div></div></tr></table></div>"
+				individualJourneyDetails = individualJourneyDetails+"<div class='"+transportDetails.id+"divBox detailsBox"+i+"'> <table width='100%'><tr ><td ><div class='row-eq-height'><div class='col-sm-3 col-height col-middle' style ='text-align:left'><font color = 'grey'>"+numberOfChangesView+"<br/>&nbsp;</div><div class='col-sm-6 col-height col-middle' style ='text-align:center'>"+travelSpecificWid+"</div></font><div class='col-sm-3 col-height col-middle'><table width = '100%' style ='text-align:right'><tr><td><"+fontSize+" style='white-space: nowrap;'><font color='green'>&#8377 "+transportDetails.price+"/-</font><"+fontSize+"></td></tr></table></div></div></tr></table></div>"
 			
 			}else{
 				individualJourneyDetails = individualJourneyDetails + "<div class='"+transportDetails.id+"divBox detailsBox"+i+"' hidden>"
@@ -87,7 +98,7 @@ function showTrainJourneyList(transportList){
 					
 					var travelSpecificWid = travelSpecificsWidget(transportDetails.source,transportDetails.destination,transportOptionDetails.arrival,transportOptionDetails.departure,transportOptionDetails.duration);
 					
-					individualJourneyDetails = individualJourneyDetails+"<table width='100%'><tr ><td ><div class='row-eq-height'><div class='col-sm-3 col-height col-middle' style ='text-align:left'><font color = '#056273'><b>"+transportOptionDetails.carrierName+"</b>&nbsp;</div><div class='col-sm-6 col-height col-middle' style ='text-align:center'>"+travelSpecificWid+"</div></font><div class='col-sm-3 col-height col-middle'><table width = '100%' style ='text-align:right'><tr><td><font color='grey' size='1'>"+startingFrom+"</font><h4 style='white-space: nowrap;'><font color='green'>&#8377 "+price+"/-</font><h4></td></tr></table></div></div></tr></table>"
+					individualJourneyDetails = individualJourneyDetails+"<table width='100%'><tr ><td ><div class='row-eq-height'><div class='col-sm-3 col-height col-middle' style ='text-align:left'><font color = '#056273'><b>"+transportOptionDetails.carrierName+"</b>&nbsp;</div><div class='col-sm-6 col-height col-middle' style ='text-align:center'>"+travelSpecificWid+"</div></font><div class='col-sm-3 col-height col-middle'><table width = '100%' style ='text-align:right'><tr><td><font color='grey' size='1'>"+startingFrom+"</font><"+fontSize+" style='white-space: nowrap;'><font color='green'>&#8377 "+price+"/-</font><"+fontSize+"></td></tr></table></div></div></tr></table>"
 					if (k!=(transportDetails.subParts.length-1)){
 						individualJourneyDetails = individualJourneyDetails + '<hr/>'
 					}
@@ -98,7 +109,7 @@ function showTrainJourneyList(transportList){
 		}
 			
 				
-				var journeyDivider = "<br/><table class='table table-bordered' style ='text-align:center' ><tbody><tr>"+journeyDividerContent+"</tr><tr><td colspan='"+transportList[i].parts.length+"'>"+individualJourneyDetails+"</td></tr></tbody></table>";
+				var journeyDivider = summary+"<table class='table table-bordered' style ='text-align:center' ><tbody><tr>"+journeyDividerContent+"</tr><tr><td colspan='"+transportList[i].parts.length+"'>"+individualJourneyDetails+"</td></tr></tbody></table>";
 				
 				output = output + "<div class='trainMain' id = 'main"+transportTotalDetails.id+"'><tr><td bgcolor='WhiteSmoke'><div class='row-eq-height'><table width = '100%'><tr><td width = '75%' style ='text-align:left'>&nbsp;&nbsp;<font color = '#056273'><b>"+transportTotaljourney+"</b></td><td width = '25%' style ='text-align:right'><button type='button' class='btn btn-warning'  data-toggle='modal' data-target='#details"+transportTotalDetails.id+"'>Select</button>&nbsp;&nbsp;</td></tr></table></div></td></tr><tr><td><div class='row-eq-height'>"+journeyDivider+"</div>";
 				

@@ -3,6 +3,7 @@
 	color:#f6931f; 
 	font-size:90%;
 }
+
 .filterLabel { 
 	border:0; 
 	font-weight:bold;
@@ -71,10 +72,28 @@ td a {
 	font-size: 130%
 }
 
+.journeyDuration{
+	color: grey;
+	font-weight:bold;
+	font-size: 110%
+}
+
 .journeyPriceLabel{
 	font-size: 90%;
 	font-weight:bold;
 }
+.journeyPriceSumLabel{
+	font-size: 70%;
+	font-weight:bold;
+	color:grey
+}
 .sameLine{
 	display: inline-block
+}
+
+.summaryBar{
+	background-color:#f8b362;
+}
+.summaryNA{
+	background-color:grey;
 }
