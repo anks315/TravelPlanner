@@ -59,4 +59,4 @@ from sets import Set
 
 #print dateTimeUtility.getduration('04:35', '09:12','16-02-2016','14-02-2016')
 #dateTimeUtility.addduration('04:35', '24:20')
-models.loadtraindata(loggerUtil.getLogger('tmp',logging.DEBUG))
+models.getfarefortrainandpersist('12013', 'NDLS', 'ASR',loggerUtil.getLogger('tmp',logging.DEBUG))

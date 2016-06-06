@@ -1,40 +1,55 @@
 
 from neo4jrestclient.client import GraphDatabase
-from entity import TrainOption, TrainStation
+from entity import TrainOption, TrainStation, FareData
 import time
 from datetime import datetime, timedelta
 import calendar
 import TravelPlanner.trainUtil
-
+import loggerUtil
+import logging
+import urllib
+import json
+import trainConstants
+from sets import Set
 
 def demo():
     pass
 
+citytoplacesyncmap = {"Adilabad" : "Edlabad", "Ajmer" : "Ajaymeru", "Aligarh" : "Allygurh", "Allahabad" : "Prayag", "Alleppey": "Alappuzha", "Aluva": "Alwaye", "Badnera": "Amravati", "Amravati" : "Badnera", "New Delhi": "Delhi", "Ankleshwar" :"Bharuch", "Bagwada (Halt)": "Bagwada", "Baikunthpur Road": "Baikunthpur", "Baitarani Road": "Baitarani", "Balpur Halt": "Balpur",
+                      "Bangalore": "Bengaluru", "Barchi Road": "Barchi", "Bardhana Halt" : "Bardhana", "Bargarh Road" : "Bargarh", "Barsi Town" : "Barshi", "Basin Bridge" : "Chennai", "Hyderabad":"Bhagyanagaram", "Bekal Fort" : "Bekal", "Belgaum": "Belagavi", "Bellary" : "Ballari", "Belthara Road" : "Belthara", "Berhampore Crt" : "Berhampore", "Bhabua Road": "Bhabua", "Bhadrachalam Road": "Bhadrachalam",
+                      "Bhandara Road": "Bhandara", "Bhatisuda(Halt)": "Bhatisuda", "Bhavnagar Terminus":"Bhavnagar", "Bhilai Pwr Hs": "Bhilai", "Bhivpuri Road":"Bhivpuri", "Bhiwandi Road": "Bhiwandi", "Bijapur": "Vijayapura", "Bilaspur": "Usalapur", "Bindki Road": "Bindki", "Chachaura Bngj": "Chachaura-Binaganj", "Champaner Road":"Champaner", "Chandauli Mjhwr": "Chandauli", "Chandia Road" : "Chandia", "Chandrakona Road": "Chandrakona", "Chauth Ka Brwra": "Chauth Ka Barwara",
+                      "Chennai": "Madras", "Chikni Road": "Chikni", "Kolkata" : "Calcutta", "Cuddapah": "Kadapa", "Karimnagar" : "Elagandla", "Karur": "Karuvur", "Kollam": "Quilon", "Kozhikode": "Calicut", "Indore": "Indur", "Machelipatnam": "Machilipatnam", "Mangalore": "Mangaluru", "Mayiladuthurai": "Mayavaram", "Noida": "Gautam Budha Nagar", "Mysore": "Mysuru", "Nagaon" : "Nowgong", "Nasik": "Nashik", "Mumbai" : "Bombay", "Gurgaon" : "Gurugram", "Guwahati": "Gauhati",
+                      "Hospet": "Hosapete", "Chikkamagalur": "Chikmagalur", "Hubli":"Hubballi", "Jabalpur": "Jubbulpore", "Jalandhar":"Jullunder", "Kakinada":"Cocanada", "Kanchipuram":"Conjeevaram", "Kannur":"Cannanore", "Kanpur":"Cawnpore", "Kanyakumari":"Cape Comorin", "Nizamabad": "Indur", "Palakkad":"Palghat", "Puducherry": "Pondicherry", "Pune": "Poona", "Rajahmundry" : "Rajamahendravaramu", "Pala": "Palai", "Rupnagar": "Ropar", "SASNagar" : "Mohali", "Saugor" : "Sagar",
+                      "Shahdol": "Viratnagari", "Shimoga": "Shivamogga", "Sibsagar" : "Sivasagar", "Simla" :"Shimla", "Surat": "Suryapur", "Thalassery": "Tellicherry", "Thane": "Thana", "Thanjavur" : "Tanjore", "Thrissur" : "Trichur", "Tiruchirapalli" : "Trichinopoly", "Tirunelveli" : "Tinnevelly", "Tiruvannamalai": "Trinomalee", "Trivandrum" : "Thiruvananthapuram", "Tumkur" : "Tumakuru", "Tuticorin" : "Thoothukudi", "Udagamandalam" : "Ootacamund", "Ujjain":"Avantika", "Vadodara":"Baroda",
+                      "Valsad": "Bulsar", "Varanasi": "Banaras", "Vidisha" : "Bhelsa", "Virudhunagar" : "Virudupatti", "Warangal":"Orugallu", "KHAMBHAT" : "Cambay", "Kochi": "Cochin", "Ahmedabad" : "Karnavati", "SHERTALLAI" : "Cherthala"}
 
-#DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="ankurjain")
 
-DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
+DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
+
+#DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
 
 
-def getTrainsBetweenStation(sourcecity, destinationStationSet, logger, journeydate, destinationcity):
+def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeydate, destinationcity):
     """
     :param sourcecity: source of the journey
-    :param destinationStationSet: destination cities station set
+    :param destinationstationset: destination cities station set
     :param logger: to log information
     :return: all possible routes along with fare between source and destination stations
     """
 
-    logger.debug("Fetching train routes between source[%s] and destination stations[%s] on [%s]", sourcecity,destinationStationSet, journeydate)
-    q = """MATCH (a:TRAINSTATION {CITY : '""" + sourcecity + """'})-[r:""" + '|'.join(destinationStationSet) + """]->(b:TRAIN) RETURN a,b,r"""
+    logger.debug("Fetching train routes between source[%s] and destination stations[%s] on [%s]", sourcecity,destinationstationset, journeydate)
+    q = """MATCH (a:TRAINSTATION {CITY : '""" + sourcecity + """'})-[r:""" + '|'.join(destinationstationset) + """]->(b:TRAIN) RETURN a,b,r"""
     results = DATABASE_CONNECTION.query(q)
     trains = []
 
     if len(results.elements) == 0:
-        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity,destinationStationSet)
+        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity,destinationstationset)
         return trains
 
+    trainnumberset = Set()
+
     for i in range(len(results.elements)):
-        if istrainrunningonjourneydate(results.elements[i], journeydate, sourcecity, logger):
+        if istrainrunningonjourneydate(results.elements[i], journeydate, sourcecity, logger) and isnonduplicatetrain(trainnumberset, results.elements[i][1]['data']['NUMBER']):
             trainoption = TrainOption()
             trainoption.trainName = results.elements[i][1]['data']['NAME']
             trainoption.trainNumber = results.elements[i][1]['data']['NUMBER']
@@ -46,7 +61,7 @@ def getTrainsBetweenStation(sourcecity, destinationStationSet, logger, journeyda
             trainoption.destStation = str(destinationcity).title()
             trainoption.prices = {"1A": 0, "2A": 0, "3A": 0, "3E": 0, "FC": 0, "CC": 0, "SL": 0, "2S": 0, "GN": 0} #empty dictionary
             trainoption.price = 0
-            trainoption.duration =  getDuration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
+            trainoption.duration =  getduration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
             if 'FARE_1A' in results.elements[i][2]['data']:
                 trainoption.prices["1A"] = int(results.elements[i][2]['data']['FARE_1A'])
             if 'FARE_2A' in results.elements[i][2]['data']:
@@ -78,23 +93,23 @@ def getTrainsBetweenStation(sourcecity, destinationStationSet, logger, journeyda
     return trains
 
 
-def getDuration(sourceDepartureTime, sourceDay, destinationArrivalTime, destinationDay):
+def getduration(sourcedeparturetime, sourceday, destinationarrivaltime, destinationday):
     """
     to get time duration between 2 stations
-    :param sourceDepartureTime: source departure time
-    :param sourceDay: day on which it reaches source station
-    :param destinationArrivalTime: destination arrival time
-    :param destinationDay: day on which it reaches destination station
+    :param sourcedeparturetime: source departure time
+    :param sourceday: day on which it reaches source station
+    :param destinationarrivaltime: destination arrival time
+    :param destinationday: day on which it reaches destination station
     :return: duration between source & destination
     """
-    destinationArrivalTimeSplit = destinationArrivalTime.split(':')
-    destinationArrivalTimeIntoMinutes=int(destinationArrivalTimeSplit[0])*60 + int(destinationArrivalTimeSplit[1])
-    sourceDepartureTimeSplit = sourceDepartureTime.split(':')
-    sourceDepartureTimeIntoMinutes = int(sourceDepartureTimeSplit[0])*60 + int(sourceDepartureTimeSplit[1])
-    duration = (destinationDay * 24 * 60 + destinationArrivalTimeIntoMinutes) - (sourceDay * 24 * 60 + sourceDepartureTimeIntoMinutes)
-    durationHours=duration/60
-    durationMinutes=duration%60
-    return str(durationHours) + ':' + str(durationMinutes)
+    destinationarrivaltimesplit = destinationarrivaltime.split(':')
+    destinationarrivaltimeintominutes = int(destinationarrivaltimesplit[0])*60 + int(destinationarrivaltimesplit[1])
+    sourcedeparturetimesplit = sourcedeparturetime.split(':')
+    sourcedeparturetimeintominutes = int(sourcedeparturetimesplit[0])*60 + int(sourcedeparturetimesplit[1])
+    duration = (destinationday * 24 * 60 + destinationarrivaltimeintominutes) - (sourceday * 24 * 60 + sourcedeparturetimeintominutes)
+    durationhours = duration/60
+    durationminutes = duration%60
+    return str(durationhours) + ':' + str(durationminutes)
 
 def getstationcodesbycityname(cityname, logger):
     """
@@ -122,21 +137,21 @@ def getstationcodesbycityname(cityname, logger):
     return stationcodes
 
 
-def addStationToTrainMapping(relationInformation):
-    q = """MATCH (a:TRAINSTATION),(b:TRAIN) WHERE a.CODE = '""" + relationInformation.sourceStationCode + """' AND b.NUMBER = '""" + relationInformation.trainNumber + """' CREATE (a)-[r:""" + relationInformation.destinationStationCode
-    q = q + """ {SOURCEDEPARTURETIME: '""" + relationInformation.sourceDepartureTime
-    q = q + """' ,DESTINATIONARRIVALTIME:'""" + relationInformation.destinationArrivalTime
-    q = q + """' ,SOURCEDAYNUMBER:""" + str(relationInformation.sourceDayNumber)
-    q = q + """ ,DESTINATIONDAYNUMBER:""" + str(relationInformation.destinationDayNumber)
-    q = q + """ ,FARE_1A:""" + str(relationInformation.fare_1A)
-    q = q + """ ,FARE_2A:""" + str(relationInformation.fare_2A)
-    q = q + """ ,FARE_3A:""" + str(relationInformation.fare_3A)
-    q = q + """ ,FARE_SL:""" + str(relationInformation.fare_SL)
-    q = q + """ ,FARE_2S:""" + str(relationInformation.fare_2S)
-    q = q + """ ,FARE_CC:""" + str(relationInformation.fare_CC)
-    q = q + """ ,FARE_FC:""" + str(relationInformation.fare_FC)
-    q = q + """ ,FARE_3E:""" + str(relationInformation.fare_3E)
-    q = q + """ ,FARE_GN:""" + str(relationInformation.fare_GN) + """}]->(b) RETURN r"""
+def addstationtotrainmapping(relationinformation):
+    q = """MATCH (a:TRAINSTATION),(b:TRAIN) WHERE a.CODE = '""" + relationinformation.sourceStationCode + """' AND b.NUMBER = '""" + relationinformation.trainNumber + """' CREATE (a)-[r:""" + relationinformation.destinationStationCode
+    q = q + """ {SOURCEDEPARTURETIME: '""" + relationinformation.sourceDepartureTime
+    q = q + """' ,DESTINATIONARRIVALTIME:'""" + relationinformation.destinationArrivalTime
+    q = q + """' ,SOURCEDAYNUMBER:""" + str(relationinformation.sourceDayNumber)
+    q = q + """ ,DESTINATIONDAYNUMBER:""" + str(relationinformation.destinationDayNumber)
+    q = q + """ ,FARE_1A:""" + str(relationinformation.fare_1A)
+    q = q + """ ,FARE_2A:""" + str(relationinformation.fare_2A)
+    q = q + """ ,FARE_3A:""" + str(relationinformation.fare_3A)
+    q = q + """ ,FARE_SL:""" + str(relationinformation.fare_SL)
+    q = q + """ ,FARE_2S:""" + str(relationinformation.fare_2S)
+    q = q + """ ,FARE_CC:""" + str(relationinformation.fare_CC)
+    q = q + """ ,FARE_FC:""" + str(relationinformation.fare_FC)
+    q = q + """ ,FARE_3E:""" + str(relationinformation.fare_3E)
+    q = q + """ ,FARE_GN:""" + str(relationinformation.fare_GN) + """}]->(b) RETURN r"""
     DATABASE_CONNECTION.query(q)
     pass
 
@@ -162,8 +177,8 @@ def addRunningDaysToTrain(runningdays, trainnumber):
     pass
 
 
-def checkRouteStationExists(routeStations):
-    for route in routeStations:
+def checkroutestationexists(routestations):
+    for route in routestations:
         code = str(route["code"]).upper()
         name = str(route["name"]).upper()
         q = """ MERGE (a:TRAINSTATION {CODE : '""" + code + """'}) ON CREATE SET a.NAME = '""" + name + """', a.CITY = '""" + name + """'"""
@@ -171,7 +186,7 @@ def checkRouteStationExists(routeStations):
     pass
 
 
-def checkStationExists(stations):
+def checkstationexists(stations):
     for line in stations:
         print line
         trainNumber, trainName = line.split(",", 1)
@@ -180,7 +195,7 @@ def checkStationExists(stations):
     pass
 
 
-def getBreakingCity(possiblecity, logger):
+def getbreakingcity(possiblecity, logger):
     """
     To get name of the city from where we can split journey between source & destination
     :param possiblecity: possible city or station name
@@ -202,7 +217,7 @@ def getBreakingCity(possiblecity, logger):
     # return result.elements[0][0]['data']['CITY']
 
 
-def getDayFromDate(journeydate, diff):
+def getdayfromdate(journeydate, diff):
 
     """
     this method is used to get day of the week(uppercase) on journeydate
@@ -224,7 +239,7 @@ def istrainrunningonjourneydate(train, journeydate, sourcecity, logger):
     :return: true if train runs else false
     """
     sourcedaynumber = train[2]['data']['SOURCEDAYNUMBER']
-    day = getDayFromDate(journeydate, sourcedaynumber - 1)
+    day = getdayfromdate(journeydate, sourcedaynumber - 1)
     if day == 'THURSDAY':
         day = 'THRUSDAY'
     if train[1]['data'][day] == 'N':
@@ -232,18 +247,36 @@ def istrainrunningonjourneydate(train, journeydate, sourcecity, logger):
         return False
     return True
 
-def loadtraindata():
+
+def isnonduplicatetrain(trainnumberset, trainnumber):
+
+    """
+    To check train is already loaded or not
+    :param trainnumberset: set of trains already loaded
+    :param trainnumber: train to be loaded
+    :return: True if train is new else False
+    """
+    if trainnumber not in trainnumberset:
+        trainnumberset.add(trainnumber)
+        return True
+    return False
+
+
+def loadtraindata(trainstationsmap):
     """
     To load train stations on startup
-    :param logger: logger to log
     :return: Map of train stations with code as key and train station as value
     """
-    trainstationsmap = {}
     q = "MATCH (n:TRAINSTATION) return n"
-    trainstations = DATABASE_CONNECTION.query(q)
+    try:
+        trainstations = DATABASE_CONNECTION.query(q)
+    except Exception as e:
+        logger = loggerUtil.getLogger("loaddata", logging.INFO)
+        logger.error("Error in loading train data on startup, reason [%s]", e.message)
+        return trainstationsmap
 
     if len(trainstations.elements) == 0:
-        return trainstations
+        return trainstationsmap
 
     for i in range(len(trainstations.elements)):
         trainstation = TrainStation()
@@ -253,3 +286,108 @@ def loadtraindata():
         trainstationsmap[trainstation.code]= trainstation
 
     return trainstationsmap
+
+
+def citytoplacesync():
+    return
+
+
+def getfarefortrainandpersist(trainnumber ,sourcestationcode, destinationstationcode, logger):
+    """
+    To get fare data and pesist in DB
+    :param trainnumber: train for which fare needs to be fetched
+    :param sourcestationcode: source station code
+    :param destinationstationcode: destination station code
+    :param logger: to log
+    :return: faredata if present else nothing
+    """
+    try:
+        jsonresponsetrainfare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainnumber + "/source/"+ sourcestationcode+ "/dest/"+ destinationstationcode+ "/age/20/quota/GN/doj/"+ '11-06'+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
+    except:
+        logger.error("Connection Error Getting Fare Data for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s] ",trainnumber,sourcestationcode,destinationstationcode)
+        return
+
+    faredatajson = parseandreturnfare(jsonresponsetrainfare, logger, trainnumber, sourcestationcode, destinationstationcode)
+
+    if faredatajson:
+        faredata = getfaredataentity(faredatajson)
+        persistfaredata(faredata, trainnumber, sourcestationcode, destinationstationcode, logger)
+        return faredata
+
+
+def parseandreturnfare(jsondata, logger, trainnumber, sourcestationcode, destinationstationcode):
+    """
+    To get fare data from railway api and persist in DB is result is successful
+    :param jsondata: fare data json
+    :param logger: to log information
+    :return: faredata
+    """
+    faredata = {}
+    if not jsondata:
+        return faredata
+    try:
+        returnedfaredata = json.loads(jsondata)
+        logger.debug("Fare Data [%s] for train [%s] between source [%s] and destination [%s]", returnedfaredata, trainnumber, sourcestationcode, destinationstationcode)
+        if returnedfaredata["response_code"] == 200:
+            if len(returnedfaredata["fare"]) != 0:
+                return returnedfaredata["fare"]
+    except Exception as e:
+        logger.error("Response Error Getting Fare Data for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s], reason [%s] ",trainnumber, sourcestationcode, destinationstationcode, e.message)
+
+    return faredata
+
+def getfaredataentity(faredatajson):
+
+    """
+    Get fare information from json
+    :param faredatajson: fare data json
+    :return: FareData object having all fares for train
+    """
+    faredata = FareData()
+    for fare in faredatajson:
+        if fare["code"]=="1A":
+            faredata.fare_1A=fare["fare"]
+        if fare["code"]=="2A":
+            faredata.fare_2A=fare["fare"]
+        if fare["code"]=="3A":
+            faredata.fare_3A=fare["fare"]
+        if fare["code"]=="SL":
+            faredata.fare_SL=fare["fare"]
+        if fare["code"]=="CC":
+            faredata.fare_CC=fare["fare"]
+        if fare["code"]=="2S":
+            faredata.fare_2S=fare["fare"]
+        if fare["code"]=="GN":
+            faredata.fare_GN=fare["fare"]
+        if fare["code"]=="FC":
+            faredata.fare_FC=fare["fare"]
+        if fare["code"]=="3E":
+            faredata.fare_3E=fare["fare"]
+    return faredata
+
+
+def persistfaredata(faredata, trainnumber, sourcestationcode, destinationstationcode, logger):
+    """
+    Persist fare information in DB
+    :param faredata: fare data object
+    :param trainnumber: train number
+    :param sourcestationcode: source station code
+    :param destinationstationcode: destination station code
+    :param logger: to log
+    """
+    q = """MATCH (a:TRAINSTATION {CODE : '""" + sourcestationcode + """'})-[r:""" + destinationstationcode + """]->(b:TRAIN {NUMBER: '""" + trainnumber + """'}) SET r.FARE_1A:""" + str(faredata.fare_1A)
+    q = q + """ ,FARE_2A = """ + str(faredata.fare_2A)
+    q = q + """ ,FARE_3A = """ + str(faredata.fare_3A)
+    q = q + """ ,FARE_SL = """ + str(faredata.fare_SL)
+    q = q + """ ,FARE_2S = """ + str(faredata.fare_2S)
+    q = q + """ ,FARE_CC = """ + str(faredata.fare_CC)
+    q = q + """ ,FARE_FC = """ + str(faredata.fare_FC)
+    q = q + """ ,FARE_3E = """ + str(faredata.fare_3E)
+    q = q + """ ,FARE_GN = """ + str(faredata.fare_GN)
+    print q
+    try:
+        DATABASE_CONNECTION.query(q)
+        logger.info("Fare persisted in DB for trainNumber [%s], source [%s], destination [%s]", trainnumber, sourcestationcode, destinationstationcode)
+    except Exception as e:
+        logger.error("Error while persisting fare information for trainNumber [%s], source [%s], destination [%s], reason [%s]", trainnumber, sourcestationcode, destinationstationcode, e.message)
+

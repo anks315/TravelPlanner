@@ -63,7 +63,7 @@ def parseAndReturnFare(jsonData):
 
 
 def getTrainFare(sourceStation,destinationStation,trainNumber,srcStationInformation,destStationInformation):
-    jsonResponseTrainFare=""
+
     try:
         jsonResponseTrainFare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainNumber + "/source/"+ sourceStation+ "/dest/"+ destinationStation+ "/age/20/quota/GN/doj/"+ '11-06'+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
     except:
@@ -84,7 +84,7 @@ def getTrainFare(sourceStation,destinationStation,trainNumber,srcStationInformat
     finalInformationToCommit=consolidateRelationDatatoUpdate(srcStationInformation,destStationInformation,fareData,trainNumber)
     """call database to create relation between src station to train with relation as trainNumber """
     try:
-        models.addStationToTrainMapping(finalInformationToCommit)
+        models.addstationtotrainmapping(finalInformationToCommit)
     except:
         logger.info("DB Error for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]. Failed to commit fare information",trainNumber,sourceStation,destinationStation)
 
@@ -201,7 +201,7 @@ def main():
             logger.error("Response Error Getting Train Route  for TrainNumber[%s]",trainNumber)
         else:
             logger.info("Route Data Fetch Success for TrainNumber[%s], No of Routes[%s].",trainNumber, len(routeStations))
-        models.checkRouteStationExists(routeStations)
+        models.checkroutestationexists(routeStations)
         index=0
         # We can use a with statement to ensure threads are cleaned up promptly
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:

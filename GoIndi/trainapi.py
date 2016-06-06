@@ -1,6 +1,5 @@
 __author__ = 'ankur'
 
-import hmac
 import json
 import trainConstants
 import urllib
@@ -87,7 +86,7 @@ class TrainController:
         availableTrainNumbers = parseTrainBetweenStationsAndReturnTrainNumber(jsonResponseTrainBetweenStations)
         return availableTrainNumbers
 
-    def getTrainFare(self, sourceStation, destinationStation, journeyDate, trainNumber, trainCounter):
+    def getTrainFare(self, sourceStation, destinationStation, trainNumber, trainCounter):
         start = time.time()
         jsonResponseTrainFare = urllib.urlopen(
             "http://api.railwayapi.com/fare/train/" + trainNumber + "/source/" + sourceStation + "/dest/" + destinationStation + "/age/18/quota/GN/doj/" + '05-05' + "/apikey/" + trainConstants.ERAILWAYAPI_APIKEY + "/").read()
@@ -124,12 +123,11 @@ class TrainController:
         print("--- %s seconds kjbnkj---" % (time.time() - start_time))
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             for trainNumber in availableTrainNumbers:
-                trainCounter = trainCounter + 1
+                trainCounter += 1
                 if trainCounter < 10:
                     farefutures.append(
                         executor.submit(self.getTrainFare, trainNumberstoDurationMap[trainNumber]["srcStation"],
-                                        trainNumberstoDurationMap[trainNumber]["destStation"], journeyDate, trainNumber,
-                                        trainCounter))
+                                        trainNumberstoDurationMap[trainNumber]["destStation"], trainNumber, trainCounter))
 
         for future in farefutures:
             fareData = future.result()

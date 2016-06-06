@@ -11,7 +11,7 @@ def loadtraindata():
     """
     To load all train station on startup and create city to station map cache
     """
-    trainmapping = GoIndi.models.loadtraindata()
+    GoIndi.models.loadtraindata(trainmapping)
 
     for code, trainstation in trainmapping.items():
         if trainstation.city in citytostationcodesmap:
@@ -34,7 +34,6 @@ def getcityfromstation(possiblecityname, logger):
         if stationname == possiblecityname or stationname.startswith(possiblecityname+ " ") or stationname.endswith(" "+possiblecityname) or \
                         cityname == possiblecityname or cityname.startswith(possiblecityname+ " ") or cityname.endswith(" "+possiblecityname):
             return trainstation.city
-        else:
-            logger.warning("No Breaking city present for [%s]", possiblecityname)
-            return str()
 
+    logger.warning("No Breaking city present for [%s]", possiblecityname)
+    return str()

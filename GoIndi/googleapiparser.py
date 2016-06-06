@@ -50,7 +50,7 @@ def getcityfromstation(routedestinationstation, logger):
     :return: destination city name if mapped to routedestinationstation
     """
     try:
-        city = models.getBreakingCity(routedestinationstation, logger)
+        city = models.getbreakingcity(routedestinationstation, logger)
         if city:
             return city
     except Exception as e:
@@ -61,7 +61,7 @@ def getcityfromstation(routedestinationstation, logger):
         possiblecity = possiblecity.upper()
         try:
             if possiblecity not in skipValues:
-                city = models.getBreakingCity(possiblecity, logger)
+                city = models.getbreakingcity(possiblecity, logger)
                 if city:
                     return city
         except Exception as e:
