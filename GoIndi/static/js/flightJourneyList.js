@@ -1,7 +1,7 @@
 var radionames = []
 var isSelected =0
 function showFlightJourneyList(transportList){
-	if(flightList.length==0){
+	if(transportList.length==0){
 		
 		var noData = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Sorry! We could not find any flights on this Route<br/>Check out Train or Bus for more options</td></tr><tr><td><br/></td></tr></table></div>'
 		document.getElementById("flightData").innerHTML = noData;
@@ -145,6 +145,12 @@ function showFlightJourneyList(transportList){
 			getTotalPrice(id);
 		});
 	}
+	$(".booking").click(function() {
+			var id = $(this).attr("id").split("book")[1];
+			var bookingLink = $('input[name=radio'+id+']:checked').attr('bookingLink')
+			var win = window.open(bookingLink, '_blank');
+			win.focus();
+	});
 		$("#flightBox").fadeIn();
 		//setting action on mode menu box
 		$(".divisionFlightBox").mouseover(function() {

@@ -1,7 +1,7 @@
 var radionames = []
 var isSelected =0
 function showTrainJourneyList(transportList){
-	if(trainList.length==0){
+	if(transportList.length==0){
 		var noData = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Sorry! We could not find any Trains on this Route<br/>Check out Flight or Bus for more options</td></tr><tr><td><br/></td></tr></table></div>'
 		document.getElementById("trainData").innerHTML = noData;
 		return;

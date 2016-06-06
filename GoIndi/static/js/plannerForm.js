@@ -84,7 +84,9 @@ function showPlanner(plannerContainer){
 					  flightList = data.flight
 					  setSummary(flightList,"flight","price")
 					  routeFilter(flightList,"flight")
-					  flightList = routeMap["flight"][flightRouteList[0]]
+					  if(routeMap["flight"]==null){
+						flightList = routeMap["flight"][flightRouteList[0]]
+					  }
 					  newflightList = flightList
 					showtransportJourneyList(flightList,"flight");
 					if(flightList.length!=0){
@@ -100,7 +102,10 @@ function showPlanner(plannerContainer){
 					  trainList = data.train
 					  setSummary(trainList,"train","price")
 					  routeFilter(trainList,"train")
-					  flightList = routeMap["train"][trainRouteList[0]]
+					   
+					  if(routeMap["train"]==null){
+						trainList = routeMap["train"][trainRouteList[0]]
+					  }
 					  newtrainList = trainList
 					showtransportJourneyList(trainList,"train");
 					if(trainList.length!=0){
@@ -232,7 +237,10 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 					  flightList = data.flight
 					  setSummary(flightList,"flight","price")
 					  routeFilter(flightList,"flight")
-					  flightList = routeMap["flight"][flightRouteList[0]]
+					  if(routeMap["flight"]==null){
+						flightList = routeMap["flight"][flightRouteList[0]]
+					  }
+					  
 					  newflightList = flightList
 					showtransportJourneyList(flightList,"flight");
 					if(flightList.length!=0){
@@ -249,7 +257,9 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 					  trainList = data.train
 					  setSummary(trainList,"train","price")
 					  routeFilter(trainList,"train")
-					  flightList = routeMap["train"][trainRouteList[0]]
+					  if(routeMap["train"]==null){
+						trainList = routeMap["train"][trainRouteList[0]]
+					  }
 					  newtrainList = trainList
 					showtransportJourneyList(trainList,"train");
 					if(trainList.length!=0){
