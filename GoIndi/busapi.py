@@ -24,7 +24,7 @@ class BusController:
             jdList = journeyDate.split("-")
             newFormatJourneyDate = jdList[2]+"-"+jdList[1]+"-"+jdList[0]
             url = "http://agent.etravelsmart.com/etsAPI/api/getAvailableBuses?sourceCity="+source+"&destinationCity="+destination+"&doj="+newFormatJourneyDate
-            req = requests.get(url, auth=HTTPDigestAuth('eazzer', 'E@ZZer1713'), timeout=3)
+            req = requests.get(url, auth=HTTPDigestAuth('eazzer', 'E@ZZer1713'), timeout=8)
             response = self.parseResultAndReturnFare(req.json(),source,destination,journeyDate)
         except:
             logger.info("Error Getting Data For Source[%s] and Destination[%s],JourneyDate:[%s]",source,destination,journeyDate)
