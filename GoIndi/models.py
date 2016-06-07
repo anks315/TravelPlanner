@@ -15,14 +15,7 @@ from sets import Set
 def demo():
     pass
 
-citytoplacesyncmap = {"Adilabad" : "Edlabad", "Ajmer" : "Ajaymeru", "Aligarh" : "Allygurh", "Allahabad" : "Prayag", "Alleppey": "Alappuzha", "Aluva": "Alwaye", "Badnera": "Amravati", "Amravati" : "Badnera", "New Delhi": "Delhi", "Ankleshwar" :"Bharuch", "Bagwada (Halt)": "Bagwada", "Baikunthpur Road": "Baikunthpur", "Baitarani Road": "Baitarani", "Balpur Halt": "Balpur",
-                      "Bangalore": "Bengaluru", "Barchi Road": "Barchi", "Bardhana Halt" : "Bardhana", "Bargarh Road" : "Bargarh", "Barsi Town" : "Barshi", "Basin Bridge" : "Chennai", "Hyderabad":"Bhagyanagaram", "Bekal Fort" : "Bekal", "Belgaum": "Belagavi", "Bellary" : "Ballari", "Belthara Road" : "Belthara", "Berhampore Crt" : "Berhampore", "Bhabua Road": "Bhabua", "Bhadrachalam Road": "Bhadrachalam",
-                      "Bhandara Road": "Bhandara", "Bhatisuda(Halt)": "Bhatisuda", "Bhavnagar Terminus":"Bhavnagar", "Bhilai Pwr Hs": "Bhilai", "Bhivpuri Road":"Bhivpuri", "Bhiwandi Road": "Bhiwandi", "Bijapur": "Vijayapura", "Bilaspur": "Usalapur", "Bindki Road": "Bindki", "Chachaura Bngj": "Chachaura-Binaganj", "Champaner Road":"Champaner", "Chandauli Mjhwr": "Chandauli", "Chandia Road" : "Chandia", "Chandrakona Road": "Chandrakona", "Chauth Ka Brwra": "Chauth Ka Barwara",
-                      "Chennai": "Madras", "Chikni Road": "Chikni", "Kolkata" : "Calcutta", "Cuddapah": "Kadapa", "Karimnagar" : "Elagandla", "Karur": "Karuvur", "Kollam": "Quilon", "Kozhikode": "Calicut", "Indore": "Indur", "Machelipatnam": "Machilipatnam", "Mangalore": "Mangaluru", "Mayiladuthurai": "Mayavaram", "Noida": "Gautam Budha Nagar", "Mysore": "Mysuru", "Nagaon" : "Nowgong", "Nasik": "Nashik", "Mumbai" : "Bombay", "Gurgaon" : "Gurugram", "Guwahati": "Gauhati",
-                      "Hospet": "Hosapete", "Chikkamagalur": "Chikmagalur", "Hubli":"Hubballi", "Jabalpur": "Jubbulpore", "Jalandhar":"Jullunder", "Kakinada":"Cocanada", "Kanchipuram":"Conjeevaram", "Kannur":"Cannanore", "Kanpur":"Cawnpore", "Kanyakumari":"Cape Comorin", "Nizamabad": "Indur", "Palakkad":"Palghat", "Puducherry": "Pondicherry", "Pune": "Poona", "Rajahmundry" : "Rajamahendravaramu", "Pala": "Palai", "Rupnagar": "Ropar", "SASNagar" : "Mohali", "Saugor" : "Sagar",
-                      "Shahdol": "Viratnagari", "Shimoga": "Shivamogga", "Sibsagar" : "Sivasagar", "Simla" :"Shimla", "Surat": "Suryapur", "Thalassery": "Tellicherry", "Thane": "Thana", "Thanjavur" : "Tanjore", "Thrissur" : "Trichur", "Tiruchirapalli" : "Trichinopoly", "Tirunelveli" : "Tinnevelly", "Tiruvannamalai": "Trinomalee", "Trivandrum" : "Thiruvananthapuram", "Tumkur" : "Tumakuru", "Tuticorin" : "Thoothukudi", "Udagamandalam" : "Ootacamund", "Ujjain":"Avantika", "Vadodara":"Baroda",
-                      "Valsad": "Bulsar", "Varanasi": "Banaras", "Vidisha" : "Bhelsa", "Virudhunagar" : "Virudupatti", "Warangal":"Orugallu", "KHAMBHAT" : "Cambay", "Kochi": "Cochin", "Ahmedabad" : "Karnavati", "SHERTALLAI" : "Cherthala"}
-
+citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai",}
 
 DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/db/data/", username="neo4j", password="rkdaimpwd")
 
@@ -375,15 +368,15 @@ def persistfaredata(faredata, trainnumber, sourcestationcode, destinationstation
     :param destinationstationcode: destination station code
     :param logger: to log
     """
-    q = """MATCH (a:TRAINSTATION {CODE : '""" + sourcestationcode + """'})-[r:""" + destinationstationcode + """]->(b:TRAIN {NUMBER: '""" + trainnumber + """'}) SET r.FARE_1A:""" + str(faredata.fare_1A)
-    q = q + """ ,FARE_2A = """ + str(faredata.fare_2A)
-    q = q + """ ,FARE_3A = """ + str(faredata.fare_3A)
-    q = q + """ ,FARE_SL = """ + str(faredata.fare_SL)
-    q = q + """ ,FARE_2S = """ + str(faredata.fare_2S)
-    q = q + """ ,FARE_CC = """ + str(faredata.fare_CC)
-    q = q + """ ,FARE_FC = """ + str(faredata.fare_FC)
-    q = q + """ ,FARE_3E = """ + str(faredata.fare_3E)
-    q = q + """ ,FARE_GN = """ + str(faredata.fare_GN)
+    q = """MATCH (a:TRAINSTATION {CODE : '""" + sourcestationcode + """'})-[r:""" + destinationstationcode + """]->(b:TRAIN {NUMBER: '""" + trainnumber + """'}) SET r.FARE_1A=""" + str(faredata.fare_1A)
+    q = q + """ ,r.FARE_2A = """ + str(faredata.fare_2A)
+    q = q + """ ,r.FARE_3A = """ + str(faredata.fare_3A)
+    q = q + """ ,r.FARE_SL = """ + str(faredata.fare_SL)
+    q = q + """ ,r.FARE_2S = """ + str(faredata.fare_2S)
+    q = q + """ ,r.FARE_CC = """ + str(faredata.fare_CC)
+    q = q + """ ,r.FARE_FC = """ + str(faredata.fare_FC)
+    q = q + """ ,r.FARE_3E = """ + str(faredata.fare_3E)
+    q = q + """ ,r.FARE_GN = """ + str(faredata.fare_GN)
     print q
     try:
         DATABASE_CONNECTION.query(q)

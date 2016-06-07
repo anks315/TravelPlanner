@@ -20,6 +20,7 @@ import TravelPlanner.trainUtil
 
 today = datetime.date.today().strftime("%Y-%m-%d")
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
+bigcities = Set(['NEW DELHI', 'MUMBAI', 'BANGALORE', 'KOLKATA', 'HYDERABAD', 'CHENNAI', 'JAIPUR', 'AHMEDABAD', 'BHOPAL', 'LUCKNOW', 'PATNA', 'CHANDIGARH', 'PUNE', 'DELHI', 'AGRA', 'LUDHIANA', 'SURAT', 'KANPUR', 'NAGPUR', 'VISHAKHAPATNAM', 'INDORE', 'THANE','COIMBATORE', 'VADODARA', 'MADURAI', 'VARANASI', 'AMRITSAR', 'ALLAHABAD','KOTA', 'GUWAHATI', 'SOLAPUR', 'TRIVANDRUM'])
 
 logger = loggerUtil.getLogger("TrainApi", logging.DEBUG)
 
@@ -61,7 +62,7 @@ def parseandreturnroute(trainroutes, logger, journeyDate, traincounter):
             full["minDeparture"] = full["maxDeparture"] = trainroute.srcDepartureTime
             route["full"].append(full)
             route["parts"].append(part)
-            if hasprice(route):
+            if hasprice(route, trainroute.trainNumber, trainroute.srcStationCode, trainroute.destStationCode):
                 routes.append(route)
         except ValueError as e:
             logger.error("Error while route map with full & parts journey, reason [%s]", e.message)
@@ -231,10 +232,10 @@ class TrainController:
         logger.debug("[START]-Get Results From TrainApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ", source,destination, journeydate)
         source = str(source).upper()
         destination = str(destination).upper()
-        destinationstationset = self.placetostationcodescache.getstationsbycityname(destination)
+        destinationstationset = self.placetostationcodescache.getstationsbycityname(TravelPlanner.trainUtil.gettraincity(destination))
         traincounter = [0]
         if len(destinationstationset) != 0:
-            directjson = self.findtrainsbetweenstations(source, destinationstationset, journeydate, traincounter,destination)
+            directjson = self.findtrainsbetweenstations(TravelPlanner.trainUtil.gettraincity(source), destinationstationset, journeydate, traincounter,TravelPlanner.trainUtil.gettraincity(destination))
         else:
             directjson = {"train": []}
         if isonlydirect == 1 or len(directjson["train"]) > 8:  # return in case we have more than 8 direct trains
@@ -248,7 +249,8 @@ class TrainController:
             breakingcityset = (self.getbreakingcityset(breakingcitieslist))
             if len(breakingcityset) > 0:
                 for breakingcity in breakingcityset:
-                    self.fetchtraindatafrombreakingcities(breakingcity, destination, destinationstationset, journeydate,source, traincounter, directjson)
+                    if breakingcity != TravelPlanner.trainUtil.gettraincity(source) and breakingcity != TravelPlanner.trainUtil.gettraincity(destination):
+                        self.fetchtraindatafrombreakingcities(breakingcity, destination, destinationstationset, journeydate,source, traincounter, directjson)
 
         if len(breakingcitieslist) == 0 or len(breakingcityset) == 0:
             try:
@@ -298,26 +300,26 @@ class TrainController:
         breakingcitystationset = self.placetostationcodescache.getstationsbycityname(breakingcity)
         if (len(breakingcitystationset)) != 0:
             # only call for train if breaking city has train stations
-            sourcetobreakingstationjson = self.findtrainsbetweenstations(source, breakingcitystationset,journeydate, traincounter,breakingcity)
+            sourcetobreakingstationjson = self.findtrainsbetweenstations(TravelPlanner.trainUtil.gettraincity(source), breakingcitystationset,journeydate, traincounter,TravelPlanner.trainUtil.gettraincity(breakingcity))
         else:
             logger.warning("Breaking city [%s] has no train stations", breakingcity)
             sourcetobreakingstationjson = {"train": []}
 
         buscontroller = busapi.BusController()
-        sourcetobreakingstationbusjson = buscontroller.getResults(source.title(), breakingcity.title(), journeydate)
+        sourcetobreakingstationbusjson = buscontroller.getResults(TravelPlanner.trainUtil.getbuscity(source), TravelPlanner.trainUtil.getbuscity(breakingcity), journeydate)
 
         if len(sourcetobreakingstationjson["train"]) > 0 or len(sourcetobreakingstationbusjson["bus"]) > 0:
             nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
 
             if (len(destinationstationset)) != 0:
                 # only call for train if breaking city has train stations
-                breakingtodestinationjson = self.findtrainsbetweenstations(breakingcity, destinationstationset,journeydate, traincounter,destination)
-                breakingtodestinationjson["train"].extend(self.findtrainsbetweenstations(breakingcity, destinationstationset, nextday, traincounter,destination)["train"])
+                breakingtodestinationjson = self.findtrainsbetweenstations(TravelPlanner.trainUtil.gettraincity(breakingcity), destinationstationset,journeydate, traincounter,TravelPlanner.trainUtil.gettraincity(destination))
+                breakingtodestinationjson["train"].extend(self.findtrainsbetweenstations(TravelPlanner.trainUtil.gettraincity(breakingcity), destinationstationset, nextday, traincounter,TravelPlanner.trainUtil.gettraincity(destination))["train"])
             else:
                 breakingtodestinationjson = {"train": []}
 
-            breakingtodestinationbusjson = buscontroller.getResults(breakingcity.title(),destination.title(), journeydate)
-            breakingtodestinationbusjson["bus"].extend(buscontroller.getResults(breakingcity.title(), destination.title(), nextday)["bus"])
+            breakingtodestinationbusjson = buscontroller.getResults(TravelPlanner.trainUtil.getbuscity(breakingcity),TravelPlanner.trainUtil.getbuscity(destination), journeydate)
+            breakingtodestinationbusjson["bus"].extend(buscontroller.getResults(TravelPlanner.trainUtil.getbuscity(breakingcity), TravelPlanner.trainUtil.getbuscity(destination), nextday)["bus"])
 
             if len(breakingtodestinationjson["train"]) > 0 and len(sourcetobreakingstationjson["train"]) > 0:
                 # merge train data from source - breakingcity - destination
@@ -353,10 +355,10 @@ class TrainController:
         for breakingcities in breakingcitieslist:
             if len(breakingcities) == 1:
                 breakingcityset.add(breakingcities.pop())
-
-                # for breakingcities in breakingstationlist:
-                #   if len(breakingcities) == 2:
-                #       return breakingcities
+            else:
+                for breakingcity in breakingcities:
+                    if breakingcity.upper() in bigcities:
+                        breakingcityset.add(breakingcity)
         return breakingcityset
 
     def combinebusandtraininit(self, sourcetobreakingbusjson, breakingtodestinationjson):
@@ -430,7 +432,7 @@ class TrainController:
         return combinedjson
 
 
-def hasprice(route):
+def hasprice(route, trainnumber ,sourcestationcode, destinationstationcode):
     """
     Check whether any price exists for the train or not, if not try to get from railway api. Ignore train if either no price data is present or could not get from railway api
     :param route: train route
@@ -443,7 +445,7 @@ def hasprice(route):
     if prices["1A"] == 0 and prices["2A"] == 0 and prices["3A"] == 0 and prices["3E"] == 0 and prices["FC"] == 0 and 0 == \
             prices["CC"] and prices["SL"] == 0 and prices["2S"] == 0 and prices["GN"] == 0:
         logger.warning("re-trying fare data for train [%s] since all prices are 0", trainname)
-        faredata = models.getfarefortrainandpersist()
+        faredata = models.getfarefortrainandpersist(trainnumber ,sourcestationcode, destinationstationcode, logger)
         if not faredata:
             return False
         else:
