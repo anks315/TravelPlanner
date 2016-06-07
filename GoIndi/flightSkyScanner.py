@@ -10,7 +10,7 @@ import loggerUtil
 logger = loggerUtil.getLogger("FlighSkyScanner",logging.DEBUG)
 
 def getApiResults(sourcecity,destinationcity,journeyDate,id):
-    cityAndStateToStationsMap = {'Pathankot':'IXP','Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
+    cityAndStateToStationsMap = {'Rajahmundry':'RJA','Pantnagar':'PGH','Pathankot':'IXP','Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
                                  'Amritsar': 'ATQ', 'Aurangabad': 'IXU', 'Bagdogra': 'IXB', 'Bangalore': 'BLR',
                                  'Bhavnagar': 'BHU', 'Bhopal': 'BHO', 'Bhubaneswar': 'BBI', 'Bhuj': 'BHJ',
                                  'Calcutta': 'CCU', 'Kolkata': 'CCU', 'Chandigarh': 'IXC', 'Chennai': 'MAA',

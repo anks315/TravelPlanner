@@ -15,9 +15,20 @@ function showTrainJourneyList(transportList){
 		var individualJourneyDetails = "";
 		var summary = "<br/>";
 		var fontSize = 'h4'
+		var travelSplitter = ''
 		if(transportList[i].parts.length>1){
+			if(transportList[i].parts.length ==2){
+				customWidth = 44
+			} else if (transportList[i].parts.length ==3){
+				customWidth = 28
+			}
+			travelSplitterParts = ''
+			for (var q = 0; q < transportList[i].parts.length;q++ ){
+				travelSplitterParts = travelSplitterParts + "<td width='"+customWidth+"%'>&nbsp;<hr/>&nbsp;</td><td width='4%'><b><font color = '#dfa158' style='white-space: nowrap;'>"+transportList[i].parts[q].destination+"</font></b></td>";
+			}
+			travelSplitter = travelSplitter + "<table width='100%' style = 'text-align:center'><tr><td width='1%'><b><font color = '#dfa158' style='white-space: nowrap;'>"+transportList[i].parts[0].source+"</font></b></td>"+travelSplitterParts+"</tr></table>"
 			fontSize = 'h5'
-			summary="<table width = '100%'><tr><td style='text-align:left;padding: 5px;'><div class='journeyPriceSumLabel'>duration starts from</div><div class='journeyDuration sameLine'> <div class='sameLine'>"+transportTotalDetails.duration+" Hrs</div></div></td><td style='text-align:right;padding: 5px;'><div class='journeyPriceSumLabel'>price starts from</div><div class='journeyPrice sameLine'>  &#8377 <div class='sameLine'>"+transportTotalDetails.price+"</div>/-</div></td></tr></table>"
+			summary="<table width = '100%'><tr><td style='text-align:left;padding: 5px;' width='20%'><div class='journeyPriceSumLabel'>duration starts from</div><div class='journeyDuration sameLine'> <div class='sameLine'>"+transportTotalDetails.duration+" Hrs</div></div></td><td width='60%'>"+travelSplitter+"</td><td style='text-align:right;padding: 5px;' width='20%'><div class='journeyPriceSumLabel'>price starts from</div><div class='journeyPrice sameLine'>  &#8377 <div class='sameLine'>"+transportTotalDetails.price+"</div>/-</div></td></tr></table>"
 		}
 		
 		for (j = 0; j < transportList[i].parts.length;j++ ){

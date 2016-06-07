@@ -82,6 +82,15 @@ td a {
 	font-size: 90%;
 	font-weight:bold;
 }
+.routeLabel{
+	font-size: 100%;
+}
+hr { margin: 0.1em auto; 
+  height: 10px;
+  border: 0;
+  box-shadow: 0 10px 10px -10px #8c8c8c inset;
+  }
+  
 .journeyPriceSumLabel{
 	font-size: 70%;
 	font-weight:bold;

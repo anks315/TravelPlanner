@@ -19,13 +19,13 @@ function trainFilters(){
 				}
 			routeOptions = routeOptions + "<input type='radio' class ='trainRoutes' name='trainRoutes' id='train"+i+"' "+isChecked+" value = '"+trainRouteList[i]+"'>"
 			routeArr = trainRouteList[i].split(",")
-			routeLabel="<div class='journeyPriceLabel sameLine'>"+routeArr[0]+"</div>"
+			routeLabel="<div class='routeLabel sameLine'>"+routeArr[0]+"</div>"
 			for(var j =1;j<routeArr.length;j++){
 				routeLabel = routeLabel + "&nbsp;&nbsp;<img class='sameLine' src='/static/images/"+routeArr[j]+"2.png'></img>&nbsp;&nbsp;"
 				j++
-				routeLabel=routeLabel+"<div class='journeyPriceLabel sameLine'>"+routeArr[j]+"</div>"
+				routeLabel=routeLabel+"<div class='routeLabel sameLine'>"+routeArr[j]+"</div>"
 			}
-			routeOptions = routeOptions + routeLabel+"</input><br/><span class='label label-success'>Rs 500/-</span><br/>"
+			routeOptions = routeOptions + routeLabel+"</input><br/><span class='label label-success'>&#8377 "+routeMap["train"][trainRouteList[i]][0]["full"][0]["price"]+"/-</span><br/>"
 		}
 	
 	var output = "<div class='panel panel-default'><div class='panel-body'><p><label for='routeOptions' class='filterLabel'>Route options:</label><div id='routeOptions' class='filterValue'>"+routeOptions+"</div></p><hr/><p><label for='trainAmount' class='filterLabel'>Price range:</label><div id='trainAmount' class='filterValue'></div></p><div id='trainPriceRange'></div><br/><p><label for='trainTime' class='filterLabel'>Travel time range:</label><div id='trainTime' class='filterValue'></div></p><div id='trainDurationRange'></div><br/><p><label for='trainDeparture' class='filterLabel'>Departure time range:</label><div id='trainDeparture' class='filterValue'></div></p><div id='trainDepartureTimeRange'></div><br/><p><label for='trainArrival' class='filterLabel'>Arrival time range:</label><div id='trainArrival' class='filterValue'></div></p><div id='trainArrivalTimeRange'></div><br/></div></div></div>"
@@ -33,6 +33,8 @@ function trainFilters(){
 	document.getElementById("trainFilters").innerHTML = output;
 	if($("#trainDataHead").hasClass("active")){
 		$("#trainFilters").show();
+	}else{
+		$("#trainFilters").hide();
 	}
 	trainLeastPrice = trainList[0].full[0].minPrice;
 	trainLeastDuration = trainList[0].full[0].minDuration;

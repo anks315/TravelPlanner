@@ -77,33 +77,39 @@ function showPlanner(plannerContainer){
 					document.getElementById("flightFilters").innerHTML = '';
 				// change in documeent ready as well, if changed here
 				$.getJSON('flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate, function(data, err) {
-				  if (err != "success") {
+				 if (err != "success") {
+					 flightList = []
 				  } else {
+					  flightList = data.flight
+				  }
 					  newflightList = []
 					  flightRouteChecked=0
-					  flightList = data.flight
+					  
 					  setSummary(flightList,"flight","price")
 					  routeFilter(flightList,"flight")
-					  if(routeMap["flight"]!=null){
+					  if(flightRouteList!=0){
 						flightList = routeMap["flight"][flightRouteList[0]]
 					  }
+					  
 					  newflightList = flightList
 					showtransportJourneyList(flightList,"flight");
 					if(flightList.length!=0){
 						flightFilters();
 					}
-				  }
 				});
 				$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+'', function(data, err) {
 				  if (err != "success") {
+					  trainList=[]
 				  } else {
+					  trainList = data.train
+				  }
 					  newtrainList = []
 					  trainRouteChecked=0
-					  trainList = data.train
+					  
 					  setSummary(trainList,"train","price")
 					  routeFilter(trainList,"train")
 					   
-					  if(routeMap["train"]!=null){
+					  if(trainRouteList!=0){
 						trainList = routeMap["train"][trainRouteList[0]]
 					  }
 					  newtrainList = trainList
@@ -111,7 +117,7 @@ function showPlanner(plannerContainer){
 					if(trainList.length!=0){
 						trainFilters();
 					}
-				  }
+				  
 				});
 				
 				$.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
@@ -119,6 +125,7 @@ function showPlanner(plannerContainer){
 				  } else {
 					  busList = data.bus
 					  setSummary(busList,"bus","price")
+					  SortListByPrice(busList);
 					  newbusList=busList
 					showBusJourneyList(busList);
 					if(busList.length!=0){
@@ -231,13 +238,16 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 	//change in the search click as well if changed here
 	$.getJSON('flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate, function(data, err) {
 				  if (err != "success") {
+					  flightList = []
 				  } else {
+					  flightList = data.flight
+				  }
 					  newflightList = []
 					  flightRouteChecked=0
-					  flightList = data.flight
+					  
 					  setSummary(flightList,"flight","price")
 					  routeFilter(flightList,"flight")
-					  if(routeMap["flight"]!=null){
+					  if(flightRouteList!=0){
 						flightList = routeMap["flight"][flightRouteList[0]]
 					  }
 					  
@@ -246,18 +256,22 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 					if(flightList.length!=0){
 						flightFilters();
 					}
-				  }
+				  
 				});
 	$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
 					
 				  if (err != "success") {
+					  trainList=[]
 				  } else {
+					  trainList = data.train
+				  }
 					  newtrainList = []
 					  trainRouteChecked=0
-					  trainList = data.train
+					  
 					  setSummary(trainList,"train","price")
 					  routeFilter(trainList,"train")
-					  if(routeMap["train"]!=null){
+					   
+					  if(trainRouteList!=0){
 						trainList = routeMap["train"][trainRouteList[0]]
 					  }
 					  newtrainList = trainList
@@ -265,7 +279,6 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 					if(trainList.length!=0){
 						trainFilters();
 					}
-				  }
 				  
 				});
 	
@@ -274,7 +287,9 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 				  } else {
 					  busList = data.bus
 					  setSummary(busList,"bus","price")
+					  SortListByPrice(busList);
 					  newbusList=busList
+					  
 					showBusJourneyList(busList);
 					if(busList.length!=0){
 						busFilters();

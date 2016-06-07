@@ -4,6 +4,7 @@ function showBusJourneyList(busList){
 		document.getElementById("busData").innerHTML = noData;
 		return;
 	}
+	
 	var output = "<br/><div id='busBox' hidden><table width='100%'><tr>";
 	for (i = 0; i < busList.length; i++) { 
 		var busDetails = busList[i].parts[0];

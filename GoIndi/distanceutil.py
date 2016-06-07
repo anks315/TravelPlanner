@@ -2299,7 +2299,7 @@ airportList = [
     },
     {
         'City': 'Hyderabad',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Hyderabad',
         'IATA': 'BPM',

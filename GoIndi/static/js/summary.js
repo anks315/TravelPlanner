@@ -91,13 +91,13 @@ function setSummaryDiv(current,mode){
 	} else {
 		var percent = 1
 	}
-	var internals = "<td width='"+percent+"%' style ='padding: 0px;text-align:left' class = 'summaryBar'>&nbsp;<font color = 'white'>"+routeArr[0]+"</font></td>"
+	var internals = "<td width='"+percent+"%' style ='padding: 0px;text-align:left' class = 'summaryBar'>&nbsp;<font color = 'white' style='white-space: nowrap;'>"+routeArr[0]+"</font></td>"
 	for (var j = 1 ; j < routeLen; j++){
 		
 		internals = internals + "<td style ='padding: 0px' class = 'summaryBar'><img  src='/static/images/"+routeArr[j]+"3.png'></td>"
 		j++;
 		if(j!=routeLen-1){
-			internals = internals + "<td style ='padding: 0px' class = 'summaryBar'><font color = 'white'>"+routeArr[j]+"</font</td>"
+			internals = internals + "<td style ='padding: 0px' class = 'summaryBar'><font color = 'white' style='white-space: nowrap;'>"+routeArr[j]+"</font</td>"
 		} else {
 			internals = internals + "<td width='"+percent+"%' style ='padding: 0px;text-align:right' class = 'summaryBar'><font color = 'white'>"+routeArr[j]+"</font>&nbsp;</td>"
 		}

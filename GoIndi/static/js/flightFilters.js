@@ -19,13 +19,13 @@ function flightFilters(){
 				}
 			routeOptions = routeOptions + "<input type='radio' class ='flightRoutes' name='flightRoutes' id='flight"+i+"' "+isChecked+" value = '"+flightRouteList[i]+"'>"
 			routeArr = flightRouteList[i].split(",")
-			routeLabel="<div class='journeyPriceLabel sameLine'>"+routeArr[0]+"</div>"
+			routeLabel="<div class='routeLabel sameLine'>"+routeArr[0]+"</div>"
 			for(var j =1;j<routeArr.length;j++){
 				routeLabel = routeLabel + "&nbsp;&nbsp;<img class='sameLine' src='/static/images/"+routeArr[j]+"2.png'></img>&nbsp;&nbsp;"
 				j++
-				routeLabel=routeLabel+"<div class='journeyPriceLabel sameLine'>"+routeArr[j]+"</div>"
+				routeLabel=routeLabel+"<div class='routeLabel sameLine'>"+routeArr[j]+"</div>"
 			}
-			routeOptions = routeOptions + routeLabel+"</input><br/><span class='label label-success'>Rs 500/-</span><br/>"
+			routeOptions = routeOptions + routeLabel+"</input><br/><span class='label label-success'>&#8377 "+routeMap["flight"][flightRouteList[i]][0]["full"][0]["price"]+"/-</span><br/>"
 		}
 	
 	var output = "<div class='panel panel-default'><div class='panel-body'><p><label for='routeOptions' class='filterLabel'>Route options:</label><div id='routeOptions' class='filterValue'>"+routeOptions+"</div></p><hr/><p><label for='flightAmount' class='filterLabel'>Price range:</label><div id='flightAmount' class='filterValue'></div></p><div id='flightPriceRange'></div><br/><p><label for='flightTime' class='filterLabel'>Travel time range:</label><div id='flightTime' class='filterValue'></div></p><div id='flightDurationRange'></div><br/><p><label for='flightDeparture' class='filterLabel'>Departure time range:</label><div id='flightDeparture' class='filterValue'></div></p><div id='flightDepartureTimeRange'></div><br/><p><label for='flightArrival' class='filterLabel'>Arrival time range:</label><div id='flightArrival' class='filterValue'></div></p><div id='flightArrivalTimeRange'></div><br/></div></div></div>"
@@ -33,6 +33,8 @@ function flightFilters(){
 	document.getElementById("flightFilters").innerHTML = output;
 	if($("#flightDataHead").hasClass("active")){
 		$("#flightFilters").show();
+	}else{
+		$("#flightFilters").hide();
 	}
 	flightLeastPrice = flightList[0].full[0].minPrice;
 	flightLeastDuration = flightList[0].full[0].minDuration;

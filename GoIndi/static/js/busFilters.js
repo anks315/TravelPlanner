@@ -19,6 +19,8 @@ function busFilters(){
 	document.getElementById("busFilters").innerHTML = output;
 	if($("#busDataHead").hasClass("active")){
 		$("#busFilters").show();
+	}else{
+		$("#busFilters").hide();
 	}
 	busLeastPrice = busList[0].full[0].price.split(",")[0];
 	busLeastDuration = busList[0].full[0].duration;

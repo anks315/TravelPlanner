@@ -53,9 +53,10 @@ function getFlightPart(flight,id){
 			
 			
 			transportCarrier = "<img src='"+transportDetails.carrierName+"'></img><br/>";
+			flightnumber = "<font color='grey'>"+transportDetails.flightNumber+"</font>"
 
 			//details of the transportation mode
-			details = details + "<tr><td><table width='100%'><td width='5%'><table><tr><td style='white-space: nowrap;'>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div style='border-left:1px solid #808080;border-left-style:dotted;height:150px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;<b class='detailsMode'>"+transportCarrier+"</td></tr></table></td><td width='95%' style='text-align:right'></td></tr></table></td></tr>";
+			details = details + "<tr><td><table width='100%'><td width='5%'><table><tr><td style='white-space: nowrap;'>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div style='border-left:1px solid #808080;border-left-style:dotted;height:150px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;"+transportCarrier+"Flight:"+flightnumber+"</td></tr></table></td><td width='95%' style='text-align:right'></td></tr></table></td></tr>";
 			
 			if(j==flight.subParts.length-1){
 				//details of last station
