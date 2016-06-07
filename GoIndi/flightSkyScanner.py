@@ -129,7 +129,9 @@ def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate):
             full["route"]=part["source"]+",flight,"+part["destination"]
             part["bookingOptions"] = itinerary["PricingOptions"]
             for option in part["bookingOptions"]:
+                option["AgentsImg"] = getAgentImgById(option["Agents"][0], returnedFareData["Agents"])
                 option["Agents"]=getAgentNameById(option["Agents"][0],returnedFareData["Agents"])
+
             part["subParts"]=[]
             if returnedFareData["Legs"][flightCounter]["Stops"]:
                 Source =getCityNameById(returnedFareData["Legs"][flightCounter]["OriginStation"],returnedFareData["Places"])
@@ -178,8 +180,17 @@ def getCarrierNameById(carrierId,carriersList):
 
 def getAgentNameById(agentId,agentsList):
 
-    for agent in agentsList:
+    for i in range(len(agentsList)):
+        agent = agentsList[i]
         if agent["Id"]==agentId:
-            agentName = agent["Name"].split('.')
-            agentFinalName = agentName[0].replace(" ","_")
-            return "/static/images/" + agentFinalName + ".png"
+
+                return agent["Name"]
+
+def getAgentImgById(agentId,agentsList):
+
+    for i in range(len(agentsList)):
+        agent = agentsList[i]
+        if agent["Id"]==agentId:
+                agentName = agent["Name"].split('.')
+                agentFinalName = agentName[0].replace(" ","_")
+                return "/static/images/" + agentFinalName + ".png"

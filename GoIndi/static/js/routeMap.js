@@ -2,7 +2,10 @@ var routeMap = {}
 var flightRouteList
 var trainRouteList
 function routeFilter(transportList,mode){
-	routeMap[mode] ={}
+	if(transportList.length>0){
+		routeMap[mode] ={}
+	}
+	
 	var routeList = new Array()
 	for (var i = 0; i < transportList.length;i++ ){
 		var route = transportList[i].full[0].route

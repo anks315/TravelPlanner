@@ -25,7 +25,7 @@ function trainFilters(){
 				j++
 				routeLabel=routeLabel+"<div class='journeyPriceLabel sameLine'>"+routeArr[j]+"</div>"
 			}
-			routeOptions = routeOptions + routeLabel+"</input><br/><br/>"
+			routeOptions = routeOptions + routeLabel+"</input><br/><span class='label label-success'>Rs 500/-</span><br/>"
 		}
 	
 	var output = "<div class='panel panel-default'><div class='panel-body'><p><label for='routeOptions' class='filterLabel'>Route options:</label><div id='routeOptions' class='filterValue'>"+routeOptions+"</div></p><hr/><p><label for='trainAmount' class='filterLabel'>Price range:</label><div id='trainAmount' class='filterValue'></div></p><div id='trainPriceRange'></div><br/><p><label for='trainTime' class='filterLabel'>Travel time range:</label><div id='trainTime' class='filterValue'></div></p><div id='trainDurationRange'></div><br/><p><label for='trainDeparture' class='filterLabel'>Departure time range:</label><div id='trainDeparture' class='filterValue'></div></p><div id='trainDepartureTimeRange'></div><br/><p><label for='trainArrival' class='filterLabel'>Arrival time range:</label><div id='trainArrival' class='filterValue'></div></p><div id='trainArrivalTimeRange'></div><br/></div></div></div>"

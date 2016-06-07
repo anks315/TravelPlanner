@@ -105,5 +105,5 @@ function setSummaryDiv(current,mode){
 	var output = "<table width='100%' style ='text-align:center' ><tr>"+internals+"</tr></table><br/>"
 	document.getElementById(""+mode+"SumWid").innerHTML = output
 	document.getElementById(""+mode+"SumPrice").innerHTML = "<b><font color='green'>&#8377 "+price+"/-</font></b>"
-	document.getElementById(""+mode+"SumDur").innerHTML = "<font color='grey'>"+current.full[0].duration+" Hrs</font>"
+	document.getElementById(""+mode+"SumDur").innerHTML = "<b><font color='grey'>"+current.full[0].duration+" Hrs</font></b>"
 }

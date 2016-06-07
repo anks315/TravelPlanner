@@ -25,7 +25,7 @@ function flightFilters(){
 				j++
 				routeLabel=routeLabel+"<div class='journeyPriceLabel sameLine'>"+routeArr[j]+"</div>"
 			}
-			routeOptions = routeOptions + routeLabel+"</input><br/><br/>"
+			routeOptions = routeOptions + routeLabel+"</input><br/><span class='label label-success'>Rs 500/-</span><br/>"
 		}
 	
 	var output = "<div class='panel panel-default'><div class='panel-body'><p><label for='routeOptions' class='filterLabel'>Route options:</label><div id='routeOptions' class='filterValue'>"+routeOptions+"</div></p><hr/><p><label for='flightAmount' class='filterLabel'>Price range:</label><div id='flightAmount' class='filterValue'></div></p><div id='flightPriceRange'></div><br/><p><label for='flightTime' class='filterLabel'>Travel time range:</label><div id='flightTime' class='filterValue'></div></p><div id='flightDurationRange'></div><br/><p><label for='flightDeparture' class='filterLabel'>Departure time range:</label><div id='flightDeparture' class='filterValue'></div></p><div id='flightDepartureTimeRange'></div><br/><p><label for='flightArrival' class='filterLabel'>Arrival time range:</label><div id='flightArrival' class='filterValue'></div></p><div id='flightArrivalTimeRange'></div><br/></div></div></div>"

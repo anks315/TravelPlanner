@@ -71,12 +71,15 @@ function getFlightPart(flight,id){
 	var pricesWid = ''
 	
 	for(var z =0;z<flight.bookingOptions.length;z++){
+		var bookingOption = flight.bookingOptions[z];
 		var isCheckedPrice = ''
+		var agent = bookingOption.Agents
 		if(z==0){
 			isCheckedPrice='checked'
+			var agent = "<img src='"+bookingOption.AgentsImg+"'></img>"
 		}
-		var bookingOption = flight.bookingOptions[z];
-		pricesWid = pricesWid + "<img src='"+bookingOption.Agents+"'></img><br/><input type='radio' value = '"+bookingOption.Price+"' bookingLink='"+bookingOption.DeeplinkUrl+"' class = '"+id+"' name='radio"+flight.id+"' "+isCheckedPrice+">&nbsp;&nbsp;<div class = 'detailsPrice sameLine'>&#8377 "+bookingOption.Price+"/-</div><br/>"
+		
+		pricesWid = pricesWid + agent +"<br/><input type='radio' value = '"+bookingOption.Price+"' bookingLink='"+bookingOption.DeeplinkUrl+"' class = '"+id+"' name='radio"+flight.id+"' "+isCheckedPrice+">&nbsp;&nbsp;<div class = 'detailsPrice sameLine'>&#8377 "+bookingOption.Price+"/-</div><br/>"
 	}
 	details=details+"<td width=50% style='text-align:center' >"+pricesWid+"</td></tr></table>";
 	var length =  radionames.length

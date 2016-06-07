@@ -29,10 +29,10 @@ function showFlightJourneyList(transportList){
 				for(var q=0;q<transportDetails.subParts.length;q++){
 					
 					if(first==1 ){
-						transportTotaljourney = transportTotaljourney + "<img height='40' width='70' src='"+transportDetails.subParts[q].carrierName+"'></img>"
+						transportTotaljourney = transportTotaljourney + "<img  src='"+transportDetails.subParts[q].carrierName+"'></img>"
 						first = 0;
 					} else if(transportDetails.subParts[q].carrierName!=transportDetails.subParts[q-1].carrierName){
-						transportTotaljourney = transportTotaljourney + "&nbsp;&#8594;&nbsp" + "<img height='40' width='70' src='"+transportDetails.subParts[q].carrierName+"'></img>";
+						transportTotaljourney = transportTotaljourney + "&nbsp;&#8594;&nbsp" + "<img  src='"+transportDetails.subParts[q].carrierName+"'></img>";
 					}
 				}
 			}

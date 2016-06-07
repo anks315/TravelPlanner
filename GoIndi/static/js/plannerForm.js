@@ -84,7 +84,7 @@ function showPlanner(plannerContainer){
 					  flightList = data.flight
 					  setSummary(flightList,"flight","price")
 					  routeFilter(flightList,"flight")
-					  if(routeMap["flight"]==null){
+					  if(routeMap["flight"]!=null){
 						flightList = routeMap["flight"][flightRouteList[0]]
 					  }
 					  newflightList = flightList
@@ -103,7 +103,7 @@ function showPlanner(plannerContainer){
 					  setSummary(trainList,"train","price")
 					  routeFilter(trainList,"train")
 					   
-					  if(routeMap["train"]==null){
+					  if(routeMap["train"]!=null){
 						trainList = routeMap["train"][trainRouteList[0]]
 					  }
 					  newtrainList = trainList
@@ -237,7 +237,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 					  flightList = data.flight
 					  setSummary(flightList,"flight","price")
 					  routeFilter(flightList,"flight")
-					  if(routeMap["flight"]==null){
+					  if(routeMap["flight"]!=null){
 						flightList = routeMap["flight"][flightRouteList[0]]
 					  }
 					  
@@ -257,7 +257,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 					  trainList = data.train
 					  setSummary(trainList,"train","price")
 					  routeFilter(trainList,"train")
-					  if(routeMap["train"]==null){
+					  if(routeMap["train"]!=null){
 						trainList = routeMap["train"][trainRouteList[0]]
 					  }
 					  newtrainList = trainList

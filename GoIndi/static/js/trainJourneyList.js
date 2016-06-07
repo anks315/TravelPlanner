@@ -133,7 +133,7 @@ function showTrainJourneyList(transportList){
 			  var price = $(this).attr('price');
 			  $(this).parents('.btn-group').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
 			  var selectedPrice = document.getElementById($(this).attr("trainClassId"))
-			  selectedPrice.innerHTML = "&#8377 "+price+"/-";
+			  selectedPrice.innerHTML = "&#8377 "+price+"/-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 			  selectedPrice.setAttribute('price',price);
 			  var className = selectedPrice.getAttribute('trainclass');
 			  changePrice(className);
@@ -141,6 +141,11 @@ function showTrainJourneyList(transportList){
 		});
 			
 		$("#trainBox").fadeIn();
+		$(".bookingTrain").click(function() {
+			
+			var win = window.open('http://irctc.co.in', '_blank');
+			win.focus();
+	});
 		//setting action on mode menu box
 		$(".divisionTrainBox").mouseover(function() {
 					if($(this).hasClass("divisionTrainSelected")){
