@@ -369,7 +369,7 @@ airportList = [
         'City': 'Hissar',
         'Kind': 'Small',
         'Name': None,
-        'RailwayStation': 'Hissar',
+        'RailwayStation': 'Hisar',
         'IATA': 'HSS',
         'Longitude': '75.755(E)',
         'ICAO': 'VIHR',
@@ -3332,11 +3332,12 @@ def findNearestBigAirport(latitude, longitude):
   print(listairport)"""
 
 
-def findnearestrailwaystation(latitude, longitude):
+def findnearestrailwaystation(latitude, longitude, cityname):
     """
     To find nearest city with railway station to our city
     :param latitude: latitude of city
     :param longitude: longitude of city
+    :param cityname: name of the city
     :return: name of nearest city with railway
     """
     
@@ -3344,7 +3345,7 @@ def findnearestrailwaystation(latitude, longitude):
     sourceplace = (latitude, longitude)
     nearestrailstation = ""
     for airport in airportList:
-        if airport["RailwayStation"]:
+        if airport["RailwayStation"] and cityname.upper() != airport["City"].upper():
             airlatitude = airport["Latitude"]
             airlatitude = airlatitude[:-3]
             distance = vincenty((float(airlatitude), float(airport["Longitude"][:-3])), sourceplace)

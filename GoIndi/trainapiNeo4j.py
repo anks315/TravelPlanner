@@ -263,7 +263,7 @@ class TrainController:
                 sourcelat = sourcelatlong["results"][0]["geometry"]["location"]["lat"]
                 sourcelong = sourcelatlong["results"][0]["geometry"]["location"]["lng"]
                 logger.debug("Co-ordinates for source [%s] are Lat[%s]-Long[%s]", source, sourcelat, sourcelong)
-                breakingcity = distanceutil.findnearestrailwaystation(sourcelat, sourcelong).upper()
+                breakingcity = distanceutil.findnearestrailwaystation(sourcelat, sourcelong, TravelPlanner.trainUtil.gettraincity(source)).upper()
                 if breakingcity == source or breakingcity in source or source in breakingcity:
                     logger.warning("Breaking city is same as source [%s], calculating breaking city from destination [%s] co-ordinates", source, destination)
                     response = urllib2.urlopen('https://maps.googleapis.com/maps/api/geocode/json?address='+ destination.title())
@@ -272,7 +272,7 @@ class TrainController:
                     destlat = destlatlong["results"][0]["geometry"]["location"]["lat"]
                     destlong = destlatlong["results"][0]["geometry"]["location"]["lng"]
                     logger.debug("Co-ordinates for destination [%s] are Lat[%s]-Long[%s]", destination, destlat, destlong)
-                    breakingcity = distanceutil.findnearestrailwaystation(destlat, destlong).upper()
+                    breakingcity = distanceutil.findnearestrailwaystation(destlat, destlong, TravelPlanner.trainUtil.gettraincity(destination)).upper()
                     if breakingcity == destination or breakingcity in destination or destination in breakingcity:
                         logger.warning("No breaking journey city possible between source [%s] and destination [%s]", source, destination)
                         return directjson
