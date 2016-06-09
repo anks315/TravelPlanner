@@ -236,7 +236,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 	var depDateArr = document.getElementById('departureBox').value.split("/");
 	var depDate = depDateArr[1]+"-"+depDateArr[0]+"-"+depDateArr[2]
 	//change in the search click as well if changed here
-	$.getJSON('flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate, function(data, err) {
+	$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate, function(data, err) {
 				  if (err != "success") {
 					  flightList = []
 				  } else {
@@ -258,7 +258,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 					}
 				  
 				});
-	$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
+	$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
 					
 				  if (err != "success") {
 					  trainList=[]
@@ -282,7 +282,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 				  
 				});
 	
-	 $.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
+	 $.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
 				  if (err != "success") {
 				  } else {
 					  busList = data.bus
