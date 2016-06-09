@@ -9,6 +9,7 @@ from django.http import HttpResponse
 import dateTimeUtility
 import loggerUtil
 import logging
+import TravelPlanner.trainUtil
 
 logger = loggerUtil.getLogger("BusApi",logging.DEBUG)
 
@@ -20,6 +21,8 @@ class BusController:
     def getResults(self, source, destination, journeyDate):
         response = {"bus": []}
         try:
+            source = TravelPlanner.trainUtil.getbuscity(source)
+            destination = TravelPlanner.trainUtil.getbuscity(destination)
             logger.debug("[START]-Get Results From BusApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeyDate)
             jdList = journeyDate.split("-")
             newFormatJourneyDate = jdList[2]+"-"+jdList[1]+"-"+jdList[0]

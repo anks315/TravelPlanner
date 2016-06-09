@@ -20,7 +20,7 @@ logger = loggerUtil.getLogger("FlightApi",logging.DEBUG)
 class FlightController:
     """Class returns all stations corresponding to a city"""
 
-    stationToCityMap = {'RJA':'Rajahmundry','PGH':'Pantnagar','IXP':'Pathankot','KUU':'Kullu','SLV':'Shimla','IXA':'Agartala','AGR':'Agra','AMD':'Ahmedabad','IXD':'Allahabad','ATQ':'Amritsar','IXU':'Aurangabad','IXB':'Bagdogra','BLR':'Bangalore','BHU':'Bhavnagar','BHO':'Bhopal','BBI':'Bhubaneswar','BHJ':'Bhuj','CCU':'Kolkata','IXC':'Chandigarh','MAA':'Chennai','COK':'Cochin','CJB':'Coimbatore','NMB':'Daman','DED':'Dehradun','DIB':'Dibrugarh','DMU':'Dimapur','DIU':'Diu','GAU':'Gauhati','GOI':'Goa','GWL':'Gwalior','HBX':'Hubli','HYD':'Hyderabad','IMF':'Imphal','IDR':'Indore','JAI':'Jaipur','IXJ':'Jammu','JGA':'Jamnagar','IXW':'Jamshedpur','JDH':'Jodhpur','JRH':'Jorhat','KNU':'Kanpur','HJR':'Khajuraho','CCJ':'Kozhikode','IXL':'Leh','LKO':'Lucknow','LUH':'Ludhiana','IXM':'Madurai','IXE':'Mangalore','BOM':'Mumbai','BOM':'Mumbai','NAG':'Nagpur','NDC':'Nanded','ISK':'Nasik','DEL':'Delhi','PAT':'Patna','PNY':'Pondicherry','PNQ':'Poona','PNQ':'Pune','PBD':'Porbandar','IXZ':'Port Blair','PUT':'PuttasubParthi','BEK':'Rae Bareli','RAJ':'Rajkot','IXR':'Ranchi','SHL':'Shillong','IXS':'Silchar','SXR':'Srinagar','STV':'Surat','TEZ':'Tezpur','TRZ':'Tiruchirapally','TIR':'Tirupati','TRV':'Trivandrum','UDR':'Udaipur','BDQ':'Vadodara','VNS':'Varanasi','VGA':'Vijayawada','VTZ': 'Vishakhapatnam'}
+    stationToCityMap = {'JSA':'Jaisalmer','RJA':'Rajahmundry','PGH':'Pantnagar','IXP':'Pathankot','KUU':'Kullu','SLV':'Shimla','IXA':'Agartala','AGR':'Agra','AMD':'Ahmedabad','IXD':'Allahabad','ATQ':'Amritsar','IXU':'Aurangabad','IXB':'Bagdogra','BLR':'Bangalore','BHU':'Bhavnagar','BHO':'Bhopal','BBI':'Bhubaneswar','BHJ':'Bhuj','CCU':'Kolkata','IXC':'Chandigarh','MAA':'Chennai','COK':'Cochin','CJB':'Coimbatore','NMB':'Daman','DED':'Dehradun','DIB':'Dibrugarh','DMU':'Dimapur','DIU':'Diu','GAU':'Gauhati','GOI':'Goa','GWL':'Gwalior','HBX':'Hubli','HYD':'Hyderabad','IMF':'Imphal','IDR':'Indore','JAI':'Jaipur','IXJ':'Jammu','JGA':'Jamnagar','IXW':'Jamshedpur','JDH':'Jodhpur','JRH':'Jorhat','KNU':'Kanpur','HJR':'Khajuraho','CCJ':'Kozhikode','IXL':'Leh','LKO':'Lucknow','LUH':'Ludhiana','IXM':'Madurai','IXE':'Mangalore','BOM':'Mumbai','NAG':'Nagpur','NDC':'Nanded','ISK':'Nasik','DEL':'New Delhi','PAT':'Patna','PNY':'Pondicherry','PNQ':'Poona','PNQ':'Pune','PBD':'Porbandar','IXZ':'Port Blair','PUT':'PuttasubParthi','BEK':'Rae Bareli','RAJ':'Rajkot','IXR':'Ranchi','SHL':'Shillong','IXS':'Silchar','SXR':'Srinagar','STV':'Surat','TEZ':'Tezpur','TRZ':'Tiruchirapally','TIR':'Tirupati','TRV':'Trivandrum','UDR':'Udaipur','BDQ':'Vadodara','VNS':'Varanasi','VGA':'Vijayawada','VTZ': 'Vishakhapatnam'}
 
     def getResults(self, sourcecity,sourcestate, destinationcity,destinationstate, journeyDate):
 
@@ -28,14 +28,18 @@ class FlightController:
         with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
             source = TravelPlanner.trainUtil.gettraincity(sourcecity).title()
             destination = TravelPlanner.trainUtil.gettraincity(destinationcity).title()
-            response = urllib2.urlopen('https://maps.googleapis.com/maps/api/geocode/json?address='+ source)
+            url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + source
+            url = url.replace(' ', '%20')
+            response = urllib2.urlopen(url)
             sourceLatLong = json.loads(response.read())
             response.close()
             sourceLat = sourceLatLong["results"][0]["geometry"]["location"]["lat"]
             sourceLong = sourceLatLong["results"][0]["geometry"]["location"]["lng"]
             sourceAirport = distanceutil.findNearestAirport(sourceLat,sourceLong)
             bigSourceAirport = distanceutil.findNearestBigAirport(sourceLat,sourceLong)
-            response2 = urllib2.urlopen('https://maps.googleapis.com/maps/api/geocode/json?address=' + destination)
+            url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + destination
+            url = url.replace(' ', '%20')
+            response2 = urllib2.urlopen(url)
             destLatLong = json.loads(response2.read())
             destLat = destLatLong["results"][0]["geometry"]["location"]["lat"]
             destLong = destLatLong["results"][0]["geometry"]["location"]["lng"]
@@ -197,8 +201,7 @@ class FlightController:
                     continueFurther=1
                     minmax1 = minMaxUtil.getMinMaxValues(subparts)
                     newpart = {"subParts": subparts, "mode": subparts[0]["mode"],"id": mixedFlight["flight"][j]["full"][0]["id"] + str(0),
-                               "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"],
-                               "trainNumber": subparts[0]["trainNumber"]}
+                               "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"]}
                     flightPart["id"] = mixedFlight["flight"][j]["full"][0]["id"] + str(1)
                     mixedFlight["flight"][j]["parts"].insert(0, newpart)
                     mixedFlight["flight"][j]["full"][0]["route"] = newpart["source"] + ","+newpart["mode"]+"," + newpart["destination"] + ",flight," + flightPart["destination"]
@@ -215,8 +218,7 @@ class FlightController:
                 if subparts and continueFurther==1:
                     minmax2 = minMaxUtil.getMinMaxValues(subparts)
                     newpart = {"subParts": subparts, "mode": subparts[0]["mode"],"id": mixedFlight["flight"][j]["full"][0]["id"] + str(2),
-                               "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"],
-                               "trainNumber": subparts[0]["trainNumber"]}
+                               "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"]}
                     mixedFlight["flight"][j]["parts"].append(newpart)
                     mixedFlight["flight"][j]["full"][0]["route"] = mixedFlight["flight"][j]["full"][0]["route"] + ","+subparts[0]["mode"]+"," + newpart["destination"]
                     mixedFlight["flight"][j]["full"][0]["price"] = int(mixedFlight["flight"][j]["full"][0]["price"]) + int(minmax1["minPrice"]) + int(minmax2["minPrice"])
@@ -253,8 +255,7 @@ class FlightController:
             if subparts:
                 minmax = minMaxUtil.getMinMaxValues(subparts)
                 newpart = {"subParts": subparts, "mode": subparts[0]["mode"],"id": mixedFlightInit["flight"][j]["full"][0]["id"] + str(1),
-                           "destination": subparts[0]["destination"], "source": subparts[0]["source"], "carrierName": subparts[0]["carrierName"],
-                           "trainNumber": subparts[0]["trainNumber"]}
+                           "destination": subparts[0]["destination"], "source": subparts[0]["source"], "carrierName": subparts[0]["carrierName"]}
                 mixedFlightInit["flight"][j]["parts"].append(newpart)
                 mixedFlightInit["flight"][j]["full"][0]["route"]=flightPart["source"]+",flight,"+flightPart["destination"]+","+subparts[0]["mode"]+","+newpart["destination"]
                 mixedFlightInit["flight"][j]["full"][0]["price"] = int(mixedFlightInit["flight"][j]["full"][0]["price"]) + int(minmax["minPrice"])
@@ -289,8 +290,7 @@ class FlightController:
             if subparts:
                 minmax = minMaxUtil.getMinMaxValues(subparts)
                 newpart = {"subParts": subparts, "mode": subparts[0]["mode"],"id": mixedFlightEnd["flight"][j]["full"][0]["id"] + str(0),
-                           "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"],
-                           "trainNumber": subparts[0]["trainNumber"]}
+                           "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"]}
                 flightPart["id"]=mixedFlightEnd["flight"][j]["full"][0]["id"] + str(1)
                 mixedFlightEnd["flight"][j]["parts"].insert(0,newpart)
                 mixedFlightEnd["flight"][j]["full"][0]["route"] = newpart["source"] + ","+subparts[0]["mode"]+"," + newpart["destination"] + ",flight," + flightPart["destination"]

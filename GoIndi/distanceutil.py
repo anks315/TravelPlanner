@@ -403,7 +403,7 @@ airportList = [
     },
     {
         'City': 'Kota',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Kota',
         'IATA': 'KTU',
@@ -559,7 +559,7 @@ airportList = [
     },
     {
         'City': 'Guna',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Guna',
         'IATA': 'GUX',

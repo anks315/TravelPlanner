@@ -10,7 +10,7 @@ import loggerUtil
 logger = loggerUtil.getLogger("FlighSkyScanner",logging.DEBUG)
 
 def getApiResults(sourcecity,destinationcity,journeyDate,id):
-    cityAndStateToStationsMap = {'Rajahmundry':'RJA','Pantnagar':'PGH','Pathankot':'IXP','Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
+    cityAndStateToStationsMap = {'Jaisalmer':'JSA','Rajahmundry':'RJA','Pantnagar':'PGH','Pathankot':'IXP','Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
                                  'Amritsar': 'ATQ', 'Aurangabad': 'IXU', 'Bagdogra': 'IXB', 'Bangalore': 'BLR',
                                  'Bhavnagar': 'BHU', 'Bhopal': 'BHO', 'Bhubaneswar': 'BBI', 'Bhuj': 'BHJ',
                                  'Calcutta': 'CCU', 'Kolkata': 'CCU', 'Chandigarh': 'IXC', 'Chennai': 'MAA',
@@ -22,7 +22,7 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id):
                                  'Khajuraho': 'HJR', 'Kozhikode': 'CCJ', 'calicut': 'CCJ', 'Leh': 'IXL',
                                  'Lucknow': 'LKO', 'Ludhiana': 'LUH', 'Madurai': 'IXM', 'Mangalore': 'IXE',
                                  'Mumbai': 'BOM', 'Bombay': 'BOM', 'Nagpur': 'NAG', 'Nanded': 'NDC', 'Nasik': 'ISK',
-                                 'New Delhi': 'DEL', 'Delhi': 'DEL', 'Patna': 'PAT', 'Pondicherry': 'PNY',
+                                 'New Delhi': 'DEL', 'Patna': 'PAT', 'Pondicherry': 'PNY',
                                  'Poona': 'PNQ', 'Pune': 'PNQ', 'Porbandar': 'PBD', 'Port Blair': 'IXZ',
                                  'PuttasubParthi': 'PUT', 'Rae Bareli': 'BEK', 'Rajkot': 'RAJ', 'Ranchi': 'IXR',
                                  'Shillong': 'SHL', 'Silchar': 'IXS', 'Srinagar': 'SXR', 'Surat': 'STV',

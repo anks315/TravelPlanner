@@ -306,7 +306,7 @@ class TrainController:
             sourcetobreakingstationjson = {"train": []}
 
         buscontroller = busapi.BusController()
-        sourcetobreakingstationbusjson = buscontroller.getResults(TravelPlanner.trainUtil.getbuscity(source), TravelPlanner.trainUtil.getbuscity(breakingcity), journeydate)
+        sourcetobreakingstationbusjson = buscontroller.getResults(source, breakingcity, journeydate)
 
         if len(sourcetobreakingstationjson["train"]) > 0 or len(sourcetobreakingstationbusjson["bus"]) > 0:
             nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
@@ -318,8 +318,8 @@ class TrainController:
             else:
                 breakingtodestinationjson = {"train": []}
 
-            breakingtodestinationbusjson = buscontroller.getResults(TravelPlanner.trainUtil.getbuscity(breakingcity),TravelPlanner.trainUtil.getbuscity(destination), journeydate)
-            breakingtodestinationbusjson["bus"].extend(buscontroller.getResults(TravelPlanner.trainUtil.getbuscity(breakingcity), TravelPlanner.trainUtil.getbuscity(destination), nextday)["bus"])
+            breakingtodestinationbusjson = buscontroller.getResults(breakingcity,destination, journeydate)
+            breakingtodestinationbusjson["bus"].extend(buscontroller.getResults(breakingcity, destination, nextday)["bus"])
 
             if len(breakingtodestinationjson["train"]) > 0 and len(sourcetobreakingstationjson["train"]) > 0:
                 # merge train data from source - breakingcity - destination
