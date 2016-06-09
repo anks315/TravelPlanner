@@ -76,7 +76,7 @@ function showPlanner(plannerContainer){
 					document.getElementById("flightData").innerHTML = loadingFlight;
 					document.getElementById("flightFilters").innerHTML = '';
 				// change in documeent ready as well, if changed here
-				$.getJSON('flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate, function(data, err) {
+				$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate, function(data, err) {
 				 if (err != "success") {
 					 flightList = []
 				  } else {
@@ -97,7 +97,7 @@ function showPlanner(plannerContainer){
 						flightFilters();
 					}
 				});
-				$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+'', function(data, err) {
+				$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+'', function(data, err) {
 				  if (err != "success") {
 					  trainList=[]
 				  } else {
@@ -120,7 +120,7 @@ function showPlanner(plannerContainer){
 				  
 				});
 				
-				$.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
+				$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate, function(data, err) {
 				  if (err != "success") {
 				  } else {
 					  busList = data.bus
