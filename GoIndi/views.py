@@ -16,8 +16,8 @@ import busapi
 import models
 import trainapiNeo4j
 #import trainDBscript
-from googleapiparser import getpossiblebreakingplacesfortrain
-from flightSkyScanner import getApiResults
+
+
 
 
 trainController = trainapi.TrainController()
@@ -41,24 +41,28 @@ def main(request):
 def test(request):
 
      return render_to_response('index.html',{},context_instance = RequestContext(request))
+
 def flightapi(request):
     sourcecity = request.GET['sourcecity']
-    sourcestate = request.GET['sourcestate']
+    #sourcestate = request.GET['sourcestate']
     destinationcity = request.GET['destinationcity']
-    destinationstate = request.GET['destinationstate']
+    #destinationstate = request.GET['destinationstate']
     journeyDate = request.GET['journeyDate']
+    trainClass = request.GET["trainClass"]
+    flightClass = request.GET["flightClass"]
     # request.session['source']=source
     # request.session['destination']=destination
-    resultJsonData = flightController.getResults(sourcecity,sourcestate, destinationcity,destinationstate, journeyDate)
+    resultJsonData = flightController.getResults(sourcecity,"", destinationcity,"", journeyDate,trainClass,flightClass)
     return HttpResponse(json.dumps(resultJsonData), content_type='application/json')
 
 def trainapi(request):
     source = request.GET['source']
     destination = request.GET['destination']
     journeyDate = request.GET['journeyDate']
+    trainclass = request.GET["trainClass"]
     #request.session['source']=source
     #request.session['destination']=destination
-    resultJsonData = trainControllerneo.getRoutes(source,destination,journeyDate,0)
+    resultJsonData = trainControllerneo.getRoutes(source,destination,journeyDate,0,trainclass)
     return HttpResponse(json.dumps(resultJsonData), content_type='application/json')
 
 def busapi(request):

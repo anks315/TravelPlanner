@@ -9,7 +9,7 @@ import loggerUtil
 
 logger = loggerUtil.getLogger("FlighSkyScanner",logging.DEBUG)
 
-def getApiResults(sourcecity,destinationcity,journeyDate,id):
+def getApiResults(sourcecity,destinationcity,journeyDate,id,flightClass='Economy'):
     cityAndStateToStationsMap = {'Jaisalmer':'JSA','Rajahmundry':'RJA','Pantnagar':'PGH','Pathankot':'IXP','Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
                                  'Amritsar': 'ATQ', 'Aurangabad': 'IXU', 'Bagdogra': 'IXB', 'Bangalore': 'BLR',
                                  'Bhavnagar': 'BHU', 'Bhopal': 'BHO', 'Bhubaneswar': 'BBI', 'Bhuj': 'BHJ',
@@ -66,7 +66,7 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id):
                 originplace=source+'-sky',
                 destinationplace=destination+'-sky',
                 outbounddate=str(year)+'-'+str(month)+'-'+str(day),
-                adults=1), initial_delay = 1, delay = 1, tries = 100).parsed
+                adults=1,cabinclass=flightClass), initial_delay = 1, delay = 1, tries = 100).parsed
             if result:
                 resultJson = parseFlightAndReturnFare(result, id, sourcecity, destinationcity, journeyDate)
                 break

@@ -22,7 +22,7 @@ class FlightController:
 
     stationToCityMap = {'JSA':'Jaisalmer','RJA':'Rajahmundry','PGH':'Pantnagar','IXP':'Pathankot','KUU':'Kullu','SLV':'Shimla','IXA':'Agartala','AGR':'Agra','AMD':'Ahmedabad','IXD':'Allahabad','ATQ':'Amritsar','IXU':'Aurangabad','IXB':'Bagdogra','BLR':'Bangalore','BHU':'Bhavnagar','BHO':'Bhopal','BBI':'Bhubaneswar','BHJ':'Bhuj','CCU':'Kolkata','IXC':'Chandigarh','MAA':'Chennai','COK':'Cochin','CJB':'Coimbatore','NMB':'Daman','DED':'Dehradun','DIB':'Dibrugarh','DMU':'Dimapur','DIU':'Diu','GAU':'Gauhati','GOI':'Goa','GWL':'Gwalior','HBX':'Hubli','HYD':'Hyderabad','IMF':'Imphal','IDR':'Indore','JAI':'Jaipur','IXJ':'Jammu','JGA':'Jamnagar','IXW':'Jamshedpur','JDH':'Jodhpur','JRH':'Jorhat','KNU':'Kanpur','HJR':'Khajuraho','CCJ':'Kozhikode','IXL':'Leh','LKO':'Lucknow','LUH':'Ludhiana','IXM':'Madurai','IXE':'Mangalore','BOM':'Mumbai','NAG':'Nagpur','NDC':'Nanded','ISK':'Nasik','DEL':'New Delhi','PAT':'Patna','PNY':'Pondicherry','PNQ':'Poona','PNQ':'Pune','PBD':'Porbandar','IXZ':'Port Blair','PUT':'PuttasubParthi','BEK':'Rae Bareli','RAJ':'Rajkot','IXR':'Ranchi','SHL':'Shillong','IXS':'Silchar','SXR':'Srinagar','STV':'Surat','TEZ':'Tezpur','TRZ':'Tiruchirapally','TIR':'Tirupati','TRV':'Trivandrum','UDR':'Udaipur','BDQ':'Vadodara','VNS':'Varanasi','VGA':'Vijayawada','VTZ': 'Vishakhapatnam'}
 
-    def getResults(self, sourcecity,sourcestate, destinationcity,destinationstate, journeyDate):
+    def getResults(self, sourcecity,sourcestate, destinationcity,destinationstate, journeyDate,trainClass,flightClass):
 
         logger.debug("[START]-Get Results From FlightApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",sourcecity,destinationcity,journeyDate)
         with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
@@ -51,13 +51,13 @@ class FlightController:
             destinationFlight = FlightController.stationToCityMap[destAirport]
 
             if source!=sourceFlight:
-                othermodessminitfuture = executor.submit(self.getothermodes,sourcecity, sourceFlight, journeyDate)
-                othermodessminit2future = executor.submit(self.getothermodes, sourcecity, sourceFlight, dateTimeUtility.getPreviousDate(journeyDate))
+                othermodessminitfuture = executor.submit(self.getothermodes,sourcecity, sourceFlight, journeyDate,trainClass)
+                othermodessminit2future = executor.submit(self.getothermodes, sourcecity, sourceFlight, dateTimeUtility.getPreviousDate(journeyDate),trainClass)
             if destination != destinationFlight:
-                othermodessmendfuture = executor.submit(self.getothermodes, destinationFlight, destinationcity, journeyDate)
-                othermodessmend2future = executor.submit(self.getothermodes, destinationFlight, destinationcity, dateTimeUtility.getNextDate(journeyDate))
+                othermodessmendfuture = executor.submit(self.getothermodes, destinationFlight, destinationcity, journeyDate,trainClass)
+                othermodessmend2future = executor.submit(self.getothermodes, destinationFlight, destinationcity, dateTimeUtility.getNextDate(journeyDate),trainClass)
 
-            onlyflightfuture = executor.submit(flightSkyScanner.getApiResults,sourceFlight,destinationFlight,journeyDate,"flight0")
+            onlyflightfuture = executor.submit(flightSkyScanner.getApiResults,sourceFlight,destinationFlight,journeyDate,"flight0",flightClass)
 
 
 
@@ -77,25 +77,25 @@ class FlightController:
                 otherModesEndFuture = []
                 #if there is only one big airport in between or both source and destination are big airports
                 if((bigSource!=bigDestination) and ((bigSource != sourceFlight)and(bigDestination!=destinationFlight))):
-                    mixedFlightFuture = executor.submit(flightSkyScanner.getApiResults,bigSource,bigDestination,journeyDate,"flight1")
-                    otherModesInitFuture = executor.submit(self.getothermodes, sourcecity, bigSource, journeyDate)
-                    otherModesInit2Future = executor.submit(self.getothermodes, sourcecity, bigSource, dateTimeUtility.getPreviousDate(journeyDate))
-                    otherModesEndFuture = executor.submit(self.getothermodes, bigDestination, destinationcity, journeyDate)
+                    mixedFlightFuture = executor.submit(flightSkyScanner.getApiResults,bigSource,bigDestination,journeyDate,"flight1",flightClass)
+                    otherModesInitFuture = executor.submit(self.getothermodes, sourcecity, bigSource, journeyDate,trainClass)
+                    otherModesInit2Future = executor.submit(self.getothermodes, sourcecity, bigSource, dateTimeUtility.getPreviousDate(journeyDate),trainClass)
+                    otherModesEndFuture = executor.submit(self.getothermodes, bigDestination, destinationcity, journeyDate,trainClass)
                     otherModesEnd2Future = executor.submit(self.getothermodes, bigDestination, destinationcity,
-                                                          dateTimeUtility.getNextDate(journeyDate))
+                                                          dateTimeUtility.getNextDate(journeyDate),trainClass)
                 if (bigSource != sourceFlight):
-                    mixedFlightEndFuture =executor.submit(flightSkyScanner.getApiResults,bigSource,destinationFlight,journeyDate,"flight2")
+                    mixedFlightEndFuture =executor.submit(flightSkyScanner.getApiResults,bigSource,destinationFlight,journeyDate,"flight2",flightClass)
                     if otherModesInitFuture==[]:
-                        otherModesInitFuture = executor.submit(self.getothermodes,sourcecity, bigSource, journeyDate)
+                        otherModesInitFuture = executor.submit(self.getothermodes,sourcecity, bigSource, journeyDate,trainClass)
                         otherModesInit2Future = executor.submit(self.getothermodes, sourcecity, bigSource,
-                                                        dateTimeUtility.getPreviousDate(journeyDate))
+                                                        dateTimeUtility.getPreviousDate(journeyDate),trainClass)
 
                 if (bigDestination != destinationFlight):
-                    mixedFlightInitFuture =executor.submit(flightSkyScanner.getApiResults,sourceFlight,bigDestination,journeyDate,"flight3")
+                    mixedFlightInitFuture =executor.submit(flightSkyScanner.getApiResults,sourceFlight,bigDestination,journeyDate,"flight3",flightClass)
                     if otherModesEndFuture==[]:
-                        otherModesEndFuture = executor.submit(self.getothermodes,bigDestination, destinationcity, journeyDate)
+                        otherModesEndFuture = executor.submit(self.getothermodes,bigDestination, destinationcity, journeyDate,trainClass)
                         otherModesEnd2Future = executor.submit(self.getothermodes, bigDestination, destinationcity,
-                                                       dateTimeUtility.getNextDate(journeyDate))
+                                                       dateTimeUtility.getNextDate(journeyDate),trainClass)
                 onlyFlight = onlyflightfuture.result()
                 onlyFlight = miscUtility.limitResults(onlyFlight, "flight")
                 if source != sourceFlight and destination !=destinationFlight:
@@ -164,11 +164,11 @@ class FlightController:
             logger.debug("[END]-Get Results From FlightApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",sourcecity,destinationcity,journeyDate)
             return finalList
 
-    def getothermodes(self, source,destination, journeydate):
+    def getothermodes(self, source,destination, journeydate,trainClass='3A'):
 
         traincontrollerneo = trainapiNeo4j.TrainController()
         logger.debug("[START] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
-        resultjsondata = traincontrollerneo.getRoutes(source, destination, journeydate)["train"]
+        resultjsondata = traincontrollerneo.getRoutes(source, destination, journeydate,priceClass=trainClass)["train"]
         if not resultjsondata:
             logger.debug("No Data From Train,Retrieving From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
             buscontroller = busapi.BusController()

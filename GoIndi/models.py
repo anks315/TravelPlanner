@@ -1,4 +1,4 @@
-
+from numpy.testing.print_coercion_tables import print_cancast_table
 from neo4jrestclient.client import GraphDatabase
 from entity import TrainOption, TrainStation, FareData
 import time
@@ -17,12 +17,13 @@ def demo():
 
 citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai",}
 
-DATABASE_CONNECTION= GraphDatabase("http://ec2-54-179-130-192.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
+#DATABASE_CONNECTION= GraphDatabase("http://ec2-54-179-130-192.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
+DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="ankurjain")
 
 #DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
 
 
-def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeydate, destinationcity):
+def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeydate, destinationcity,priceClass='3A'):
     """
     :param sourcecity: source of the journey
     :param destinationstationset: destination cities station set
@@ -53,38 +54,54 @@ def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeyda
             trainoption.destStationCode = results.elements[i][2]['type']
             trainoption.destStation = str(destinationcity).title()
             trainoption.prices = {"1A": 0, "2A": 0, "3A": 0, "3E": 0, "FC": 0, "CC": 0, "SL": 0, "2S": 0, "GN": 0} #empty dictionary
-            trainoption.price = 0
+            trainoption.price=0
+            if 'FARE_'+priceClass in results.elements[i][2]['data']:
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,int(results.elements[i][2]['data']['FARE_'+priceClass]),priceClass)
+
             trainoption.duration =  getduration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
-            if 'FARE_1A' in results.elements[i][2]['data']:
-                trainoption.prices["1A"] = int(results.elements[i][2]['data']['FARE_1A'])
-            if 'FARE_2A' in results.elements[i][2]['data']:
-                trainoption.prices["2A"] = int(results.elements[i][2]['data']['FARE_2A'])
             if 'FARE_3A' in results.elements[i][2]['data']:
                 trainoption.prices["3A"] = int(results.elements[i][2]['data']['FARE_3A'])
-                if trainoption.prices["3A"] != 0:
-                    trainoption.price = trainoption.prices["3A"]
-                    trainoption.priceClass = "3A"
-            if 'FARE_3E' in results.elements[i][2]['data']:
-                trainoption.prices["3E"] = int(results.elements[i][2]['data']['FARE_3E'])
-            if 'FARE_FC' in results.elements[i][2]['data']:
-                trainoption.prices["FC"] = int(results.elements[i][2]['data']['FARE_FC'])
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["3A"],"3A")
+
             if 'FARE_CC' in results.elements[i][2]['data']:
                 trainoption.prices["CC"] = int(results.elements[i][2]['data']['FARE_CC'])
-                if trainoption.prices["3A"] == 0 and trainoption.prices["CC"] != 0:
-                    trainoption.price = trainoption.prices["CC"]
-                    trainoption.priceClass = "CC"
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["CC"],"CC")
+
             if 'FARE_SL' in results.elements[i][2]['data']:
                 trainoption.prices["SL"] = int(results.elements[i][2]['data']['FARE_SL'])
-                if trainoption.prices["3A"] == 0 and trainoption.prices["CC"] == 0 and trainoption.prices["SL"] != 0:
-                    trainoption.price = trainoption.prices["SL"]
-                    trainoption.priceClass = "SL"
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["SL"],"SL")
+
+            if 'FARE_2A' in results.elements[i][2]['data']:
+                trainoption.prices["2A"] = int(results.elements[i][2]['data']['FARE_2A'])
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["2A"],"2A")
+
+
+            if 'FARE_3E' in results.elements[i][2]['data']:
+                trainoption.prices["3E"] = int(results.elements[i][2]['data']['FARE_3E'])
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["3E"],"3E")
+
+
             if 'FARE_2S' in results.elements[i][2]['data']:
                 trainoption.prices["2S"] = int(results.elements[i][2]['data']['FARE_2S'])
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["2S"],"2S")
+            if 'FARE_FC' in results.elements[i][2]['data']:
+                trainoption.prices["FC"] = int(results.elements[i][2]['data']['FARE_FC'])
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["FC"],"FC")
+
+            if 'FARE_1A' in results.elements[i][2]['data']:
+                trainoption.prices["1A"] = int(results.elements[i][2]['data']['FARE_1A'])
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["1A"],"1A")
+
             if 'FARE_GN' in results.elements[i][2]['data']:
                 trainoption.prices["GN"] = int(results.elements[i][2]['data']['FARE_GN'])
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["GN"],"GN")
             trains.append(trainoption)
     return trains
 
+def setdefaultpriceifnotpresent(trainoption,currentprice,newpriceAvailable,priceClass):
+    if currentprice==0 and newpriceAvailable != 0:
+                    trainoption.price = newpriceAvailable
+                    trainoption.priceClass = priceClass
 
 def getduration(sourcedeparturetime, sourceday, destinationarrivaltime, destinationday):
     """
