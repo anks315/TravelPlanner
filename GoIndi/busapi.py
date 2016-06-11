@@ -1,11 +1,8 @@
 
 __author__ = 'ankur'
 
-import json
-import urllib2
 import requests
 from requests.auth import HTTPDigestAuth
-from django.http import HttpResponse
 import dateTimeUtility
 import loggerUtil
 import logging
@@ -40,11 +37,8 @@ class BusController:
                 counter = 1
                 if jsonData["apiAvailableBuses"]:
                     for option in jsonData["apiAvailableBuses"]:
-                        route = {}
-                        route["full"] = []
-                        route["parts"] = []
-                        part = {}
-                        part["carrierName"] = option["operatorName"]
+                        route = {"full": [], "parts": []}
+                        part = {"carrierName": option["operatorName"]}
                         priceList = option["fare"].split(',')
                         prices = ''
                         for price in priceList:
