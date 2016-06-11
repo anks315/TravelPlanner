@@ -24,10 +24,7 @@ bigcities = Set(['NEW DELHI', 'MUMBAI', 'BANGALORE', 'KOLKATA', 'HYDERABAD', 'CH
 
 logger = loggerUtil.getLogger("TrainApi", logging.DEBUG)
 
-trainNumberstoDurationMap = {}
-
-
-def parseandreturnroute(trainroutes, logger, journeyDate, traincounter):
+def parseandreturnroute(trainroutes, logger, journeydate, traincounter):
     """
     to return map of train routes in either full or by parts journey
     :param trainroutes: list of trainroutes
@@ -37,38 +34,55 @@ def parseandreturnroute(trainroutes, logger, journeyDate, traincounter):
 
     logger.info("Generating route map with full & parts journey")
     routes = []
+    futures = []
 
     for trainroute in trainroutes:
-        route = {"full": [], "parts": []}
         traincounter[0] += 1
-        try:
-            full = {"carrierName": trainroute.trainName, "duration": trainroute.duration, "id": "train" + str(traincounter[0]), "mode": "train",
-                    "site": "IRCTC", "source": trainroute.srcStation, "destination": trainroute.destStation, "arrival": trainroute.destArrivalTime,
-                    "sourceStation": trainroute.srcStationCode, "destinationStation": trainroute.destStationCode,
-                    "arrivalDate": dateTimeUtility.calculateArrivalTimeAndDate(journeyDate, trainroute.srcDepartureTime,trainroute.duration)["arrivalDate"],
-                    "departure": trainroute.srcDepartureTime, "departureDate": journeyDate, "prices": trainroute.prices, "price": trainroute.price,
-                    "priceClass": trainroute.priceClass, "route": trainroute.srcStation + ",train," + trainroute.destStation, "trainNumber": trainroute.trainNumber
-                    }
-            part = copy.deepcopy(full)
-            part["id"] = "train" + str(traincounter[0]) + str(1)
-            part["subParts"] = []
-            part["subParts"].append(copy.deepcopy(full))
-            part["subParts"][0]["id"] = "train" + str(traincounter[0]) + str(1) + str(1)
+        futures.append(TravelPlanner.trainUtil.trainfareexecutor.submit(gettrainroute, trainroute, traincounter, journeydate))
 
-            # this min/max data only in full journey for filtering purpose
-            full["minPrice"] = full["maxPrice"] = trainroute.price
-            full["minDuration"] = full["maxDuration"] = trainroute.duration
-            full["minArrival"] = full["maxArrival"] = trainroute.destArrivalTime
-            full["minDeparture"] = full["maxDeparture"] = trainroute.srcDepartureTime
-            route["full"].append(full)
-            route["parts"].append(part)
-            if hasprice(route, trainroute.trainNumber, trainroute.srcStationCode, trainroute.destStationCode):
-                routes.append(route)
-        except ValueError as e:
-            logger.error("Error while route map with full & parts journey, reason [%s]", e.message)
-            return routes
+    for future in futures:
+        if future and future.result(timeout=5):
+            routes.append(future.result())
     return routes
 
+
+def gettrainroute(trainroute, traincounter, journeydate):
+
+    """
+    To get train journey route
+    :param trainroute: train route object having route information
+    :param traincounter: global train counter
+    :param journeydate: date of journey
+    :return: train route if it is having fare
+    """
+    route = {"full": [], "parts": []}
+    try:
+        full = {"carrierName": trainroute.trainName, "duration": trainroute.duration, "id": "train" + str(traincounter[0]), "mode": "train",
+                "site": "IRCTC", "source": trainroute.srcStation, "destination": trainroute.destStation, "arrival": trainroute.destArrivalTime,
+                "sourceStation": trainroute.srcStationCode, "destinationStation": trainroute.destStationCode,
+                "arrivalDate": dateTimeUtility.calculateArrivalTimeAndDate(journeydate, trainroute.srcDepartureTime,trainroute.duration)["arrivalDate"],
+                "departure": trainroute.srcDepartureTime, "departureDate": journeydate, "prices": trainroute.prices, "price": trainroute.price,
+                "priceClass": trainroute.priceClass, "route": trainroute.srcStation + ",train," + trainroute.destStation, "trainNumber": trainroute.trainNumber
+                }
+        part = copy.deepcopy(full)
+        part["id"] = "train" + str(traincounter[0]) + str(1)
+        part["subParts"] = []
+        part["subParts"].append(copy.deepcopy(full))
+        part["subParts"][0]["id"] = "train" + str(traincounter[0]) + str(1) + str(1)
+
+        # this min/max data only in full journey for filtering purpose
+        full["minPrice"] = full["maxPrice"] = trainroute.price
+        full["minDuration"] = full["maxDuration"] = trainroute.duration
+        full["minArrival"] = full["maxArrival"] = trainroute.destArrivalTime
+        full["minDeparture"] = full["maxDeparture"] = trainroute.srcDepartureTime
+        route["full"].append(full)
+        route["parts"].append(part)
+        # check if train has fare present for source & destination, if not get it from railway api and persisit in DB
+        if hasprice(route, trainroute.trainNumber, trainroute.srcStationCode, trainroute.destStationCode):
+            return route
+    except Exception as e:
+        logger.error("Error getting route with full & parts journey between source [%s], destination [%s], reason [%s]",trainroute.srcStation, trainroute.destStation, e.message)
+        return
 
 def convertspartstofulljson(part_1, part_2, traincounter):
     """
@@ -180,13 +194,13 @@ class TrainController:
         :return: combined data
         """
         resultjsondata = {"train": []}
-        for possibleSrcToBreakRoute in sourcetobreakingstationjson["train"]:
-            for possibleBreakToDestRoute in breakingtodestinationjson["train"]:
-                if dateTimeUtility.checkIfApplicable(possibleSrcToBreakRoute["parts"][0]["arrival"],
-                                                     possibleSrcToBreakRoute["parts"][0]["arrivalDate"],
-                                                     possibleBreakToDestRoute["parts"][0]["departure"],
-                                                     possibleBreakToDestRoute["parts"][0]["departureDate"], 3):
-                    combinedjson = convertspartstofulljson(possibleSrcToBreakRoute, possibleBreakToDestRoute,traincounter)
+        for possiblesrctobreakroute in sourcetobreakingstationjson["train"]:
+            for possiblebreaktodestroute in breakingtodestinationjson["train"]:
+                if dateTimeUtility.checkIfApplicable(possiblesrctobreakroute["parts"][0]["arrival"],
+                                                     possiblesrctobreakroute["parts"][0]["arrivalDate"],
+                                                     possiblebreaktodestroute["parts"][0]["departure"],
+                                                     possiblebreaktodestroute["parts"][0]["departureDate"], 3):
+                    combinedjson = convertspartstofulljson(possiblesrctobreakroute, possiblebreaktodestroute,traincounter)
                     resultjsondata["train"].append(combinedjson)
         return resultjsondata
 
@@ -226,7 +240,8 @@ class TrainController:
 
         :param source: source station of the journey
         :param destination: destination station of the journey
-        :param dateofjourney: date of the journey
+        :param journeydate: date of the journey
+        :param isonlydirect: if only direct trains are required
         :return: all possible routes from source to destination via direct train or combination of train-bus
         """
         logger.debug("[START]-Get Results From TrainApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ", source,destination, journeydate)
@@ -241,7 +256,7 @@ class TrainController:
         if isonlydirect == 1 or len(directjson["train"]) > 8:  # return in case we have more than 8 direct trains
             return directjson
         logger.debug("Calling google api parser for Source[%s] an Destination[%s],journeyDate", source, destination,journeydate)
-        breakingcitieslist = googleapiparser.getpossiblebreakingplacesfortrain(source, destination, logger, journeydate)
+        breakingcitieslist = googleapiparser.getpossiblebreakingplacesfortrain(source, destination, logger, journeydate, TravelPlanner.trainUtil.googleplacesexecutor)
         logger.debug("Call To google api parser successful for Source[%s] and Destination[%s]", source, destination)
 
         breakingcityset = Set()
@@ -250,11 +265,12 @@ class TrainController:
             if len(breakingcityset) > 0:
                 for breakingcity in breakingcityset:
                     if breakingcity != TravelPlanner.trainUtil.gettraincity(source) and breakingcity != TravelPlanner.trainUtil.gettraincity(destination):
-                        self.fetchtraindatafrombreakingcities(breakingcity, destination, destinationstationset, journeydate,source, traincounter, directjson)
+                        logger.info("Getting train journey from source [%s] to destination [%s] via breaking city [%s]", source, destination, breakingcity)
+                        TravelPlanner.trainUtil.trainexecutor.submit(self.fetchtraindatafrombreakingcities(breakingcity, destination, destinationstationset, journeydate,source, traincounter, directjson))
 
         if len(breakingcitieslist) == 0 or len(breakingcityset) == 0:
             try:
-                logger.info("Getting nearest railway station to [%s]", source)
+                logger.debug("Getting nearest railway station to source [%s]", source)
                 url = 'https://maps.googleapis.com/maps/api/geocode/json?address='+ source.title()
                 url = url.replace(' ', '%20')
                 response = urllib2.urlopen(url)
@@ -262,22 +278,31 @@ class TrainController:
                 response.close()
                 sourcelat = sourcelatlong["results"][0]["geometry"]["location"]["lat"]
                 sourcelong = sourcelatlong["results"][0]["geometry"]["location"]["lng"]
-                logger.debug("Co-ordinates for source [%s] are Lat[%s]-Long[%s]", source, sourcelat, sourcelong)
+                logger.info("Co-ordinates for source [%s] are Lat[%s]-Long[%s]", source, sourcelat, sourcelong)
                 breakingcity = distanceutil.findnearestrailwaystation(sourcelat, sourcelong, TravelPlanner.trainUtil.gettraincity(source)).upper()
                 if breakingcity == source or breakingcity in source or source in breakingcity:
-                    logger.warning("Breaking city is same as source [%s], calculating breaking city from destination [%s] co-ordinates", source, destination)
-                    response = urllib2.urlopen('https://maps.googleapis.com/maps/api/geocode/json?address='+ destination.title())
-                    destlatlong = json.loads(response.read())
-                    response.close()
-                    destlat = destlatlong["results"][0]["geometry"]["location"]["lat"]
-                    destlong = destlatlong["results"][0]["geometry"]["location"]["lng"]
-                    logger.debug("Co-ordinates for destination [%s] are Lat[%s]-Long[%s]", destination, destlat, destlong)
-                    breakingcity = distanceutil.findnearestrailwaystation(destlat, destlong, TravelPlanner.trainUtil.gettraincity(destination)).upper()
-                    if breakingcity == destination or breakingcity in destination or destination in breakingcity:
-                        logger.warning("No breaking journey city possible between source [%s] and destination [%s]", source, destination)
-                        return directjson
-                logger.info("Breaking city is [%s]", breakingcity.upper())
-                self.fetchtraindatafrombreakingcities(breakingcity.upper(), destination, destinationstationset, journeydate,source, traincounter, directjson)
+                    logger.warning("Breaking city is same as source [%s], calculating breaking city from destination [%s]'s co-ordinates", source, destination)
+                else:
+                    breakingcityset.add(breakingcity)
+                logger.debug("Getting nearest railway station to destination [%s]", destination)
+                url = 'https://maps.googleapis.com/maps/api/geocode/json?address='+ destination.title()
+                url = url.replace(' ', '%20')
+                response = urllib2.urlopen(url)
+                destlatlong = json.loads(response.read())
+                response.close()
+                destlat = destlatlong["results"][0]["geometry"]["location"]["lat"]
+                destlong = destlatlong["results"][0]["geometry"]["location"]["lng"]
+                logger.info("Co-ordinates for destination [%s] are Lat[%s]-Long[%s]", destination, destlat, destlong)
+                breakingcity = distanceutil.findnearestrailwaystation(destlat, destlong, TravelPlanner.trainUtil.gettraincity(destination)).upper()
+                if breakingcity == destination or breakingcity in destination or destination in breakingcity:
+                    logger.warning("No breaking journey city possible between source [%s] and destination [%s]", source, destination)
+                    return directjson
+                else:
+                    breakingcityset.add(breakingcity)
+
+                for breakingcity in breakingcityset:
+                    logger.info("Getting train journey from source [%s] to destination [%s] via breaking city [%s]", source, destination, breakingcity)
+                    TravelPlanner.trainUtil.trainexecutor.submit(self.fetchtraindatafrombreakingcities(breakingcity.upper(), destination, destinationstationset, journeydate,source, traincounter, directjson))
             except Exception as e:
                 logger.error("Error in fetching longitude and latitude for [%s], reason [%s]", source, e.message)
 
@@ -445,7 +470,7 @@ def hasprice(route, trainnumber ,sourcestationcode, destinationstationcode):
     if prices["1A"] == 0 and prices["2A"] == 0 and prices["3A"] == 0 and prices["3E"] == 0 and prices["FC"] == 0 and 0 == \
             prices["CC"] and prices["SL"] == 0 and prices["2S"] == 0 and prices["GN"] == 0:
         logger.warning("re-trying fare data for train [%s] since all prices are 0", trainname)
-        faredata = models.getfarefortrainandpersist(trainnumber ,sourcestationcode, destinationstationcode, logger)
+        faredata = models.getfarefortrainandpersist(trainnumber, sourcestationcode, destinationstationcode, logger)
         if not faredata:
             return False
         else:

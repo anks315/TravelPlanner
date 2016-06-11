@@ -1,18 +1,7 @@
 # from django.test import TestCase
-
+import ConfigParser
 # Create your tests here.
-import dateTimeUtility
-import calendar
-from datetime import datetime, timedelta
-import time
-import models
-import loggerUtil
-import logging
-from sets import Set
 #import trainapiNeo4j
-# import json
-# import trainDBscript
-# import concurrent.futures
 # filename = "C:/Users/Ankit Kumar/Downloads/11073_routes.txt"
 #
 #
@@ -59,4 +48,10 @@ from sets import Set
 
 #print dateTimeUtility.getduration('04:35', '09:12','16-02-2016','14-02-2016')
 #dateTimeUtility.addduration('04:35', '24:20')
-models.getfarefortrainandpersist('12013', 'NDLS', 'ASR',loggerUtil.getLogger('tmp',logging.DEBUG))
+#models.getfarefortrainandpersist('12013', 'NDLS', 'ASR',loggerUtil.getLogger('tmp',logging.DEBUG))
+
+# def readConfig():
+#     H = dict(line.strip().split('=') for line in open('../configuration.properties'))
+#     print H
+#
+# readConfig()

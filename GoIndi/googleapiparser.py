@@ -71,7 +71,7 @@ def getcityfromstation(routedestinationstation, logger):
     return routedestinationstation # return same value if not mapped to any station
 
 
-def getpossiblebreakingplacesfortrain(source,destination, logger, journeydate):
+def getpossiblebreakingplacesfortrain(source,destination, logger, journeydate, executor):
 
     """
     To get possible stations to break journey between source & destination stations
@@ -87,10 +87,9 @@ def getpossiblebreakingplacesfortrain(source,destination, logger, journeydate):
     epochs = [epochtime, epochjourneytime]
     futures = []
     possiblebreakage = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        for epoch in epochs:
-            logger.info("Getting breaking station in journey from source[%s] to destination[%s]", source, destination)
-            futures.append(executor.submit(getbreakingcities, source, destination, epoch, logger))
+    for epoch in epochs:
+        logger.info("Getting breaking station in journey from source[%s] to destination[%s]", source, destination)
+        futures.append(executor.submit(getbreakingcities, source, destination, epoch, logger))
     for future in futures:
         if future:
             possiblebreakage.extend(future.result())
