@@ -59,12 +59,12 @@ def flightapi(request):
 def trainapi(request):
     source = request.GET['source']
     destination = request.GET['destination']
-    journeyDate = request.GET['journeyDate']
+    journeydate = request.GET['journeyDate']
     trainclass = request.GET["trainClass"]
-    numberofAdults=request.GET["adults"]
+    numberofadults = request.GET["adults"]
     #request.session['source']=source
     #request.session['destination']=destination
-    resultJsonData = trainControllerneo.getRoutes(source,destination,journeyDate,0,trainclass,int(numberofAdults))
+    resultJsonData = trainControllerneo.getroutes(source,destination,journeydate,0,trainclass,int(numberofadults))
     return HttpResponse(json.dumps(resultJsonData), content_type='application/json')
 
 def busapi(request):

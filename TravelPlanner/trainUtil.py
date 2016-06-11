@@ -27,7 +27,7 @@ def loadtraindata():
         else:
             citytostationcodesmap[trainstation.city] = Set([code])
 
-
+# needs to be optimized
 def getcityfromstation(possiblecityname, logger):
 
     """

@@ -1,16 +1,18 @@
-from numpy.testing.print_coercion_tables import print_cancast_table
 from neo4jrestclient.client import GraphDatabase
 from entity import TrainOption, TrainStation, FareData
 import time
-from datetime import datetime, timedelta
 import calendar
 import TravelPlanner.trainUtil
-import loggerUtil
 import logging
 import urllib
 import json
 import trainConstants
+import datetime
+import loggerUtil
+from datetime import timedelta
 from sets import Set
+import copy
+import dateTimeUtility
 
 def demo():
     pass
@@ -18,30 +20,70 @@ def demo():
 citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai",}
 
 #DATABASE_CONNECTION= GraphDatabase("http://ec2-54-179-130-192.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
-DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="ankurjain")
+DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="rkdaimpwd")
 
 #DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
 
+def testquery():
+    source = 'JAIPUR'
+    other = 'AMBALA'
+    results = DATABASE_CONNECTION.query("""MATCH (a:TRAINSTATION {CITY : '"""+source+"""'})-[r:BPL]->(b:TRAIN) RETURN a as station ,b as train ,r as route union MATCH (c:TRAINSTATION {CITY : '"""+other+"""'})-[e:NDLS]->(d:TRAIN) RETURN c as station,d as train ,e as route""")
+    print results
 
-def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeydate, destinationcity,priceClass='3A',numberOfAdults=1):
+def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeydate, destinationcity, traincounter, priceclass='3A', numberofadults=1, nextday=False):
+
     """
-    :param sourcecity: source of the journey
-    :param destinationstationset: destination cities station set
+    To get train between 2 stations
+    :param sourcecity: source of journey
+    :param destinationstationset: set of destination city's railway station codes
     :param logger: to log information
-    :return: all possible routes along with fare between source and destination stations
+    :param journeydate: date of journey
+    :param destinationcity: destination city
+    :param priceclass: preferred class for journey
+    :param nextday: if train for next days are reuqired
+    :return: array of trains and their data
     """
-
+    trains = []
     logger.debug("Fetching train routes between source[%s] and destination stations[%s] on [%s]", sourcecity,destinationstationset, journeydate)
     q = """MATCH (a:TRAINSTATION {CITY : '""" + sourcecity + """'})-[r:""" + '|'.join(destinationstationset) + """]->(b:TRAIN) RETURN a,b,r"""
-    results = DATABASE_CONNECTION.query(q)
-    trains = []
+
+    try:
+        results = DATABASE_CONNECTION.query(q)
+    except Exception as e:
+        logger.error("Error getting trains between source [%s] and destination [%s], reason [%s]", sourcecity, destinationcity, e.message)
+        return trains
 
     if len(results.elements) == 0:
         logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity,destinationstationset)
         return trains
 
-    trainnumberset = Set()
+    gettrains(results,journeydate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains)
 
+    routes = parseandreturnroute(trains, logger, journeydate, traincounter)
+
+    if nextday:
+        nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
+        gettrains(results,nextdate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains)
+        routes.extend(parseandreturnroute(trains, logger, nextdate, traincounter))
+
+    return routes
+
+def gettrains(results, journeydate, sourcecity, logger, destinationcity, priceclass, numberofadults, trains):
+
+    """
+    To populate array of trains which have price and are running from source on journey date
+    :param results: train result from db
+    :param journeydate: date of journey
+    :param sourcecity: source city of journey
+    :param logger: to log infomation
+    :param destinationcity: destination city
+    :param priceclass: default price
+    :param numberofadults: no. of adults taking journey
+    :param trains: array of trains
+    :return: trains
+    """
+
+    trainnumberset = Set()
     for i in range(len(results.elements)):
         if istrainrunningonjourneydate(results.elements[i], journeydate, sourcecity, logger) and isnonduplicatetrain(trainnumberset, results.elements[i][1]['data']['NUMBER']):
             trainoption = TrainOption()
@@ -54,54 +96,65 @@ def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeyda
             trainoption.destStationCode = results.elements[i][2]['type']
             trainoption.destStation = str(destinationcity).title()
             trainoption.prices = {"1A": 0, "2A": 0, "3A": 0, "3E": 0, "FC": 0, "CC": 0, "SL": 0, "2S": 0, "GN": 0} #empty dictionary
+            trainoption.price = 0
             trainoption.price=0
-            if 'FARE_'+priceClass in results.elements[i][2]['data']:
-                setdefaultpriceifnotpresent(trainoption,trainoption.price,int(results.elements[i][2]['data']['FARE_'+priceClass]),priceClass,numberOfAdults)
 
-            trainoption.duration =  getduration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
+            if 'FARE_'+priceclass in results.elements[i][2]['data']:
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,int(results.elements[i][2]['data']['FARE_'+priceclass]),priceclass,numberofadults)
+
+            trainoption.duration = getduration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
+
             if 'FARE_3A' in results.elements[i][2]['data']:
                 trainoption.prices["3A"] = int(results.elements[i][2]['data']['FARE_3A'])
-                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["3A"],"3A",numberOfAdults)
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["3A"],"3A",numberofadults)
 
             if 'FARE_CC' in results.elements[i][2]['data']:
                 trainoption.prices["CC"] = int(results.elements[i][2]['data']['FARE_CC'])
-                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["CC"],"CC",numberOfAdults)
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["CC"],"CC",numberofadults)
 
             if 'FARE_SL' in results.elements[i][2]['data']:
                 trainoption.prices["SL"] = int(results.elements[i][2]['data']['FARE_SL'])
-                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["SL"],"SL",numberOfAdults)
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["SL"],"SL",numberofadults)
 
             if 'FARE_2A' in results.elements[i][2]['data']:
                 trainoption.prices["2A"] = int(results.elements[i][2]['data']['FARE_2A'])
-                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["2A"],"2A",numberOfAdults)
-
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["2A"],"2A",numberofadults)
 
             if 'FARE_3E' in results.elements[i][2]['data']:
                 trainoption.prices["3E"] = int(results.elements[i][2]['data']['FARE_3E'])
-                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["3E"],"3E",numberOfAdults)
-
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["3E"],"3E",numberofadults)
 
             if 'FARE_2S' in results.elements[i][2]['data']:
                 trainoption.prices["2S"] = int(results.elements[i][2]['data']['FARE_2S'])
-                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["2S"],"2S",numberOfAdults)
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["2S"],"2S",numberofadults)
+            
             if 'FARE_FC' in results.elements[i][2]['data']:
                 trainoption.prices["FC"] = int(results.elements[i][2]['data']['FARE_FC'])
-                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["FC"],"FC",numberOfAdults)
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["FC"],"FC",numberofadults)
 
             if 'FARE_1A' in results.elements[i][2]['data']:
                 trainoption.prices["1A"] = int(results.elements[i][2]['data']['FARE_1A'])
-                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["1A"],"1A",numberOfAdults)
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["1A"],"1A",numberofadults)
 
             if 'FARE_GN' in results.elements[i][2]['data']:
                 trainoption.prices["GN"] = int(results.elements[i][2]['data']['FARE_GN'])
-                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["GN"],"GN",numberOfAdults)
+                setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["GN"],"GN",numberofadults)
             trains.append(trainoption)
-    return trains
 
-def setdefaultpriceifnotpresent(trainoption,currentprice,newpriceAvailable,priceClass,numberOfAdults):
-    if currentprice==0 and newpriceAvailable != 0:
-                    trainoption.price = newpriceAvailable*int(numberOfAdults)
-                    trainoption.priceClass = priceClass
+
+def setdefaultpriceifnotpresent(trainoption,currentprice,newpriceavailable,priceclass,numberofadults):
+    
+    """
+    To set default price on train option if available. If default option is not available then set prices in order of relevance
+    :param trainoption: current train option
+    :param currentprice: current set price
+    :param newpriceavailable: new price
+    :param priceclass: price class
+    """
+
+    if currentprice == 0 and newpriceavailable != 0:
+                    trainoption.price = newpriceavailable*int(numberofadults)
+                    trainoption.priceClass = priceclass
 
 def getduration(sourcedeparturetime, sourceday, destinationarrivaltime, destinationday):
     """
@@ -234,7 +287,7 @@ def getdayfromdate(journeydate, diff):
     :param journeydate: date of the journey
     :param diff: difference in number of days from starting point of train into reaching the station
     """
-    t = (datetime.strptime(journeydate, '%d-%m-%Y') - timedelta(days=diff)).weekday()
+    t = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') - timedelta(days=diff)).weekday()
     return calendar.day_name[t].upper()
 
 
@@ -401,3 +454,91 @@ def persistfaredata(faredata, trainnumber, sourcestationcode, destinationstation
     except Exception as e:
         logger.error("Error while persisting fare information for trainNumber [%s], source [%s], destination [%s], reason [%s]", trainnumber, sourcestationcode, destinationstationcode, e.message)
 
+
+def parseandreturnroute(trainroutes, logger, journeydate, traincounter):
+    """
+    to return map of train routes in either full or by parts journey
+    :param trainroutes: list of trainroutes
+    :param logger: to log information
+    :return: map of full and part journey of train
+    """
+
+    logger.info("Generating route map with full & parts journey")
+    routes = []
+    futures = []
+
+    for trainroute in trainroutes:
+        traincounter[0] += 1
+        futures.append(TravelPlanner.trainUtil.trainfareexecutor.submit(gettrainroute, trainroute, traincounter, journeydate, logger))
+
+    for future in futures:
+        if future and future.result(timeout=5):
+            routes.append(future.result())
+    return routes
+
+def gettrainroute(trainroute, traincounter, journeydate, logger):
+
+    """
+    To get train journey route
+    :param trainroute: train route object having route information
+    :param traincounter: global train counter
+    :param journeydate: date of journey
+    :return: train route if it is having fare
+    """
+    route = {"full": [], "parts": []}
+    try:
+        full = {"carrierName": trainroute.trainName, "duration": trainroute.duration, "id": "train" + str(traincounter[0]), "mode": "train",
+                "site": "IRCTC", "source": trainroute.srcStation, "destination": trainroute.destStation, "arrival": trainroute.destArrivalTime,
+                "sourceStation": trainroute.srcStationCode, "destinationStation": trainroute.destStationCode,
+                "arrivalDate": dateTimeUtility.calculateArrivalTimeAndDate(journeydate, trainroute.srcDepartureTime,trainroute.duration)["arrivalDate"],
+                "departure": trainroute.srcDepartureTime, "departureDate": journeydate, "prices": trainroute.prices, "price": trainroute.price,
+                "priceClass": trainroute.priceClass, "route": trainroute.srcStation + ",train," + trainroute.destStation, "trainNumber": trainroute.trainNumber
+                }
+        part = copy.deepcopy(full)
+        part["id"] = "train" + str(traincounter[0]) + str(1)
+        part["subParts"] = []
+        part["subParts"].append(copy.deepcopy(full))
+        part["subParts"][0]["id"] = "train" + str(traincounter[0]) + str(1) + str(1)
+
+        # this min/max data only in full journey for filtering purpose
+        full["minPrice"] = full["maxPrice"] = trainroute.price
+        full["minDuration"] = full["maxDuration"] = trainroute.duration
+        full["minArrival"] = full["maxArrival"] = trainroute.destArrivalTime
+        full["minDeparture"] = full["maxDeparture"] = trainroute.srcDepartureTime
+        route["full"].append(full)
+        route["parts"].append(part)
+        # check if train has fare present for source & destination, if not get it from railway api and persisit in DB
+        if hasprice(route, trainroute.trainNumber, trainroute.srcStationCode, trainroute.destStationCode, logger):
+            return route
+    except Exception as e:
+        logger.error("Error getting route with full & parts journey between source [%s], destination [%s], reason [%s]",trainroute.srcStation, trainroute.destStation, e.message)
+        return
+
+
+def hasprice(route, trainnumber ,sourcestationcode, destinationstationcode, logger):
+    """
+    Check whether any price exists for the train or not, if not try to get from railway api. Ignore train if either no price data is present or could not get from railway api
+    :param route: train route
+    :return: True if price exists else False
+    """
+
+    prices = route["full"][0]["prices"]
+    trainname = route["full"][0]["carrierName"]
+
+    if route["full"][0]["price"]==0:
+        logger.warning("re-trying fare data for train [%s] since all prices are 0", trainname)
+        faredata = getfarefortrainandpersist(trainnumber, sourcestationcode, destinationstationcode, logger)
+        if not faredata:
+            return False
+        else:
+            prices["1A"] == faredata.fare_1A
+            prices["2A"] == faredata.fare_2A
+            prices["3A"] == faredata.fare_3A
+            prices["3E"] == faredata.fare_3E
+            prices["FC"] == faredata.fare_FC
+            prices["CC"] == faredata.fare_CC
+            prices["SL"] == faredata.fare_SL
+            prices["2S"] == faredata.fare_2S
+            prices["GN"] == faredata.fare_GN
+            return True
+    return True

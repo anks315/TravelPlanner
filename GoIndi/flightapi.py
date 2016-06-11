@@ -168,7 +168,8 @@ class FlightController:
 
         traincontrollerneo = trainapiNeo4j.TrainController()
         logger.debug("[START] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
-        resultjsondata = traincontrollerneo.getRoutes(source, destination, journeydate,priceClass=trainClass,numberOfAdults=numberOfAdults)["train"]
+        resultjsondata = traincontrollerneo.getroutes(source, destination, journeydate, priceclass=trainClass,
+                                                      numberofadults=numberOfAdults)["train"]
         if not resultjsondata:
             logger.debug("No Data From Train,Retrieving From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
             buscontroller = busapi.BusController()

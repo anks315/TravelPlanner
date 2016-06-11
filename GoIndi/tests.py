@@ -1,5 +1,6 @@
 # from django.test import TestCase
-import ConfigParser
+import models
+models.testquery()
 # Create your tests here.
 #import trainapiNeo4j
 # filename = "C:/Users/Ankit Kumar/Downloads/11073_routes.txt"
