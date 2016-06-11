@@ -3345,7 +3345,7 @@ def findnearestrailwaystation(latitude, longitude, cityname):
     sourceplace = (latitude, longitude)
     nearestrailstation = ""
     for airport in airportList:
-        if airport["RailwayStation"] and cityname.upper() != airport["City"].upper():
+        if airport["RailwayStation"] and cityname.upper() != airport["RailwayStation"].upper():
             airlatitude = airport["Latitude"]
             airlatitude = airlatitude[:-3]
             distance = vincenty((float(airlatitude), float(airport["Longitude"][:-3])), sourceplace)

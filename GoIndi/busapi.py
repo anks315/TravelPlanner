@@ -1,11 +1,8 @@
 
 __author__ = 'ankur'
 
-import json
-import urllib2
 import requests
 from requests.auth import HTTPDigestAuth
-from django.http import HttpResponse
 import dateTimeUtility
 import loggerUtil
 import logging
@@ -28,23 +25,20 @@ class BusController:
             newFormatJourneyDate = jdList[2]+"-"+jdList[1]+"-"+jdList[0]
             url = "http://agent.etravelsmart.com/etsAPI/api/getAvailableBuses?sourceCity="+source+"&destinationCity="+destination+"&doj="+newFormatJourneyDate
             req = requests.get(url, auth=HTTPDigestAuth('eazzer', 'E@ZZer1713'), timeout=20)
-            response = self.parseResultAndReturnFare(req.json(),source,destination,journeyDate)
+            response = self.parseResultAndReturnFare(req.json(),source,destination,journeyDate,newFormatJourneyDate)
         except:
             logger.info("Error Getting Data For Source[%s] and Destination[%s],JourneyDate:[%s]",source,destination,journeyDate)
         logger.debug("[END]-Get Results From BusApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeyDate)
         return response
 
-    def parseResultAndReturnFare(self, jsonData, source, destination,journeyDate):
+    def parseResultAndReturnFare(self, jsonData, source, destination,journeyDate,newFormatJourneyDate):
             resultjsondata= {"bus": []}
             try:
                 counter = 1
                 if jsonData["apiAvailableBuses"]:
                     for option in jsonData["apiAvailableBuses"]:
-                        route = {}
-                        route["full"] = []
-                        route["parts"] = []
-                        part = {}
-                        part["carrierName"] = option["operatorName"]
+                        route = {"full": [], "parts": []}
+                        part = {"carrierName": option["operatorName"]}
                         priceList = option["fare"].split(',')
                         prices = ''
                         for price in priceList:
@@ -88,6 +82,7 @@ class BusController:
                         part["routeScheduleId"]= option["routeScheduleId"]
                         part["departureDate"]=journeyDate
                         part["arrivalDate"]=dateTimeUtility.calculateArrivalTimeAndDate(journeyDate,part["departure"],part["duration"])["arrivalDate"]
+                        part["bookingLink"]= "http://www.etravelsmart.com/bus/seat-book.htm?source="+source+"&destination="+destination+"&jdate="+newFormatJourneyDate+"&routeid="+option["routeScheduleId"]+"&apiType="+option["routeScheduleId"]+"&userId=eazzer&txnId=000111"
                         route["parts"].append(part)
                         full=part
                         full["id"]="bus"+str(counter)
