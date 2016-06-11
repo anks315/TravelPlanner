@@ -15,7 +15,7 @@ class BusController:
     """Class returns all stations corresponding to a city"""
 
 
-    def getResults(self, source, destination, journeyDate):
+    def getResults(self, source, destination, journeyDate,numberOfAdults=1):
         response = {"bus": []}
         try:
             source = TravelPlanner.trainUtil.getbuscity(source)
@@ -25,13 +25,13 @@ class BusController:
             newFormatJourneyDate = jdList[2]+"-"+jdList[1]+"-"+jdList[0]
             url = "http://agent.etravelsmart.com/etsAPI/api/getAvailableBuses?sourceCity="+source+"&destinationCity="+destination+"&doj="+newFormatJourneyDate
             req = requests.get(url, auth=HTTPDigestAuth('eazzer', 'E@ZZer1713'), timeout=20)
-            response = self.parseResultAndReturnFare(req.json(),source,destination,journeyDate,newFormatJourneyDate)
+            response = self.parseResultAndReturnFare(req.json(),source,destination,journeyDate,newFormatJourneyDate,numberOfAdults)
         except:
             logger.info("Error Getting Data For Source[%s] and Destination[%s],JourneyDate:[%s]",source,destination,journeyDate)
         logger.debug("[END]-Get Results From BusApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeyDate)
         return response
 
-    def parseResultAndReturnFare(self, jsonData, source, destination,journeyDate,newFormatJourneyDate):
+    def parseResultAndReturnFare(self, jsonData, source, destination,journeyDate,newFormatJourneyDate,numberOfAdults=1):
             resultjsondata= {"bus": []}
             try:
                 counter = 1
@@ -42,7 +42,7 @@ class BusController:
                         priceList = option["fare"].split(',')
                         prices = ''
                         for price in priceList:
-                            prices = prices + str(price.split('.')[0])+','
+                            prices = prices + str(int(price.split('.')[0])*int(numberOfAdults))+','
                         part["busType"]=option["busType"]
                         part["price"]=prices
                         part["mode"]="bus"

@@ -1,3 +1,4 @@
+
 __author__ = 'ankur'
 
 from skyscannerEazzer import Flights
@@ -9,7 +10,7 @@ import loggerUtil
 
 logger = loggerUtil.getLogger("FlighSkyScanner",logging.DEBUG)
 
-def getApiResults(sourcecity,destinationcity,journeyDate,id,flightClass='Economy'):
+def getApiResults(sourcecity,destinationcity,journeyDate,id,flightClass='Economy',numberOfAdults=1):
     cityAndStateToStationsMap = {'Jaisalmer':'JSA','Rajahmundry':'RJA','Pantnagar':'PGH','Pathankot':'IXP','Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
                                  'Amritsar': 'ATQ', 'Aurangabad': 'IXU', 'Bagdogra': 'IXB', 'Bangalore': 'BLR',
                                  'Bhavnagar': 'BHU', 'Bhopal': 'BHO', 'Bhubaneswar': 'BBI', 'Bhuj': 'BHJ',
@@ -66,9 +67,9 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id,flightClass='Economy
                 originplace=source+'-sky',
                 destinationplace=destination+'-sky',
                 outbounddate=str(year)+'-'+str(month)+'-'+str(day),
-                adults=1,cabinclass=flightClass), initial_delay = 1, delay = 1, tries = 100).parsed
+                adults=int(numberOfAdults),cabinclass=flightClass,groupPricing=True), initial_delay = 1, delay = 1, tries = 100).parsed
             if result:
-                resultJson = parseFlightAndReturnFare(result, id, sourcecity, destinationcity, journeyDate)
+                resultJson = parseFlightAndReturnFare(result, id, sourcecity, destinationcity, journeyDate,numberOfAdults)
                 break
             logger.debug("Retrying... Empty Response From SkyScanner for Source:[%s] and Destination:[%s],journeyDate:[%s]",source,destination,journeyDate)
             retries=retries-1
@@ -81,7 +82,7 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id,flightClass='Economy
 
 
 
-def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate):
+def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate,numberOfAdults):
     logger.info("Parsing SkyScanner Final Result for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeyDate)
     returnedFareData = apiresult
     resultJsonData = {}
@@ -129,6 +130,7 @@ def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate):
             full["route"]=part["source"]+",flight,"+part["destination"]
             part["bookingOptions"] = itinerary["PricingOptions"]
             for option in part["bookingOptions"]:
+                #option["Price"]=option["Price"]*int(numberOfAdults)
                 option["AgentsImg"] = getAgentImgById(option["Agents"][0], returnedFareData["Agents"])
                 option["Agents"]=getAgentNameById(option["Agents"][0],returnedFareData["Agents"])
 
