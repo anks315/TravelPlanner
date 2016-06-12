@@ -82,7 +82,7 @@ class BusController:
                         part["routeScheduleId"]= option["routeScheduleId"]
                         part["departureDate"]=journeyDate
                         part["arrivalDate"]=dateTimeUtility.calculateArrivalTimeAndDate(journeyDate,part["departure"],part["duration"])["arrivalDate"]
-                        part["bookingLink"]= "http://www.etravelsmart.com/bus/seat-book.htm?source="+source+"&destination="+destination+"&jdate="+newFormatJourneyDate+"&routeid="+option["routeScheduleId"]+"&apiType="+option["routeScheduleId"]+"&userId=eazzer&txnId=000111"
+                        part["bookingLink"]= "http://www.etravelsmart.com/bus/seat-book.htm?source="+source+"&destination="+destination+"&jdate="+newFormatJourneyDate+"&routeid="+option["routeScheduleId"]+"&apiType="+str(option["inventoryType"])+"&userId=eazzer&txnId=000111"
                         route["parts"].append(part)
                         full=part
                         full["id"]="bus"+str(counter)

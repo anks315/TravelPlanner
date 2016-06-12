@@ -88,7 +88,7 @@ function getTrainPart(train,id){
 	
 	}
 
-	details=details+"<td width=10% style='text-align:center' ><input type='radio' value = '"+train.price+"' class = '"+id+"' name='radio"+train.id+"' id = 'radio"+train.id+"' checked hidden></input></tr></table>";
+	details=details+"<td width=10% style='text-align:center' ><input type='radio' value = '"+train.price+"' class = '"+id+"' name='radio"+train.id+"'  checked hidden></input></tr></table>";
 	return details;
 	
 }
