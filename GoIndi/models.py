@@ -1,4 +1,3 @@
-from numpy.distutils.system_info import numarray_info
 from neo4jrestclient.client import GraphDatabase
 from entity import TrainOption, TrainStation, FareData
 import time
