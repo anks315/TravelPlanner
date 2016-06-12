@@ -48,6 +48,11 @@ function getTrainPart(train,id){
 	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td valign='center' style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke'><img src='/static/images/"+train.mode+"2.png'>&nbsp;&nbsp;"+train.source+"&nbsp;&#8594;&nbsp"+train.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success bookingTrain'>Book</button>&nbsp;&nbsp;</td></tr></table><table width='100%'><tr><td width=50%>"
 	var first = 1;
 	for ( var j = 0; j < train.subParts.length;j++ ){
+		if(train.subParts.length==1){
+				var journeyLineWidth = 250
+			} else {
+				var journeyLineWidth = 150
+			}
 			var transportDetails = train.subParts[j];
 			if(j==0){
 				//source and details of begining station
@@ -69,7 +74,7 @@ function getTrainPart(train,id){
 			var classSelector = "<font color='grey'>Class: </font><div class='btn-group'><a class='btn dropdown-toggle trainModalClass'  data-toggle='dropdown' href='#'>"+transportDetails.priceClass+"<span class='caret'></span></a><ul class='dropdown-menu'>"+classList+"</ul></div><br/>"
 
 			//details of the transportation mode
-			details = details + "<tr><td><table width='100%'><td width='5%'><table><tr><td style='white-space: nowrap;'>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div style='border-left:1px solid #808080;border-left-style:dotted;height:150px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;<b class='detailsMode'>"+transportCarrier+"</b><div class='detailsDuration'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Duration : </b>"+transportDetails.duration+" hrs</div></td></tr></table></td><td width='95%' style='text-align:right'>"+classSelector+"<div class = 'detailsPrice sameLine trainClass"+train.id+"' id='"+j+"trainClass"+train.id+"' price="+transportDetails.price+" trainClass='trainClass"+train.id+"'>&#8377 "+transportDetails.price+"/-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td></tr></table></td></tr>";
+			details = details + "<tr><td><table width='100%'><td width='5%'><table><tr><td style='white-space: nowrap;'>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div class='journeyLine' style='height:"+journeyLineWidth+"px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;<b class='detailsMode'>"+transportCarrier+"</b><div class='detailsDuration'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Duration : </b>"+transportDetails.duration+" hrs</div></td></tr></table></td><td width='95%' style='text-align:right'>"+classSelector+"<div class = 'detailsPrice sameLine trainClass"+train.id+"' id='"+j+"trainClass"+train.id+"' price="+transportDetails.price+" trainClass='trainClass"+train.id+"'>&#8377 "+transportDetails.price+"/-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td></tr></table></td></tr>";
 			
 			if(j==train.subParts.length-1){
 				//details of last station
@@ -88,7 +93,7 @@ function getTrainPart(train,id){
 	
 }
 function getBusPart(bus, id){
-	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+bus.mode+"2.png'>&nbsp;&nbsp;"+bus.source+"&nbsp;&#8594;&nbsp"+bus.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success'>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
+	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+bus.mode+"2.png'>&nbsp;&nbsp;"+bus.source+"&nbsp;&#8594;&nbsp"+bus.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success booking'id='book"+bus.id+"''>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
 	var first = 1;
 	for ( var j = 0; j < bus.subParts.length;j++ ){
 			var isChecked = '';
@@ -101,7 +106,7 @@ function getBusPart(bus, id){
 			var priceArr = priceList.split(",");
 			var price = priceArr[0]
 			
-			details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+bus.id+"' "+isChecked+" value = '"+price+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
+			details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+bus.id+"' "+isChecked+" value = '"+price+"' bookingLink='"+transportDetails.bookingLink+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
 	
 	}
 	details = details+"</table>";

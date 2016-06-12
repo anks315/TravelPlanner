@@ -106,3 +106,15 @@ hr { margin: 0.1em auto;
 .summaryNA{
 	background-color:grey;
 }
+.mainLabel{
+	font-weight:normal;
+	font-size: 90%;
+}
+.journeyLine{
+	border-left:7px solid #f6931f;
+	border-left-style:solid;
+}
+.agent{
+	font-weight:bold;
+	color:#056273; 
+}

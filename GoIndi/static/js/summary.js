@@ -99,7 +99,7 @@ function setSummaryDiv(current,mode){
 		if(j!=routeLen-1){
 			internals = internals + "<td style ='padding: 0px' class = 'summaryBar'><font color = 'white' style='white-space: nowrap;'>"+routeArr[j]+"</font</td>"
 		} else {
-			internals = internals + "<td width='"+percent+"%' style ='padding: 0px;text-align:right' class = 'summaryBar'><font color = 'white'>"+routeArr[j]+"</font>&nbsp;</td>"
+			internals = internals + "<td width='"+percent+"%' style ='padding: 0px;text-align:right' class = 'summaryBar'><font color = 'white' style='white-space: nowrap;'>"+routeArr[j]+"</font>&nbsp;</td>"
 		}
 	}
 	var output = "<table width='100%' style ='text-align:center' ><tr>"+internals+"</tr></table><br/>"

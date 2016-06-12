@@ -157,6 +157,12 @@ function showTrainJourneyList(transportList){
 			var win = window.open('http://irctc.co.in', '_blank');
 			win.focus();
 	});
+	$(".booking").click(function() {
+			var id = $(this).attr("id").split("book")[1];
+			var bookingLink = $('input[name=radio'+id+']:checked').attr('bookingLink')
+			var win = window.open(bookingLink, '_blank');
+			win.focus();
+	});
 		//setting action on mode menu box
 		$(".divisionTrainBox").mouseover(function() {
 					if($(this).hasClass("divisionTrainSelected")){

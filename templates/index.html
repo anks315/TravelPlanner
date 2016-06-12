@@ -22,12 +22,23 @@
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 	<link type="text/css" href="/static/css/customButton.css" rel="stylesheet" />
+	<link type="text/css" href="/static/css/filtersCSS.css" rel="stylesheet" />
+<style type="text/css">
+
+.imgBg { 
+background-image: url(/static/images/background.jpg); 
+background-repeat: no-repeat; 
+}
+
+</style>
 </head>
 <body>
-
-
+<div style="height:60px;">
+<table width = "100%"><td width = "10%"></td><td><img src="/static/images/logo2.jpg"></img></td></table>
+</div>
+<div style="background-image: url(/static/images/background.jpg)">
 <div id ="allContent" class="container-fluid" >
-	
+
   <div class="row">
 	   <div class="row-eq-height">
 		  <div class="col-sm-1 col-height col-middle">
@@ -38,6 +49,10 @@
 						<div class="col-sm-2 col-height col-middle">
 						</div>
 						<div class="col-sm-8 col-height col-middle">
+							<br/>
+							<br/>
+							<br/><<br/><br/>
+							<div style="text-align:center"><font size="100%" color ="#689ea8">Search and Book Flights, Trains and Buses on one Click</font></div>
 							<br/>
 							<div id="planner"></div>
 						</div>
@@ -50,6 +65,7 @@
 	   </div>
   </div>
  </div> 
+ </div>
 <script type="text/javascript" src="/static/js/plannerMain.js"></script>
 <script 
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrNn_0wQEMpN0Kykjhffa4972v3Xbw0pw&libraries=places&language=gb">

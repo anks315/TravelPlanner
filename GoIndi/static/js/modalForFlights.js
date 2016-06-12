@@ -43,9 +43,14 @@ function getFlightPart(flight,id){
 	var first = 1;
 	for ( var j = 0; j < flight.subParts.length;j++ ){
 			var transportDetails = flight.subParts[j];
+			if(flight.subParts.length==1){
+				var journeyLineWidth = 250
+			} else {
+				var journeyLineWidth = 150
+			}
 			if(j==0){
 				//source and details of begining station
-				details = details + "<table width='100%' style='color:grey'><tr><td><table width='100%'><tr><td width='20%'>"+transportDetails.source+"&nbsp;&nbsp;</td><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(flight.departure)+"</td></tr></table></td></tr>";
+				details = details + "<table width='100%' style='color:grey'><tr><td><table width='100%'><tr><td width='20%'><b>"+transportDetails.source+"&nbsp;&nbsp;</b></td><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(flight.departure)+"</td></tr></table></td></tr>";
 			}
 
 			var siteName = "";
@@ -56,15 +61,15 @@ function getFlightPart(flight,id){
 			flightnumber = "<font color='grey'>"+transportDetails.flightNumber+"</font>"
 
 			//details of the transportation mode
-			details = details + "<tr><td><table width='100%'><td width='5%'><table><tr><td style='white-space: nowrap;'>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div style='border-left:1px solid #808080;border-left-style:dotted;height:150px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;"+transportCarrier+"Flight:"+flightnumber+"</td></tr></table></td><td width='95%' style='text-align:right'></td></tr></table></td></tr>";
+			details = details + "<tr><td><table width='100%'><td width='5%'><table><tr><td style='white-space: nowrap;'>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div class='journeyLine' style='height:"+journeyLineWidth+"px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;"+transportCarrier+"Flight:"+flightnumber+"</td></tr></table></td><td width='95%' style='text-align:right'></td></tr></table></td></tr>";
 			
 			if(j==flight.subParts.length-1){
 				//details of last station
-				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"&nbsp;&nbsp;</td><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(flight.arrival)+"</td></tr></table></td></tr></table>";
+				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'><b>"+transportDetails.destination+"&nbsp;&nbsp;</b></td><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(flight.arrival)+"</td></tr></table></td></tr></table>";
 			} else {
 				//datails of intermediate station
 				k=j+1;
-				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"&nbsp;&nbsp;</td><td><table><tr><td></td></tr></table></td></tr></table></td></tr></td>"
+				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'><b>"+transportDetails.destination+"&nbsp;&nbsp;</b></td><td><table><tr><td></td></tr></table></td></tr></table></td></tr></td>"
 			}
 			
 	
@@ -77,10 +82,10 @@ function getFlightPart(flight,id){
 		var agent = bookingOption.Agents
 		if(z==0){
 			isCheckedPrice='checked'
-			var agent = "<img src='"+bookingOption.AgentsImg+"'></img>"
+			//var agent = "<img src='"+bookingOption.AgentsImg+"'></img>"
 		}
 		
-		pricesWid = pricesWid + agent +"<br/><input type='radio' value = '"+bookingOption.Price+"' bookingLink='"+bookingOption.DeeplinkUrl+"' class = '"+id+"' name='radio"+flight.id+"' "+isCheckedPrice+">&nbsp;&nbsp;<div class = 'detailsPrice sameLine'>&#8377 "+bookingOption.Price+"/-</div><br/>"
+		pricesWid = pricesWid + "<div class='agent'>"+agent+"</div>" +"<input type='radio' value = '"+bookingOption.Price+"' bookingLink='"+bookingOption.DeeplinkUrl+"' class = '"+id+"' name='radio"+flight.id+"' "+isCheckedPrice+">&nbsp;&nbsp;<div class = 'detailsPrice sameLine'>&#8377 "+bookingOption.Price+"/-</div><br/>"
 	}
 	details=details+"<td width=50% style='text-align:center' >"+pricesWid+"</td></tr></table>";
 	var length =  radionames.length
@@ -89,7 +94,7 @@ function getFlightPart(flight,id){
 	
 }
 function getOtherPart(other, id){
-	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+other.mode+"2.png'>&nbsp;&nbsp;"+other.source+"&nbsp;&#8594;&nbsp"+other.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success'>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
+	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+other.mode+"2.png'>&nbsp;&nbsp;"+other.source+"&nbsp;&#8594;&nbsp"+other.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success booking'id='book"+other.id+"''>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
 	var first = 1;
 	for ( var j = 0; j < other.subParts.length;j++ ){
 			var isChecked = '';
@@ -101,11 +106,8 @@ function getOtherPart(other, id){
 			var priceList = transportDetails.price;
 			var priceArr = priceList.split(",");
 			var price = priceArr[0]
-			if(other.mode=='bus'){
-				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+other.id+"' "+isChecked+" value = '"+price+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
-			} else {
-				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+other.id+"' "+isChecked+" value = '"+price+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.seatType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"<br/>"+transportDetails.source+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"<br/>"+transportDetails.destination+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
-			}
+				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+other.id+"' "+isChecked+" value = '"+price+"' bookingLink='"+transportDetails.bookingLink+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
+		
 	}
 	details = details+"</table>";
 	var length =  radionames.length
@@ -125,11 +127,9 @@ function getTrainOptionsPart(train, id){
 			
 			var price = transportDetails.price;
 			
-			if(train.mode=='bus'){
-				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+train.id+"' "+isChecked+" value = '"+price+"' bookingLink='http://irctc.co.in' >&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
-			} else {
+
 				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+train.id+"' "+isChecked+" value = '"+price+"' bookingLink='http://irctc.co.in'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.trainNumber+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"<br/>"+transportDetails.source+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"<br/>"+transportDetails.destination+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
-			}
+			
 	}
 	details = details+"</table>";
 	var length =  radionames.length

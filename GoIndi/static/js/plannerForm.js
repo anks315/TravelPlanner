@@ -5,8 +5,13 @@ var IsToChange = true
 var directionsService;
 var directionsDisplay;
 var flightRouteChecked=0;
+var flightClassSelected = "economy"
+var trainClassSelected = "SL"
+var persons = 1
+
 
 function showPlanner(plannerContainer){
+		
 		var out ="";
 			 out = out + "<nav role='navigation' class='navbar navbar-default'><div class='navbar-header'><button type='button' data-target='#navbarCollapse' data-toggle='collapse' class='navbar-toggle'><span class='sr-only'>Toggle navigation</span><span class='icon-bar'></span><span class='icon-bar'></span><span class='icon-bar'></span></button></div><div id='navbarCollapse' class='collapse navbar-collapse'><ul class='nav navbar-nav navbar-center'><li><div style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' id='from' placeholder='From:' type='text' autofocus autocomplete='off' ng-focus='disableTap()'></div></li><li><div style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' id='to' placeholder='To:' type='text' autofocus autocomplete='off'></div></li><li><div id='departure' style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' type='text' id='departureBox' class='form-control' placeholder= 'Departure'/><div></li><li><div id='return' style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' type='text' id='returnBox' class='form-control' placeholder= 'Return'/></div></li><li><br/><label class='radio-inline'><input type='radio' checked class='active' id='one-way'>One-Way</label><label class='radio-inline'><input type='radio' id='two-way'>Return</label></li><li><div style='padding-bottom: 15px;padding-left: 5px;padding-right: 1px;padding-top: 15px;text-align:right'><input type='submit' id='search' class='btn btn-info' value='Search'></div></li></ul></div></nav>";
 
@@ -76,7 +81,7 @@ function showPlanner(plannerContainer){
 					document.getElementById("flightData").innerHTML = loadingFlight;
 					document.getElementById("flightFilters").innerHTML = '';
 				// change in documeent ready as well, if changed here
-				$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+'&callback=?', function(data, err) {
+				$.getJSON('flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				 if (err != "success") {
 					 flightList = []
 				  } else {
@@ -97,7 +102,7 @@ function showPlanner(plannerContainer){
 						flightFilters();
 					}
 				});
-				$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+'&callback=?', function(data, err) {
+				$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  if (err != "success") {
 					  trainList=[]
 				  } else {
@@ -120,7 +125,7 @@ function showPlanner(plannerContainer){
 				  
 				});
 				
-				$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+'&callback=?', function(data, err) {
+				$.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&adults="+persons, function(data, err) {
 				  if (err != "success") {
 				  } else {
 					  busList = data.bus
@@ -223,6 +228,9 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 	placeFrom = document.getElementById('from').value;
 	placeTo = document.getElementById('to').value;
 	document.getElementById('departureBox').value = urlParams.dep;
+	flightClassSelected=urlParams.flightClass;
+	trainClassSelected = urlParams.trainClass;
+	persons = urlParams.persons;
 	var retDate=urlParams.ret;
 	if(retDate!=""){
 		document.getElementById('returnBox').value = urlParams.ret;
@@ -236,7 +244,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 	var depDateArr = document.getElementById('departureBox').value.split("/");
 	var depDate = depDateArr[1]+"-"+depDateArr[0]+"-"+depDateArr[2]
 	//change in the search click as well if changed here
-	$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+'&callback=?', function(data, err) {
+	$.getJSON('flight?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  if (err != "success") {
 					  flightList = []
 				  } else {
@@ -258,7 +266,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 					}
 				  
 				});
-	$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+'&callback=?', function(data, err) {
+	$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 					
 				  if (err != "success") {
 					  trainList=[]
@@ -282,7 +290,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 				  
 				});
 	
-	 $.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+'&callback=?', function(data, err) {
+	 $.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&adults="+persons, function(data, err) {
 				  if (err != "success") {
 				  } else {
 					  busList = data.bus
