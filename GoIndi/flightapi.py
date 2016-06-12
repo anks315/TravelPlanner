@@ -64,13 +64,10 @@ class FlightController:
 
             finalList = {}
             mixedFlight = {}
-            if((bigSource!='empty')and(bigDestination!='empty')and(bigSource!=destinationFlight)and(bigDestination!=sourceFlight)):
-                mixedFlight = {}
-                mixedFlight["flight"] = []
-                mixedFlightEnd = {}
-                mixedFlightEnd["flight"] = []
-                mixedFlightInit = {}
-                mixedFlightInit["flight"] = []
+            if (bigSource!='empty')and(bigDestination!='empty')and(bigSource!=destinationFlight)and(bigDestination!=sourceFlight):
+                mixedFlight = {"flight": []}
+                mixedFlightEnd = {"flight": []}
+                mixedFlightInit = {"flight": []}
                 otherModesInit=[]
                 otherModesEnd=[]
                 otherModesInitFuture = []
@@ -187,51 +184,51 @@ class FlightController:
         otherModesInit = otherModesInit + otherModesInit2
         mixedFlight = miscUtility.limitResults(mixedFlight, "flight")
         for j in range(len(mixedFlight["flight"])):
-                flightPart = mixedFlight["flight"][j]["parts"][0]
-                subparts = []
-                for k in range(len(otherModesInit)):
-                    subpart = otherModesInit[k]["parts"][0]
-                    if dateTimeUtility.checkIfApplicable(subpart["arrival"], subpart["arrivalDate"],flightPart["departure"], flightPart["departureDate"], 3):
-                        subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"],flightPart["departure"],subpart["arrivalDate"],flightPart["departureDate"])
-                        subparts.append(subpart)
-                if len(subparts) > 5:
-                    subparts.sort(miscUtility.sortOnWaitingTime)
-                    subparts = subparts[0:5]
-                continueFurther = 0;
-                if subparts:
-                    continueFurther=1
-                    minmax1 = minMaxUtil.getMinMaxValues(subparts)
-                    newpart = {"subParts": subparts, "mode": subparts[0]["mode"],"id": mixedFlight["flight"][j]["full"][0]["id"] + str(0),
-                               "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"]}
-                    flightPart["id"] = mixedFlight["flight"][j]["full"][0]["id"] + str(1)
-                    mixedFlight["flight"][j]["parts"].insert(0, newpart)
-                    mixedFlight["flight"][j]["full"][0]["route"] = newpart["source"] + ","+newpart["mode"]+"," + newpart["destination"] + ",flight," + flightPart["destination"]
-                subparts = []
-                for k in range(len(otherModesEnd)):
-                    subpart = otherModesEnd[k]["parts"][0]
-                    if dateTimeUtility.checkIfApplicable(flightPart["arrival"], flightPart["arrivalDate"],subpart["departure"], subpart["departureDate"], 3):
-                        subpart["waitingTime"] = dateTimeUtility.getWaitingTime(flightPart["arrival"], subpart["departure"],flightPart["arrivalDate"],subpart["departureDate"])
-                        subparts.append(subpart)
-                if len(subparts) > 5:
-                    subparts.sort(miscUtility.sortOnWaitingTime)
-                    subparts = subparts[0:5]
+            flightPart = mixedFlight["flight"][j]["parts"][0]
+            subparts = []
+            for k in range(len(otherModesInit)):
+                subpart = otherModesInit[k]["parts"][0]
+                if dateTimeUtility.checkIfApplicable(subpart["arrival"], subpart["arrivalDate"],flightPart["departure"], flightPart["departureDate"], 3):
+                    subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"],flightPart["departure"],subpart["arrivalDate"],flightPart["departureDate"])
+                    subparts.append(subpart)
+            if len(subparts) > 5:
+                subparts.sort(miscUtility.sortOnWaitingTime)
+                subparts = subparts[0:5]
+            continueFurther = 0;
+            if subparts:
+                continueFurther=1
+                minmax1 = minMaxUtil.getMinMaxValues(subparts)
+                newpart = {"subParts": subparts, "mode": subparts[0]["mode"],"id": mixedFlight["flight"][j]["full"][0]["id"] + str(0),
+                           "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"]}
+                flightPart["id"] = mixedFlight["flight"][j]["full"][0]["id"] + str(1)
+                mixedFlight["flight"][j]["parts"].insert(0, newpart)
+                mixedFlight["flight"][j]["full"][0]["route"] = newpart["source"] + ","+newpart["mode"]+"," + newpart["destination"] + ",flight," + flightPart["destination"]
+            subparts = []
+            for k in range(len(otherModesEnd)):
+                subpart = otherModesEnd[k]["parts"][0]
+                if dateTimeUtility.checkIfApplicable(flightPart["arrival"], flightPart["arrivalDate"],subpart["departure"], subpart["departureDate"], 3):
+                    subpart["waitingTime"] = dateTimeUtility.getWaitingTime(flightPart["arrival"], subpart["departure"],flightPart["arrivalDate"],subpart["departureDate"])
+                    subparts.append(subpart)
+            if len(subparts) > 5:
+                subparts.sort(miscUtility.sortOnWaitingTime)
+                subparts = subparts[0:5]
 
-                if subparts and continueFurther==1:
-                    minmax2 = minMaxUtil.getMinMaxValues(subparts)
-                    newpart = {"subParts": subparts, "mode": subparts[0]["mode"],"id": mixedFlight["flight"][j]["full"][0]["id"] + str(2),
-                               "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"]}
-                    mixedFlight["flight"][j]["parts"].append(newpart)
-                    mixedFlight["flight"][j]["full"][0]["route"] = mixedFlight["flight"][j]["full"][0]["route"] + ","+subparts[0]["mode"]+"," + newpart["destination"]
-                    mixedFlight["flight"][j]["full"][0]["price"] = int(mixedFlight["flight"][j]["full"][0]["price"]) + int(minmax1["minPrice"]) + int(minmax2["minPrice"])
-                    mixedFlight["flight"][j]["full"][0]["minPrice"] = int(mixedFlight["flight"][j]["full"][0]["minPrice"]) + int(minmax1["minPrice"]) + int(minmax2["minPrice"])
-                    mixedFlight["flight"][j]["full"][0]["maxPrice"] = int(mixedFlight["flight"][j]["full"][0]["maxPrice"]) + int(minmax1["maxPrice"]) + int(minmax2["maxPrice"])
-                    mixedFlight["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedFlight["flight"][j]["full"][0]["duration"], minmax1["minDuration"]),minmax2["minDuration"])
-                    mixedFlight["flight"][j]["full"][0]["minDuration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedFlight["flight"][j]["full"][0]["minDuration"], minmax1["minDuration"]),minmax2["minDuration"])
-                    mixedFlight["flight"][j]["full"][0]["maxDuration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedFlight["flight"][j]["full"][0]["maxDuration"], minmax1["maxDuration"]),minmax2["maxDuration"])
-                    mixedFlight["flight"][j]["full"][0]["minDeparture"] = minmax1["minDep"]
-                    mixedFlight["flight"][j]["full"][0]["maxDeparture"] = minmax1["maxDep"]
-                    mixedFlight["flight"][j]["full"][0]["minArrival"] = minmax2["minArr"]
-                    mixedFlight["flight"][j]["full"][0]["maxArrival"] = minmax2["maxArr"]
+            if subparts and continueFurther==1:
+                minmax2 = minMaxUtil.getMinMaxValues(subparts)
+                newpart = {"subParts": subparts, "mode": subparts[0]["mode"],"id": mixedFlight["flight"][j]["full"][0]["id"] + str(2),
+                           "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"]}
+                mixedFlight["flight"][j]["parts"].append(newpart)
+                mixedFlight["flight"][j]["full"][0]["route"] = mixedFlight["flight"][j]["full"][0]["route"] + ","+subparts[0]["mode"]+"," + newpart["destination"]
+                mixedFlight["flight"][j]["full"][0]["price"] = int(mixedFlight["flight"][j]["full"][0]["price"]) + int(minmax1["minPrice"]) + int(minmax2["minPrice"])
+                mixedFlight["flight"][j]["full"][0]["minPrice"] = int(mixedFlight["flight"][j]["full"][0]["minPrice"]) + int(minmax1["minPrice"]) + int(minmax2["minPrice"])
+                mixedFlight["flight"][j]["full"][0]["maxPrice"] = int(mixedFlight["flight"][j]["full"][0]["maxPrice"]) + int(minmax1["maxPrice"]) + int(minmax2["maxPrice"])
+                mixedFlight["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedFlight["flight"][j]["full"][0]["duration"], minmax1["minDuration"]),minmax2["minDuration"])
+                mixedFlight["flight"][j]["full"][0]["minDuration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedFlight["flight"][j]["full"][0]["minDuration"], minmax1["minDuration"]),minmax2["minDuration"])
+                mixedFlight["flight"][j]["full"][0]["maxDuration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedFlight["flight"][j]["full"][0]["maxDuration"], minmax1["maxDuration"]),minmax2["maxDuration"])
+                mixedFlight["flight"][j]["full"][0]["minDeparture"] = minmax1["minDep"]
+                mixedFlight["flight"][j]["full"][0]["maxDeparture"] = minmax1["maxDep"]
+                mixedFlight["flight"][j]["full"][0]["minArrival"] = minmax2["minArr"]
+                mixedFlight["flight"][j]["full"][0]["maxArrival"] = minmax2["maxArr"]
         mixedFlight["flight"] = [x for x in mixedFlight["flight"] if len(x["parts"]) == 3]
         logger.debug("[END]")
         return mixedFlight
