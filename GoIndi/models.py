@@ -1,4 +1,3 @@
-from numpy.distutils.system_info import numarray_info
 from neo4jrestclient.client import GraphDatabase
 from entity import TrainOption, TrainStation, FareData
 import time
@@ -457,7 +456,7 @@ def persistfaredata(faredata, trainnumber, sourcestationcode, destinationstation
         logger.error("Error while persisting fare information for trainNumber [%s], source [%s], destination [%s], reason [%s]", trainnumber, sourcestationcode, destinationstationcode, e.message)
 
 
-def parseandreturnroute(trainroutes, logger, journeydate, traincounter):
+def parseandreturnroute(trainroutes, logger, journeydate, trainid):
     """
     to return map of train routes in either full or by parts journey
     :param trainroutes: list of trainroutes
@@ -468,28 +467,30 @@ def parseandreturnroute(trainroutes, logger, journeydate, traincounter):
     logger.info("Generating route map with full & parts journey")
     routes = []
     futures = []
+    traincounter = -1
 
     for trainroute in trainroutes:
-        traincounter[0] += 1
-        futures.append(TravelPlanner.trainUtil.trainfareexecutor.submit(gettrainroute, trainroute, traincounter, journeydate, logger))
+        traincounter += 1
+        futures.append(TravelPlanner.trainUtil.trainfareexecutor.submit(gettrainroute, trainroute, trainid, traincounter, journeydate, logger))
 
     for future in futures:
         if future and future.result(timeout=5):
             routes.append(future.result())
     return routes
 
-def gettrainroute(trainroute, traincounter, journeydate, logger):
+def gettrainroute(trainroute, trainid, traincounter, journeydate, logger):
 
     """
     To get train journey route
     :param trainroute: train route object having route information
-    :param traincounter: global train counter
+    :param trainid: global train route id
+    :param traincounter: train counter used for id generation
     :param journeydate: date of journey
     :return: train route if it is having fare
     """
     route = {"full": [], "parts": []}
     try:
-        full = {"carrierName": trainroute.trainName, "duration": trainroute.duration, "id": "train" + str(traincounter[0]), "mode": "train",
+        full = {"carrierName": trainroute.trainName, "duration": trainroute.duration, "id": trainid + str(traincounter), "mode": "train",
                 "site": "IRCTC", "source": trainroute.srcStation, "destination": trainroute.destStation, "arrival": trainroute.destArrivalTime,
                 "sourceStation": trainroute.srcStationCode, "destinationStation": trainroute.destStationCode,
                 "arrivalDate": dateTimeUtility.calculateArrivalTimeAndDate(journeydate, trainroute.srcDepartureTime,trainroute.duration)["arrivalDate"],
@@ -497,10 +498,10 @@ def gettrainroute(trainroute, traincounter, journeydate, logger):
                 "priceClass": trainroute.priceClass, "route": trainroute.srcStation + ",train," + trainroute.destStation, "trainNumber": trainroute.trainNumber
                 }
         part = copy.deepcopy(full)
-        part["id"] = "train" + str(traincounter[0]) + str(1)
+        part["id"] = full["id"] + str(1)
         part["subParts"] = []
         part["subParts"].append(copy.deepcopy(full))
-        part["subParts"][0]["id"] = "train" + str(traincounter[0]) + str(1) + str(1)
+        part["subParts"][0]["id"] = full["id"] + str(1) + str(1)
 
         # this min/max data only in full journey for filtering purpose
         full["minPrice"] = full["maxPrice"] = trainroute.price

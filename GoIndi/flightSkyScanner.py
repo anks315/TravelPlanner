@@ -4,7 +4,6 @@ __author__ = 'ankur'
 from skyscannerEazzer import Flights
 import dateTimeUtility
 import logging
-import datetime
 import loggerUtil
 
 
@@ -48,8 +47,8 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id,flightClass='Economy
                                  'J & K': 'SXR', 'Gujrat': 'STV', 'Assam': 'TEZ', 'Tamil Nadu': 'TRZ',
                                  'Andhra Pradesh': 'TIR', 'Kerala': 'TRV', 'Rajasthan': 'UDR', 'Gujarat': 'BDQ',
                                  'Uttar Pradesh': 'VNS', 'Andhra Pradesh': 'VGA', 'Andhra Pradesh': 'VTZ','Shimla':'SLV'}
-    resultJson = {}
-    resultJson["flight"] = []
+
+    resultJson = {"flight": []}
     try:
         source = cityAndStateToStationsMap[sourcecity]
         destination = cityAndStateToStationsMap[destinationcity]
@@ -80,88 +79,88 @@ def getApiResults(sourcecity,destinationcity,journeyDate,id,flightClass='Economy
 
     return resultJson
 
-
-
 def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate,numberOfAdults):
     logger.info("Parsing SkyScanner Final Result for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeyDate)
     returnedFareData = apiresult
-    resultJsonData = {}
-    resultJsonData["flight"]=[]
+    resultJsonData = {"flight": []}
     partNo = 0
     if len(returnedFareData["Itineraries"])==0:
         logger.warn("Skyscanner responded no Data for Source:[%s] and Destination:[%s],JourneyDate:[%s]",source,destination,journeyDate)
         return resultJsonData
-    flightCounter=-1
+    flightcounter=-1
 
     for itinerary in returnedFareData["Itineraries"]:
-            route ={}
+        route = {}
+        full= {"id": str(id) + str(flightcounter)}
+        part={}
+        flightcounter += 1
+        route["full"]=[]
+        route["full"].append(full)
+        route["parts"]=[]
+        route["parts"].append(part)
+        part["price"]=itinerary["PricingOptions"][0]["Price"]
+        full["price"]=itinerary["PricingOptions"][0]["Price"]
+        full["minPrice"]=itinerary["PricingOptions"][0]["Price"]
+        full["maxPrice"]=itinerary["PricingOptions"][0]["Price"]
+        part["id"]= str(id)+str(flightcounter)+str(partNo)
+        part["mode"]="flight"
+        part["source"] = source
+        part["destination"] = destination
+        part["arrival"]=(returnedFareData["Legs"][flightcounter]["Arrival"]).split("T")[1]
+        part["departureDate"]=journeyDate
+        full["minArrival"]=(returnedFareData["Legs"][flightcounter]["Arrival"]).split("T")[1]
+        full["maxArrival"]=(returnedFareData["Legs"][flightcounter]["Arrival"]).split("T")[1]
+        part["departure"]=returnedFareData["Legs"][flightcounter]["Departure"].split("T")[1]
+        full["minDeparture"]=returnedFareData["Legs"][flightcounter]["Departure"].split("T")[1]
+        full["maxDeparture"]=returnedFareData["Legs"][flightcounter]["Departure"].split("T")[1]
+        duration = returnedFareData["Legs"][flightcounter]["Duration"]
+        hours = int(duration)/60
+        minutes = int(duration)%60
+        part["duration"]= str(hours)+":"+str(minutes)
+        part["arrivalDate"] = dateTimeUtility.calculateArrivalTimeAndDate(journeyDate, part["departure"],part["duration"])["arrivalDate"]
+        full["duration"]=str(hours)+":"+str(minutes)
+        full["minDuration"]=str(hours)+":"+str(minutes)
+        full["maxDuration"]=str(hours)+":"+str(minutes)
+        full["route"]=part["source"]+",flight,"+part["destination"]
+        part["bookingOptions"] = itinerary["PricingOptions"]
+        for option in part["bookingOptions"]:
+            #option["Price"]=option["Price"]*int(numberOfAdults)
+            option["AgentsImg"] = getAgentImgById(option["Agents"][0], returnedFareData["Agents"])
+            option["Agents"]=getAgentNameById(option["Agents"][0],returnedFareData["Agents"])
 
-            full={}
-            full["id"]=str(id)+str(flightCounter)
-            part={}
-            flightCounter=flightCounter+1
-            route["full"]=[]
-            route["full"].append(full)
-            route["parts"]=[]
-            route["parts"].append(part)
-            part["price"]=itinerary["PricingOptions"][0]["Price"]
-            full["price"]=itinerary["PricingOptions"][0]["Price"]
-            full["minPrice"]=itinerary["PricingOptions"][0]["Price"]
-            full["maxPrice"]=itinerary["PricingOptions"][0]["Price"]
-            part["id"]= str(id)+str(flightCounter)+str(partNo)
-            part["mode"]="flight"
-            part["source"] = source
-            part["destination"] = destination
-            part["arrival"]=(returnedFareData["Legs"][flightCounter]["Arrival"]).split("T")[1]
-            part["departureDate"]=journeyDate
-            full["minArrival"]=(returnedFareData["Legs"][flightCounter]["Arrival"]).split("T")[1]
-            full["maxArrival"]=(returnedFareData["Legs"][flightCounter]["Arrival"]).split("T")[1]
-            part["departure"]=returnedFareData["Legs"][flightCounter]["Departure"].split("T")[1]
-            full["minDeparture"]=returnedFareData["Legs"][flightCounter]["Departure"].split("T")[1]
-            full["maxDeparture"]=returnedFareData["Legs"][flightCounter]["Departure"].split("T")[1]
-            duration = returnedFareData["Legs"][flightCounter]["Duration"]
-            hours = int(duration)/60
-            minutes = int(duration)%60
-            part["duration"]= str(hours)+":"+str(minutes)
-            part["arrivalDate"] = dateTimeUtility.calculateArrivalTimeAndDate(journeyDate, part["departure"],part["duration"])["arrivalDate"]
-            full["duration"]=str(hours)+":"+str(minutes)
-            full["minDuration"]=str(hours)+":"+str(minutes)
-            full["maxDuration"]=str(hours)+":"+str(minutes)
-            full["route"]=part["source"]+",flight,"+part["destination"]
-            part["bookingOptions"] = itinerary["PricingOptions"]
-            for option in part["bookingOptions"]:
-                #option["Price"]=option["Price"]*int(numberOfAdults)
-                option["AgentsImg"] = getAgentImgById(option["Agents"][0], returnedFareData["Agents"])
-                option["Agents"]=getAgentNameById(option["Agents"][0],returnedFareData["Agents"])
-
-            part["subParts"]=[]
-            if returnedFareData["Legs"][flightCounter]["Stops"]:
-                Source =getCityNameById(returnedFareData["Legs"][flightCounter]["OriginStation"],returnedFareData["Places"])
-                stopNumber=0
-                for stop in returnedFareData["Legs"][flightCounter]["Stops"]:
-                    subpart = {}
-                    subpart["source"]=Source
-                    subpart["destination"]=getCityNameById(stop,returnedFareData["Places"])
-                    subpart["flightNumber"]=returnedFareData["Legs"][flightCounter]["FlightNumbers"][stopNumber]["FlightNumber"]
-                    subpart["carrierName"]=getCarrierNameById(returnedFareData["Legs"][flightCounter]["FlightNumbers"][stopNumber]["CarrierId"],returnedFareData["Carriers"])
-                    Source=subpart["destination"]
-                    part["subParts"].append(subpart)
-                    stopNumber=stopNumber+1
-                subpart = {}
-                subpart["source"]=Source
-                subpart["destination"]=getCityNameById(returnedFareData["Legs"][flightCounter]["DestinationStation"],returnedFareData["Places"])
-                subpart["flightNumber"]=returnedFareData["Legs"][flightCounter]["FlightNumbers"][stopNumber]["FlightNumber"]
-                subpart["carrierName"]=getCarrierNameById(returnedFareData["Legs"][flightCounter]["FlightNumbers"][stopNumber]["CarrierId"],returnedFareData["Carriers"])
+        part["subParts"]=[]
+        if returnedFareData["Legs"][flightcounter]["Stops"]:
+            Source =getCityNameById(returnedFareData["Legs"][flightcounter]["OriginStation"],returnedFareData["Places"])
+            stopNumber=0
+            for stop in returnedFareData["Legs"][flightcounter]["Stops"]:
+                subpart = {"source": Source, "destination": getCityNameById(stop, returnedFareData["Places"]),
+                           "flightNumber": returnedFareData["Legs"][flightcounter]["FlightNumbers"][stopNumber][
+                               "FlightNumber"], "carrierName": getCarrierNameById(
+                        returnedFareData["Legs"][flightcounter]["FlightNumbers"][stopNumber]["CarrierId"],
+                        returnedFareData["Carriers"])}
+                Source=subpart["destination"]
                 part["subParts"].append(subpart)
-            else:
-                subpart = {}
-                subpart["source"]=getCityNameById(returnedFareData["Legs"][flightCounter]["OriginStation"],returnedFareData["Places"])
-                subpart["destination"]=getCityNameById(returnedFareData["Legs"][flightCounter]["DestinationStation"],returnedFareData["Places"])
-                subpart["flightNumber"]=returnedFareData["Legs"][flightCounter]["FlightNumbers"][0]["FlightNumber"]
-                subpart["carrierName"]=getCarrierNameById(returnedFareData["Legs"][flightCounter]["FlightNumbers"][0]["CarrierId"],returnedFareData["Carriers"])
-                part["subParts"].append(subpart)
+                stopNumber += 1
+            subpart = {"source": Source,
+                       "destination": getCityNameById(returnedFareData["Legs"][flightcounter]["DestinationStation"],
+                                                      returnedFareData["Places"]),
+                       "flightNumber": returnedFareData["Legs"][flightcounter]["FlightNumbers"][stopNumber][
+                           "FlightNumber"], "carrierName": getCarrierNameById(
+                    returnedFareData["Legs"][flightcounter]["FlightNumbers"][stopNumber]["CarrierId"],
+                    returnedFareData["Carriers"])}
+            part["subParts"].append(subpart)
+        else:
+            subpart = {"source": getCityNameById(returnedFareData["Legs"][flightcounter]["OriginStation"],
+                                                 returnedFareData["Places"]),
+                       "destination": getCityNameById(returnedFareData["Legs"][flightcounter]["DestinationStation"],
+                                                      returnedFareData["Places"]),
+                       "flightNumber": returnedFareData["Legs"][flightcounter]["FlightNumbers"][0]["FlightNumber"],
+                       "carrierName": getCarrierNameById(
+                           returnedFareData["Legs"][flightcounter]["FlightNumbers"][0]["CarrierId"],
+                           returnedFareData["Carriers"])}
+            part["subParts"].append(subpart)
 
-            resultJsonData["flight"].append(route)
+        resultJsonData["flight"].append(route)
 
     return resultJsonData
 
