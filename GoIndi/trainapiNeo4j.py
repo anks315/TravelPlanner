@@ -24,7 +24,7 @@ bigcities = Set(['NEW DELHI', 'MUMBAI', 'BANGALORE', 'KOLKATA', 'HYDERABAD', 'CH
 
 logger = loggerUtil.getLogger("TrainApi", logging.DEBUG)
 
-def convertspartstofulljson(part_1, part_2, traincounter):
+def convertspartstofulljson(part_1, part_2):
     """
     This method is used to combine train journey data from part_1 and part_2 into a single entity
     :param part_1: part 1 of journey
@@ -33,7 +33,6 @@ def convertspartstofulljson(part_1, part_2, traincounter):
     """
 
     route = {"full": {}, "parts": []}
-    traincounter[0] += 1
     try:
         duration = dateTimeUtility.gettotalduration(part_2["full"][0]["arrival"],part_1["full"][0]["departure"],part_2["full"][0]["arrivalDate"],part_1["full"][0]["departureDate"])
         price = part_1["full"][0]["price"] + part_2["full"][0]["price"]
