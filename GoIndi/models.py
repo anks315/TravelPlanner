@@ -1,3 +1,4 @@
+from numpy.distutils.system_info import numarray_info
 from neo4jrestclient.client import GraphDatabase
 from entity import TrainOption, TrainStation, FareData
 import time
@@ -20,7 +21,7 @@ def demo():
 citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai",}
 
 #DATABASE_CONNECTION= GraphDatabase("http://ec2-54-179-130-192.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
-DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="rkdaimpwd")
+DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="ankurjain")
 
 #DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
 
@@ -105,39 +106,39 @@ def gettrains(results, journeydate, sourcecity, logger, destinationcity, pricecl
             trainoption.duration = getduration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
 
             if 'FARE_3A' in results.elements[i][2]['data']:
-                trainoption.prices["3A"] = int(results.elements[i][2]['data']['FARE_3A'])
+                trainoption.prices["3A"] = int(results.elements[i][2]['data']['FARE_3A'])*numberofadults
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["3A"],"3A",numberofadults)
 
             if 'FARE_CC' in results.elements[i][2]['data']:
-                trainoption.prices["CC"] = int(results.elements[i][2]['data']['FARE_CC'])
+                trainoption.prices["CC"] = int(results.elements[i][2]['data']['FARE_CC'])*numberofadults
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["CC"],"CC",numberofadults)
 
             if 'FARE_SL' in results.elements[i][2]['data']:
-                trainoption.prices["SL"] = int(results.elements[i][2]['data']['FARE_SL'])
+                trainoption.prices["SL"] = int(results.elements[i][2]['data']['FARE_SL'])*numberofadults
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["SL"],"SL",numberofadults)
 
             if 'FARE_2A' in results.elements[i][2]['data']:
-                trainoption.prices["2A"] = int(results.elements[i][2]['data']['FARE_2A'])
+                trainoption.prices["2A"] = int(results.elements[i][2]['data']['FARE_2A'])*numberofadults
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["2A"],"2A",numberofadults)
 
             if 'FARE_3E' in results.elements[i][2]['data']:
-                trainoption.prices["3E"] = int(results.elements[i][2]['data']['FARE_3E'])
+                trainoption.prices["3E"] = int(results.elements[i][2]['data']['FARE_3E'])*numberofadults
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["3E"],"3E",numberofadults)
 
             if 'FARE_2S' in results.elements[i][2]['data']:
-                trainoption.prices["2S"] = int(results.elements[i][2]['data']['FARE_2S'])
+                trainoption.prices["2S"] = int(results.elements[i][2]['data']['FARE_2S'])*numberofadults
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["2S"],"2S",numberofadults)
             
             if 'FARE_FC' in results.elements[i][2]['data']:
-                trainoption.prices["FC"] = int(results.elements[i][2]['data']['FARE_FC'])
+                trainoption.prices["FC"] = int(results.elements[i][2]['data']['FARE_FC'])*numberofadults
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["FC"],"FC",numberofadults)
 
             if 'FARE_1A' in results.elements[i][2]['data']:
-                trainoption.prices["1A"] = int(results.elements[i][2]['data']['FARE_1A'])
+                trainoption.prices["1A"] = int(results.elements[i][2]['data']['FARE_1A'])*numberofadults
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["1A"],"1A",numberofadults)
 
             if 'FARE_GN' in results.elements[i][2]['data']:
-                trainoption.prices["GN"] = int(results.elements[i][2]['data']['FARE_GN'])
+                trainoption.prices["GN"] = int(results.elements[i][2]['data']['FARE_GN'])*numberofadults
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["GN"],"GN",numberofadults)
             trains.append(trainoption)
 
