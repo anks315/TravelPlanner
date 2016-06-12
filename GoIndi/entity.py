@@ -16,6 +16,7 @@ class TrainOption:
     trainName = ""
     trainNumber = ""
     duration = time.time()
+    numadults=1
 
 
 class StationToTrainRelation:

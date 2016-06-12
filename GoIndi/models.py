@@ -98,7 +98,8 @@ def gettrains(results, journeydate, sourcecity, logger, destinationcity, pricecl
             trainoption.destStation = str(destinationcity).title()
             trainoption.prices = {"1A": 0, "2A": 0, "3A": 0, "3E": 0, "FC": 0, "CC": 0, "SL": 0, "2S": 0, "GN": 0} #empty dictionary
             trainoption.price = 0
-            trainoption.price=0
+            trainoption.priceClass=priceclass
+            trainoption.numadults=numberofadults
 
             if 'FARE_'+priceclass in results.elements[i][2]['data']:
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,int(results.elements[i][2]['data']['FARE_'+priceclass]),priceclass,numberofadults)
@@ -509,14 +510,14 @@ def gettrainroute(trainroute, traincounter, journeydate, logger):
         route["full"].append(full)
         route["parts"].append(part)
         # check if train has fare present for source & destination, if not get it from railway api and persisit in DB
-        if hasprice(route, trainroute.trainNumber, trainroute.srcStationCode, trainroute.destStationCode, logger):
+        if hasprice(route, trainroute.trainNumber, trainroute.srcStationCode, trainroute.destStationCode,trainroute.numadults, logger):
             return route
     except Exception as e:
         logger.error("Error getting route with full & parts journey between source [%s], destination [%s], reason [%s]",trainroute.srcStation, trainroute.destStation, e.message)
         return
 
 
-def hasprice(route, trainnumber ,sourcestationcode, destinationstationcode, logger):
+def hasprice(route, trainnumber ,sourcestationcode, destinationstationcode,numadults, logger):
     """
     Check whether any price exists for the train or not, if not try to get from railway api. Ignore train if either no price data is present or could not get from railway api
     :param route: train route
@@ -532,14 +533,17 @@ def hasprice(route, trainnumber ,sourcestationcode, destinationstationcode, logg
         if not faredata:
             return False
         else:
-            prices["1A"] == faredata.fare_1A
-            prices["2A"] == faredata.fare_2A
-            prices["3A"] == faredata.fare_3A
-            prices["3E"] == faredata.fare_3E
-            prices["FC"] == faredata.fare_FC
-            prices["CC"] == faredata.fare_CC
-            prices["SL"] == faredata.fare_SL
-            prices["2S"] == faredata.fare_2S
-            prices["GN"] == faredata.fare_GN
+            prices["1A"] = faredata.fare_1A*numadults
+            prices["2A"] = faredata.fare_2A*numadults
+            prices["3A"] = faredata.fare_3A*numadults
+            prices["3E"] = faredata.fare_3E*numadults
+            prices["FC"] = faredata.fare_FC*numadults
+            prices["CC"] = faredata.fare_CC*numadults
+            prices["SL"] = faredata.fare_SL*numadults
+            prices["2S"] = faredata.fare_2S*numadults
+            prices["GN"] = faredata.fare_GN*numadults
+            if prices[route["full"][0]["priceClass"]]==0:
+                return False
+            route["full"][0]["price"]=prices[route["full"][0]["priceClass"]]
             return True
     return True
