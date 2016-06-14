@@ -222,3 +222,7 @@ def read():
     f.close()
     return line
 
+
+def readfromlogfile():
+    pass
+

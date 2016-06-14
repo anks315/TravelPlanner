@@ -13,14 +13,16 @@ from datetime import timedelta
 from sets import Set
 import copy
 import dateTimeUtility
+from multiprocessing import Pool, Process
 
 def demo():
     pass
 
+# pool = Pool(processes=5)
 citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai",}
 
 #DATABASE_CONNECTION= GraphDatabase("http://ec2-54-179-130-192.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
-DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="shekhar")
+DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="rkdaimpwd")
 
 #DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
 
@@ -30,7 +32,7 @@ def testquery():
     results = DATABASE_CONNECTION.query("""MATCH (a:TRAINSTATION {CITY : '"""+source+"""'})-[r:BPL]->(b:TRAIN) RETURN a as station ,b as train ,r as route union MATCH (c:TRAINSTATION {CITY : '"""+other+"""'})-[e:NDLS]->(d:TRAIN) RETURN c as station,d as train ,e as route""")
     print results
 
-def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeydate, destinationcity, traincounter, priceclass='3A', numberofadults=1, nextday=False):
+def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeydate, destinationcity, trainrouteid, priceclass='3A', numberofadults=1, nextday=False):
 
     """
     To get train between 2 stations
@@ -59,12 +61,15 @@ def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeyda
 
     gettrains(results,journeydate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains)
 
-    routes = parseandreturnroute(trains, logger, journeydate, traincounter)
+    routes = parseandreturnroute(trains, logger, journeydate, trainrouteid)
 
     if nextday:
         nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
         gettrains(results,nextdate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains)
-        routes.extend(parseandreturnroute(trains, logger, nextdate, traincounter))
+        routes.extend(parseandreturnroute(trains, logger, nextdate, trainrouteid))
+        nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=2)).strftime('%d-%m-%Y')
+        gettrains(results,nextdate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains)
+        routes.extend(parseandreturnroute(trains, logger, nextdate, trainrouteid))
 
     return routes
 
@@ -335,7 +340,7 @@ def loadtraindata(trainstationsmap):
     try:
         trainstations = DATABASE_CONNECTION.query(q)
     except Exception as e:
-        logger = loggerUtil.getLogger("loaddata", logging.INFO)
+        logger = loggerUtil.getLogger("loaddata", logging.WARNING)
         logger.error("Error in loading train data on startup, reason [%s]", e.message)
         return trainstationsmap
 
@@ -365,6 +370,7 @@ def getfarefortrainandpersist(trainnumber ,sourcestationcode, destinationstation
     :param logger: to log
     :return: faredata if present else nothing
     """
+    print 'inside method'
     try:
         jsonresponsetrainfare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainnumber + "/source/"+ sourcestationcode+ "/dest/"+ destinationstationcode+ "/age/20/quota/GN/doj/"+ '11-06'+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
     except:
@@ -525,26 +531,31 @@ def hasprice(route, trainnumber ,sourcestationcode, destinationstationcode,numad
     :return: True if price exists else False
     """
 
-    prices = route["full"][0]["prices"]
+    # prices = route["full"][0]["prices"]
     trainname = route["full"][0]["carrierName"]
 
-    if route["full"][0]["price"]==0:
+    if route["full"][0]["price"] == 0:
         logger.warning("re-trying fare data for train [%s] since all prices are 0", trainname)
-        faredata = getfarefortrainandpersist(trainnumber, sourcestationcode, destinationstationcode, logger)
-        if not faredata:
-            return False
-        else:
-            prices["1A"] = faredata.fare_1A*numadults
-            prices["2A"] = faredata.fare_2A*numadults
-            prices["3A"] = faredata.fare_3A*numadults
-            prices["3E"] = faredata.fare_3E*numadults
-            prices["FC"] = faredata.fare_FC*numadults
-            prices["CC"] = faredata.fare_CC*numadults
-            prices["SL"] = faredata.fare_SL*numadults
-            prices["2S"] = faredata.fare_2S*numadults
-            prices["GN"] = faredata.fare_GN*numadults
-            if prices[route["full"][0]["priceClass"]]==0:
-                return False
-            route["full"][0]["price"]=prices[route["full"][0]["priceClass"]]
-            return True
+        # Process(target=getfarefortrainandpersist, args=(trainnumber, sourcestationcode, destinationstationcode, logger)).start()
+        # if not faredata:
+        return False
+        # else:
+        #     prices["1A"] = faredata.fare_1A*numadults
+        #     prices["2A"] = faredata.fare_2A*numadults
+        #     prices["3A"] = faredata.fare_3A*numadults
+        #     prices["3E"] = faredata.fare_3E*numadults
+        #     prices["FC"] = faredata.fare_FC*numadults
+        #     prices["CC"] = faredata.fare_CC*numadults
+        #     prices["SL"] = faredata.fare_SL*numadults
+        #     prices["2S"] = faredata.fare_2S*numadults
+        #     prices["GN"] = faredata.fare_GN*numadults
+        #     if prices[route["full"][0]["priceClass"]] == 0:
+        #         return False
+        #     route["full"][0]["price"]=prices[route["full"][0]["priceClass"]]
+        #     return True
+
     return True
+
+
+def faredataresult(faredata):
+    print faredata

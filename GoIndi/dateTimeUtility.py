@@ -63,7 +63,7 @@ def getWaitingTime(arrival,departure,arrivalDate,departureDate):
 
 
 
-def checkIfApplicable(arrivalTime,arrivalDate,depTime,depDate,bufferHrs):
+def checkIfApplicable(arrivalTime,arrivalDate,depTime,depDate,minbufferhrs):
     dateDic = getDateArray(arrivalDate)
     arrivalDay = datetime.date(dateDic["year"], dateDic["month"], dateDic["day"])
     dateDic = getDateArray(depDate)
@@ -71,8 +71,8 @@ def checkIfApplicable(arrivalTime,arrivalDate,depTime,depDate,bufferHrs):
     depHr = int(depTime.split(":")[0])
     depMin = int(depTime.split(":")[1])
     arrHr = int(arrivalTime.split(":")[0])
-    finalArrHr = (arrHr + bufferHrs) % 24
-    arrDayCarry = (arrHr + bufferHrs) // 24
+    finalArrHr = (arrHr + minbufferhrs) % 24
+    arrDayCarry = (arrHr + minbufferhrs) // 24
     arrMin = int(arrivalTime.split(":")[1])
     if arrDayCarry>0:
         arrivalDay = arrivalDay + datetime.timedelta(days=arrDayCarry)
@@ -133,25 +133,48 @@ def gettotalduration(arrivaltime, departuretime, arrivaldate, departuredate):
     :param arrivaltime: arrival time at destination station
     :param departuretime: departure from source station station
     :param arrivaldate: date on arrival
-    :param departuredate: date o departure
+    :param departuredate: date on departure
     :return: duration of journey
     """
 
     arrivaltime = datetime.datetime.strptime(arrivaldate + ", " + arrivaltime, '%d-%m-%Y, %H:%M')
     departuretime = datetime.datetime.strptime(departuredate + ", " + departuretime, '%d-%m-%Y, %H:%M')
-    diff =relativedelta.relativedelta(arrivaltime, departuretime)
+    diff = relativedelta.relativedelta(arrivaltime, departuretime)
     return str(diff.days * 24 + diff.hours) + ":" + str(diff.minutes)
 
 
 def gettimedifference(arrivaltime, departuretime, arrivaldate, departuredate):
 
     """
-    To calculate waiting time between train
-    :param arrivaltime:
-    :param departuretime:
-    :param arrivaldate:
-    :param departuredate:
-    :return:
+    To calculate waiting time between 2 trains
+    :param arrivaltime: arrival time on station
+    :param departuretime: departure time from station
+    :param arrivaldate: arrival date on station
+    :param departuredate: departure date from station
+    :return: time difference between departure and arrival
     """
-    return
+    arrivaltime = datetime.datetime.strptime(arrivaldate + ", " + arrivaltime, '%d-%m-%Y, %H:%M')
+    departuretime = datetime.datetime.strptime(departuredate + ", " + departuretime, '%d-%m-%Y, %H:%M')
+    diff = relativedelta.relativedelta(departuretime, arrivaltime)
+    return str(diff.days * 24 + diff.hours) + ":" + str(diff.minutes)
 
+
+def isjourneypossible(arrivaltime, departuretime, arrivaldate, departuredate, minbuffer, maxbuffer):
+
+    """
+    To check whether combine journey is feasible or not. For feasible journey total difference between arrival & departure must be within min & max buffer
+    :param arrivaltime: arrival at breaking station
+    :param departuretime: departure from breaking station
+    :param arrivaldate: arrival date on breaking station
+    :param departuredate: departure date from breaking station
+    :param minbuffer: min time differnece between 2 parts of journey
+    :param maxbuffer: max time difference between 2 parts of journey
+    :return: True if journey if feasible else False
+    """
+
+    timediff = gettimedifference(arrivaltime, departuretime, arrivaldate, departuredate)
+    hourdiff = int(timediff.split(':', 1)[0])
+    if hourdiff >= minbuffer and hourdiff <= maxbuffer:
+        return True
+    else:
+        return False

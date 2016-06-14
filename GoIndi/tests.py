@@ -1,6 +1,9 @@
 # from django.test import TestCase
-import models
-models.testquery()
+from multiprocessing import Pool
+import threading, time
+import dateTimeUtility
+#import models
+#models.testquery()
 # Create your tests here.
 #import trainapiNeo4j
 # filename = "C:/Users/Ankit Kumar/Downloads/11073_routes.txt"
@@ -56,3 +59,29 @@ models.testquery()
 #     print H
 #
 # readConfig()
+
+# def f(x):
+#     print 'started'
+#     time.sleep(5)
+#     return x*x
+
+# def z():
+#     thread = threading.Thread(target=f(5))
+#     thread.setDaemon(False)
+#     thread.start()
+#     time.sleep(3)
+#     print 'called thread'
+
+# def c(x):
+#     print 'callback'
+#     print x
+
+# if __name__ == '__main__':
+#     pool = Pool(processes=1)
+#     result = pool.apply_async(f, [2], callback=c)
+#     pool.close()
+#     pool.join()
+#     print 'done'
+
+
+dateTimeUtility.isjourneypossible('04:35', '09:12','16-02-2016','14-02-2016', 3, 12)

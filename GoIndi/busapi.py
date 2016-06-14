@@ -8,7 +8,7 @@ import loggerUtil
 import logging
 import TravelPlanner.trainUtil
 
-logger = loggerUtil.getLogger("BusApi",logging.DEBUG)
+logger = loggerUtil.getLogger("BusApi",logging.WARNING)
 
 
 class BusController:

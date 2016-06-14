@@ -105,7 +105,7 @@ def getbreakingcities(source, destination, epoch, logger):
     try:
         jsontransitroute = urllib.urlopen(url).read()
     except Exception as e:
-        logger.error("Error in getting breaking station between source[%s] and destination[%s], reson [%s]", source, destination, e.message)
+        logger.error("Error in getting breaking station between source[%s] and destination[%s], reason [%s]", source, destination, e.message)
         return jsontransitroute
 
     return parseTransitRoutes(jsontransitroute,destination, logger)

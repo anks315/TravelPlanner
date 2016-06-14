@@ -22,7 +22,7 @@ today = datetime.date.today().strftime("%Y-%m-%d")
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
 bigcities = Set(['NEW DELHI', 'MUMBAI', 'BANGALORE', 'KOLKATA', 'HYDERABAD', 'CHENNAI', 'JAIPUR', 'AHMEDABAD', 'BHOPAL', 'LUCKNOW', 'PATNA', 'CHANDIGARH', 'PUNE', 'DELHI', 'AGRA', 'LUDHIANA', 'SURAT', 'KANPUR', 'NAGPUR', 'VISHAKHAPATNAM', 'INDORE', 'THANE','COIMBATORE', 'VADODARA', 'MADURAI', 'VARANASI', 'AMRITSAR', 'ALLAHABAD','KOTA', 'GUWAHATI', 'SOLAPUR', 'TRIVANDRUM'])
 
-logger = loggerUtil.getLogger("TrainApi", logging.DEBUG)
+logger = loggerUtil.getLogger("TrainApi", logging.WARNING)
 
 def convertspartstofulljson(part_1, part_2):
     """
@@ -139,10 +139,10 @@ class TrainController:
         resultjsondata = {"train": []}
         for possiblesrctobreakroute in sourcetobreakingstationjson["train"]:
             for possiblebreaktodestroute in breakingtodestinationjson["train"]:
-                if dateTimeUtility.checkIfApplicable(possiblesrctobreakroute["parts"][0]["arrival"],
-                                                     possiblesrctobreakroute["parts"][0]["arrivalDate"],
+                if dateTimeUtility.isjourneypossible(possiblesrctobreakroute["parts"][0]["arrival"],
                                                      possiblebreaktodestroute["parts"][0]["departure"],
-                                                     possiblebreaktodestroute["parts"][0]["departureDate"], 3):
+                                                     possiblesrctobreakroute["parts"][0]["arrivalDate"],
+                                                     possiblebreaktodestroute["parts"][0]["departureDate"], 3, 24):
                     combinedjson = convertspartstofulljson(possiblesrctobreakroute, possiblebreaktodestroute)
                     resultjsondata["train"].append(combinedjson)
         return resultjsondata
@@ -350,7 +350,7 @@ class TrainController:
             subparts = []
             for k in range(len(sourcetobreakingbusjson["bus"])):
                 subpart = sourcetobreakingbusjson["bus"][k]["parts"][0]
-                if dateTimeUtility.checkIfApplicable(subpart["arrival"], subpart["arrivalDate"], trainpart["departure"],trainpart["departureDate"], 3):
+                if dateTimeUtility.isjourneypossible(subpart["arrival"], trainpart["departure"], subpart["arrivalDate"], trainpart["departureDate"], 3, 24):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"], trainpart["departure"],subpart["arrivalDate"],trainpart["departureDate"])
                     subparts.append(subpart)
 
@@ -391,7 +391,7 @@ class TrainController:
             subparts = []
             for k in range(len(breakingtodestinationbusjson["bus"])):
                 subpart = breakingtodestinationbusjson["bus"][k]["parts"][0]
-                if dateTimeUtility.checkIfApplicable(trainpart["arrival"], trainpart["arrivalDate"],subpart["departure"], subpart["departureDate"], 3):
+                if dateTimeUtility.isjourneypossible(trainpart["arrival"], subpart["departure"], trainpart["arrivalDate"], subpart["departureDate"], 3, 24):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(trainpart["arrival"], subpart["departure"],trainpart["arrivalDate"],subpart["departureDate"])
                     subparts.append(subpart)
 
