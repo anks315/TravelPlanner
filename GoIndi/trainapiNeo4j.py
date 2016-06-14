@@ -36,7 +36,7 @@ def convertspartstofulljson(part_1, part_2):
     try:
         duration = dateTimeUtility.gettotalduration(part_2["full"][0]["arrival"],part_1["full"][0]["departure"],part_2["full"][0]["arrivalDate"],part_1["full"][0]["departureDate"])
         price = part_1["full"][0]["price"] + part_2["full"][0]["price"]
-        part = {"carrierName": "Train","duration": duration, "id": part_1["full"][0]["id"] + str(1), "mode": "train", "site": "IRCTC", "source": part_1["full"][0]["source"],
+        part = {"carrierName": "Train","duration": duration, "id": part_1["full"][0]["id"] +  "_" +part_2["full"][0]["id"] + str(1), "mode": "train", "site": "IRCTC", "source": part_1["full"][0]["source"],
                 "destination": part_2["full"][0]["destination"], "arrival": part_2["full"][0]["arrival"], "departure": part_1["full"][0]["departure"], "departureDate": part_1["full"][0]["departureDate"],
                 "arrivalDate": part_2["full"][0]["arrivalDate"], "route" : part_1["full"][0]["source"] + ",train," + part_2["full"][0]["destination"],
                 "prices": {"1A": part_1["full"][0]["prices"]["1A"] + part_2["full"][0]["prices"]["1A"],
@@ -56,7 +56,7 @@ def convertspartstofulljson(part_1, part_2):
         part["subParts"][1]["id"] = part["id"] + str(2)
         route["parts"].append(part)
         route["full"] = []
-        full = {"id": part_1["full"][0]["id"], "minPrice": price, "maxPrice": price, "minDuration": duration, "maxDuration": duration, "minArrival": part_2["full"][0]["arrival"],"maxArrival": part_2["full"][0]["arrival"],
+        full = {"id": part_1["full"][0]["id"]+ "_" +part_2["full"][0]["id"], "minPrice": price, "maxPrice": price, "minDuration": duration, "maxDuration": duration, "minArrival": part_2["full"][0]["arrival"],"maxArrival": part_2["full"][0]["arrival"],
                 "minDeparture": part_1["full"][0]["departure"], "maxDeparture": part_1["full"][0]["departure"], "route": part["route"], "duration":duration, "price":price}
         route["full"].append(full)
     except Exception as e:
@@ -209,10 +209,12 @@ class TrainController:
             breakingcityset = (self.getbreakingcityset(breakingcitieslist))
             logger.info("Breaking cities between source [%s] to destination [%s] are [%s]", source, destination, breakingcityset)
             if len(breakingcityset) > 0:
+                traincounter=[1]
                 for breakingcity in breakingcityset:
+                    traincounter[0]=traincounter[0]+1
                     if breakingcity != TravelPlanner.trainUtil.gettraincity(source) and breakingcity != TravelPlanner.trainUtil.gettraincity(destination):
                         logger.info("Getting train journey from source [%s] to destination [%s] via breaking city [%s]", source, destination, breakingcity)
-                        TravelPlanner.trainUtil.trainexecutor.submit(self.fetchtraindatafrombreakingcities(breakingcity, destination, destinationstationset, journeydate, source, directjson,priceclass,numberofadults))
+                        TravelPlanner.trainUtil.trainexecutor.submit(self.fetchtraindatafrombreakingcities(breakingcity, destination, destinationstationset, journeydate, source, directjson,priceclass,numberofadults,traincounter))
 
         if len(breakingcitieslist) == 0 or len(breakingcityset) == 0:
             try:
@@ -245,10 +247,11 @@ class TrainController:
                     return directjson
                 else:
                     breakingcityset.add(breakingcity)
-
+                traincounter=[1]
                 for breakingcity in breakingcityset:
+                    traincounter[0]=traincounter[0]+ 1
                     logger.info("Getting train journey from source [%s] to destination [%s] via breaking city [%s]", source, destination, breakingcity)
-                    TravelPlanner.trainUtil.trainexecutor.submit(self.fetchtraindatafrombreakingcities(breakingcity.upper(), destination, destinationstationset, journeydate,source, directjson,priceclass,numberofadults))
+                    TravelPlanner.trainUtil.trainexecutor.submit(self.fetchtraindatafrombreakingcities(breakingcity.upper(), destination, destinationstationset, journeydate,source, directjson,priceclass,numberofadults,traincounter))
             except Exception as e:
                 logger.error("Error in fetching longitude and latitude for [%s], reason [%s]", source, e.message)
 
@@ -257,7 +260,7 @@ class TrainController:
         return directjson
 
 
-    def fetchtraindatafrombreakingcities(self, breakingcity, destination, destinationstationset, journeydate, source, directjson, priceclass, numberffadults):
+    def fetchtraindatafrombreakingcities(self, breakingcity, destination, destinationstationset, journeydate, source, directjson, priceclass, numberffadults,traincounter):
         """
 
         :param breakingcity: city from where journey needs to be broken
@@ -271,7 +274,7 @@ class TrainController:
         breakingcitystationset = self.placetostationcodescache.getstationsbycityname(breakingcity)
         if (len(breakingcitystationset)) != 0:
             # only call for train if breaking city has train stations
-            sourcetobreakingstationjson = self.findtrainsbetweenstations(TravelPlanner.trainUtil.gettraincity(source), breakingcitystationset, journeydate, "train1", TravelPlanner.trainUtil.gettraincity(breakingcity),priceclass,numberffadults)
+            sourcetobreakingstationjson = self.findtrainsbetweenstations(TravelPlanner.trainUtil.gettraincity(source), breakingcitystationset, journeydate, "train"+str(traincounter[0]), TravelPlanner.trainUtil.gettraincity(breakingcity),priceclass,numberffadults)
         else:
             logger.warning("Breaking city [%s] has no train stations", breakingcity)
             sourcetobreakingstationjson = {"train": []}
@@ -284,7 +287,7 @@ class TrainController:
 
             if (len(destinationstationset)) != 0:
                 # only call for train if breaking city has train stations
-                breakingtodestinationjson = self.findtrainsbetweenstations(TravelPlanner.trainUtil.gettraincity(breakingcity), destinationstationset,journeydate, "train2", TravelPlanner.trainUtil.gettraincity(destination),priceclass,numberffadults, nextday=True)
+                breakingtodestinationjson = self.findtrainsbetweenstations(TravelPlanner.trainUtil.gettraincity(breakingcity), destinationstationset,journeydate, "train"+str(traincounter[0])+str(traincounter[0]), TravelPlanner.trainUtil.gettraincity(destination),priceclass,numberffadults, nextday=True)
             else:
                 breakingtodestinationjson = {"train": []}
 
