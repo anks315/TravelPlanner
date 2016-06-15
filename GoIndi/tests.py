@@ -1,11 +1,13 @@
 # from django.test import TestCase
-from multiprocessing import Pool
-import threading, time
-import dateTimeUtility
-#import models
+# from multiprocessing import Pool
+# import threading, time
+# import dateTimeUtility
+# import models
+import trainDBscript
+trainDBscript.readfromlogfile();
 #models.testquery()
 # Create your tests here.
-#import trainapiNeo4j
+# import trainapiNeo4j
 # filename = "C:/Users/Ankit Kumar/Downloads/11073_routes.txt"
 #
 #
@@ -84,4 +86,4 @@ import dateTimeUtility
 #     print 'done'
 
 
-dateTimeUtility.isjourneypossible('04:35', '09:12','16-02-2016','14-02-2016', 3, 12)
+#dateTimeUtility.isjourneypossible('04:35', '09:12','16-02-2016','14-02-2016', 3, 12)

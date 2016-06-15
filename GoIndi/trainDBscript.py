@@ -25,6 +25,7 @@ For all combinations of stations :
 """
 
 filename = "C:/Users/Ankit Kumar/Downloads/tmp.txt"
+logfilename = "C:\\Users\\Hello\\PycharmProjects\\TravelPlanner\\2016-06-15.log"
 today = datetime.date.today().strftime("%Y-%m-%d")
 
 logger = logging.getLogger("TravelPlanner.Train.DBSCRIPT")
@@ -224,5 +225,44 @@ def read():
 
 
 def readfromlogfile():
+    f = open(logfilename)
+    print logfilename
+    lines = f.read().splitlines()
+    f.close()
+    for line in lines:
+        if 'Response Error Getting Fare Data for TrainNumber' in line:
+            i = str(line).find('[')
+            if i < 0:
+                continue
+            else:
+                line = line[i:]
+                j = line.find(']')
+                if j < 0:
+                    continue
+                else:
+                    trainnumber = line[1:j]
+                    line = line[j:]
+                    k = line.find('[')
+                    if k < 0:
+                        continue
+                    else:
+                        line = line[k:]
+                        l = line.find(']')
+                        if l < 0:
+                            continue
+                        else:
+                            source = line[1:l]
+                            line = line[l:]
+                            m = line.find('[')
+                            if m < 0:
+                                continue
+                            else:
+                                line = line[m:]
+                                n = line.find(']')
+                                if n < 0:
+                                    continue
+                                else:
+                                    destination = line[1:n]
+                                    # getTrainFare(source)
     pass
 
