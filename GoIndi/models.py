@@ -226,7 +226,7 @@ def addstationtotrainmapping(relationinformation):
 
 
 def addStationToRouteMapping(relationInformation):
-    q = """MATCH (a:TRAINSTATION),(b:TRAIN) WHERE a.CODE = '""" + relationInformation.sourceStationCode + """' AND b.NUMBER = '""" + relationInformation.trainNumber + """' CREATE (a)-[r:""" + relationInformation.destinationStationCode
+    q = """MATCH (a:TRAINSTATION),(b:TRAIN) WHERE a.CODE = '""" + relationInformation.sourceStationCode + """' AND b.NUMBER = '""" + relationInformation.trainNumber + """' MERGE (a)-[r:""" + relationInformation.destinationStationCode
     q = q + """ {SOURCEDEPARTURETIME: '""" + relationInformation.sourceDepartureTime
     q = q + """' ,DESTINATIONARRIVALTIME:'""" + relationInformation.destinationArrivalTime
     q = q + """' ,SOURCEDAYNUMBER:""" + str(relationInformation.sourceDayNumber)

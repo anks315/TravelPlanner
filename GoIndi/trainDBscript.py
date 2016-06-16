@@ -25,21 +25,21 @@ For all combinations of stations :
 """
 
 filename = "C:/Users/Ankit Kumar/Downloads/tmp.txt"
-logfilename = "C:\\Users\\Hello\\PycharmProjects\\TravelPlanner\\2016-06-15.log"
+logfilename = "C:/Users/Hello/Downloads/DBSCRIPT_2016-05-18.log"
 today = datetime.date.today().strftime("%Y-%m-%d")
 
 logger = logging.getLogger("TravelPlanner.Train.DBSCRIPT")
-#fileHandler = logging.FileHandler('/home/ankur/Downloads/DBSCRIPT_' + today +'.log')
+fileHandler = logging.FileHandler('C:\Users\Hello\Downloads\DBSCRIPT_' + today +'.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-#fileHandler.setFormatter(formatter)
-#logger.addHandler(fileHandler)
+fileHandler.setFormatter(formatter)
+logger.addHandler(fileHandler)
 logger.setLevel(logging.INFO)
 
 jsonLogger = logging.getLogger("DBSCRIPTJSON")
-#jsonfileHandler = logging.FileHandler('/home/ankur/Downloads/DBSCRIPTJSON_'+today+'.log')
+jsonfileHandler = logging.FileHandler('C:\Users\Hello\Downloads\DBSCRIPTJSON_'+today+'.log')
 jsonformatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-#jsonfileHandler.setFormatter(jsonformatter)
-#jsonLogger.addHandler(jsonfileHandler)
+jsonfileHandler.setFormatter(jsonformatter)
+jsonLogger.addHandler(jsonfileHandler)
 jsonLogger.setLevel(logging.INFO)
 
 
@@ -108,6 +108,23 @@ def parseTrainRoute(jsonData):
                 stationInformation["day"]=route["day"]
                 stationInformation["name"]=route["fullname"]
                 trainStations.append(stationInformation)
+
+    return  trainStations
+
+
+def parseTrainRouteAsMap(jsonData):
+    if not jsonData:
+        return []
+    returnedData = json.loads(jsonData)
+    jsonLogger.info("Route Data[%s] *** ",returnedData)
+    trainStations = {}
+
+    if returnedData["response_code"]==200:
+
+        for route in returnedData["route"]:
+                stationInformation= {"code": route["code"], "arrivalTime": route["scharr"],
+                                     "departureTime": route["schdep"], "day": route["day"], "name": route["fullname"]}
+                trainStations[route["code"]] = stationInformation
 
     return  trainStations
 
@@ -229,8 +246,15 @@ def readfromlogfile():
     print logfilename
     lines = f.read().splitlines()
     f.close()
+    return lines
+
+
+def fetchnonexitingfaredata():
+    # We can use a with statement to ensure threads are cleaned up promptly
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=8)
+    lines = readfromlogfile()
     for line in lines:
-        if 'Response Error Getting Fare Data for TrainNumber' in line:
+        if 'Error Getting Fare Data for TrainNumber' in line:
             i = str(line).find('[')
             if i < 0:
                 continue
@@ -263,6 +287,18 @@ def readfromlogfile():
                                     continue
                                 else:
                                     destination = line[1:n]
-                                    # getTrainFare(source)
-    pass
-
+                                    """ Get Route of Train"""
+                                    logger.info("Fetching data for TrainNumber[%s]",trainnumber)
+                                    jsonResponseTrainRoute=""
+                                    try:
+                                        jsonResponseTrainRoute = urllib.urlopen("http://api.railwayapi.com/route/train/" + trainnumber + "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
+                                    except:
+                                        logger.error("Connection Error Getting Train Route  for TrainNumber[%s]",trainnumber)
+                                    routeStations=parseTrainRouteAsMap(jsonResponseTrainRoute)
+                                    if len(routeStations)==0:
+                                        logger.error("Response Error Getting Train Route  for TrainNumber[%s]",trainnumber)
+                                    else:
+                                        logger.info("Route Data Fetch Success for TrainNumber[%s], No of Routes[%s].",trainnumber, len(routeStations))
+                                    index=0
+                                    # Start the load operations and mark each future with its URL
+                                    executor.submit(getTrainFare(source,destination,trainnumber, routeStations[source],routeStations[destination]))

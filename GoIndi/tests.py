@@ -4,7 +4,7 @@
 # import dateTimeUtility
 # import models
 import trainDBscript
-trainDBscript.readfromlogfile();
+trainDBscript.fetchnonexitingfaredata();
 #models.testquery()
 # Create your tests here.
 # import trainapiNeo4j
