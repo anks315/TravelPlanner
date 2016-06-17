@@ -225,12 +225,29 @@ def addstationtotrainmapping(relationinformation):
     pass
 
 
-def addStationToRouteMapping(relationInformation):
-    q = """MATCH (a:TRAINSTATION),(b:TRAIN) WHERE a.CODE = '""" + relationInformation.sourceStationCode + """' AND b.NUMBER = '""" + relationInformation.trainNumber + """' MERGE (a)-[r:""" + relationInformation.destinationStationCode
-    q = q + """ {SOURCEDEPARTURETIME: '""" + relationInformation.sourceDepartureTime
-    q = q + """' ,DESTINATIONARRIVALTIME:'""" + relationInformation.destinationArrivalTime
-    q = q + """' ,SOURCEDAYNUMBER:""" + str(relationInformation.sourceDayNumber)
-    q = q + """ ,DESTINATIONDAYNUMBER:""" + str(relationInformation.destinationDayNumber) + """}]->(b) RETURN r"""
+def addstationtofaremapping(relationinformation):
+
+    q = """MATCH (a:TRAINSTATION {CODE : '""" + relationinformation.sourceStationCode + """'})-[r:""" + relationinformation.destinationStationCode + """]->(b:TRAIN {NUMBER: '""" + relationinformation.trainNumber + """'}) SET r.FARE_1A=""" + str(relationinformation.fare_1A)
+    q = q + """ ,r.FARE_2A = """ + str(relationinformation.fare_2A)
+    q = q + """ ,r.FARE_3A = """ + str(relationinformation.fare_3A)
+    q = q + """ ,r.FARE_SL = """ + str(relationinformation.fare_SL)
+    q = q + """ ,r.FARE_2S = """ + str(relationinformation.fare_2S)
+    q = q + """ ,r.FARE_CC = """ + str(relationinformation.fare_CC)
+    q = q + """ ,r.FARE_FC = """ + str(relationinformation.fare_FC)
+    q = q + """ ,r.FARE_3E = """ + str(relationinformation.fare_3E)
+    q = q + """ ,r.FARE_GN = """ + str(relationinformation.fare_GN)
+    print q
+    DATABASE_CONNECTION.query(q)
+    pass
+
+
+def addstationtoroutemapping(relationinformation):
+    q = """MATCH (a:TRAINSTATION),(b:TRAIN) WHERE a.CODE = '""" + relationinformation.sourceStationCode + """' AND b.NUMBER = '""" + relationinformation.trainNumber + """' MERGE (a)-[r:""" + relationinformation.destinationStationCode
+    q = q + """ {SOURCEDEPARTURETIME: '""" + relationinformation.sourceDepartureTime
+    q = q + """' ,DESTINATIONARRIVALTIME:'""" + relationinformation.destinationArrivalTime
+    q = q + """' ,SOURCEDAYNUMBER:""" + str(relationinformation.sourceDayNumber)
+    q = q + """ ,DESTINATIONDAYNUMBER:""" + str(relationinformation.destinationDayNumber) + """}]->(b) RETURN r"""
+    print q
     DATABASE_CONNECTION.query(q)
     pass
 

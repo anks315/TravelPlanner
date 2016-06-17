@@ -1,6 +1,3 @@
-from _ast import mod
-from argparse import _StoreTrueAction
-
 __author__ = 'ankur'
 
 import urllib
@@ -8,8 +5,7 @@ import json
 import trainConstants
 import logging
 from entity import StationToTrainRelation
-import models
-import datetime
+import models, datetime, os
 import concurrent.futures
 """
 
@@ -26,6 +22,9 @@ For all combinations of stations :
 
 filename = "C:/Users/Ankit Kumar/Downloads/tmp.txt"
 logfilename = "C:/Users/Hello/Downloads/DBSCRIPT_2016-05-18.log"
+logfiledir = "C:/Users/Hello/Downloads/logs"
+destdir = "C:/Users/Hello/Downloads/done"
+
 today = datetime.date.today().strftime("%Y-%m-%d")
 
 logger = logging.getLogger("TravelPlanner.Train.DBSCRIPT")
@@ -43,7 +42,7 @@ jsonLogger.addHandler(jsonfileHandler)
 jsonLogger.setLevel(logging.INFO)
 
 
-def parseAndReturnFare(jsonData):
+def parseandreturnfare(jsonData):
     route = {}
     if not jsonData:
         return route
@@ -59,35 +58,32 @@ def parseAndReturnFare(jsonData):
     return route
 
 
-
-
-
-
-def getTrainFare(sourceStation,destinationStation,trainNumber,srcStationInformation,destStationInformation):
+def gettrainfare(sourcestation,destinationstation,trainnumber,srcstationinformation,deststationinformation):
 
     try:
-        jsonResponseTrainFare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainNumber + "/source/"+ sourceStation+ "/dest/"+ destinationStation+ "/age/20/quota/GN/doj/"+ '11-06'+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
+        jsonResponseTrainFare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainnumber + "/source/"+ sourcestation+ "/dest/"+ destinationstation+ "/age/20/quota/GN/doj/"+ getfuturedate(20)+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
     except:
-        logger.error("Connection Error Getting Fare Data for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s] ",trainNumber,sourceStation,destinationStation)
+        logger.error("Connection Error Getting Fare Data for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s] ",trainnumber,sourcestation,destinationstation)
         return
-    fareData=parseAndReturnFare(jsonResponseTrainFare)
-    if not fareData:
-        logger.error("Response Error Getting Fare Data for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s] ",trainNumber,sourceStation,destinationStation)
-        logger.info("Adding route relation without fare for TrainNumber[%s]", trainNumber)
-        routeInformationToCommit = consolidateRouteDataToUpdate(srcStationInformation,destStationInformation,trainNumber)
+    faredata = parseandreturnfare(jsonResponseTrainFare)
+    if not faredata:
+        logger.error("Response Error Getting Fare Data for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s] ",trainnumber,sourcestation,destinationstation)
+        logger.debug("Adding route relation without fare for TrainNumber[%s]", trainnumber)
+        routeinformationtocommit = consolidateroutedatatoupdate(srcstationinformation,deststationinformation,trainnumber)
         try:
-            models.addStationToRouteMapping(routeInformationToCommit)
+            models.addstationtoroutemapping(routeinformationtocommit)
         except:
-            logger.info("DB Error for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]. Failed to commit route information",trainNumber,sourceStation,destinationStation)
+            logger.error("DB Error for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]. Failed to commit route information",trainnumber,sourcestation,destinationstation)
         return
     else:
-        logger.info("Fare Data Fetch Success for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]",trainNumber,sourceStation,destinationStation)
-    finalInformationToCommit=consolidateRelationDatatoUpdate(srcStationInformation,destStationInformation,fareData,trainNumber)
+        logger.debug("Fare Data Fetch Success for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]",trainnumber,sourcestation,destinationstation)
+    finalinformationtocommit = consolidaterelationdatatoupdate(srcstationinformation,deststationinformation,faredata,trainnumber)
     """call database to create relation between src station to train with relation as trainNumber """
     try:
-        models.addstationtotrainmapping(finalInformationToCommit)
+        models.addstationtoroutemapping(finalinformationtocommit)
+        models.addstationtofaremapping(finalinformationtocommit)
     except:
-        logger.info("DB Error for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]. Failed to commit fare information",trainNumber,sourceStation,destinationStation)
+        logger.error("DB Error for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s]. Failed to commit fare information",trainnumber,sourcestation,destinationstation)
 
 
 
@@ -161,8 +157,8 @@ def parseAndPopulateTrainRunningDates(jsonData, trainNumber):
 
 
 
-def consolidateRelationDatatoUpdate(srcStationInformation,destStationInformation,fareInformation,trainNumber):
-        relation = consolidateRouteDataToUpdate(srcStationInformation, destStationInformation, trainNumber)
+def consolidaterelationdatatoupdate(srcStationInformation,destStationInformation,fareInformation,trainNumber):
+        relation = consolidateroutedatatoupdate(srcStationInformation, destStationInformation, trainNumber)
         for fare in fareInformation:
             if fare["code"]=="1A":
                 relation.fare_1A=fare["fare"]
@@ -186,7 +182,7 @@ def consolidateRelationDatatoUpdate(srcStationInformation,destStationInformation
         return relation
 
 
-def consolidateRouteDataToUpdate (srcStationInformation, destStationInformation, trainNumber):
+def consolidateroutedatatoupdate (srcStationInformation, destStationInformation, trainNumber):
 
     relation = StationToTrainRelation
     relation.destinationArrivalTime=destStationInformation["arrivalTime"]
@@ -205,20 +201,20 @@ def consolidateRouteDataToUpdate (srcStationInformation, destStationInformation,
 def main():
     lines = read();
     for line in lines:
-        trainNumber, trainName =line.split(",",1)
+        trainnumber, trainname =line.split(",",1)
         """ Get Route of Train"""
-        logger.info("Fetching data for TrainNumber[%s]",trainNumber)
+        logger.info("Fetching data for TrainNumber[%s]",trainnumber)
         jsonResponseTrainRoute=""
         try:
-            jsonResponseTrainRoute = urllib.urlopen("http://api.railwayapi.com/route/train/" + trainNumber + "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
+            jsonResponseTrainRoute = urllib.urlopen("http://api.railwayapi.com/route/train/" + trainnumber + "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
         except:
-            logger.error("Connection Error Getting Train Route  for TrainNumber[%s]",trainNumber)
-        parseAndPopulateTrainRunningDates(jsonResponseTrainRoute, trainNumber)
+            logger.error("Connection Error Getting Train Route  for TrainNumber[%s]",trainnumber)
+        parseAndPopulateTrainRunningDates(jsonResponseTrainRoute, trainnumber)
         routeStations=parseTrainRoute(jsonResponseTrainRoute)
         if len(routeStations)==0:
-            logger.error("Response Error Getting Train Route  for TrainNumber[%s]",trainNumber)
+            logger.error("Response Error Getting Train Route  for TrainNumber[%s]",trainnumber)
         else:
-            logger.info("Route Data Fetch Success for TrainNumber[%s], No of Routes[%s].",trainNumber, len(routeStations))
+            logger.info("Route Data Fetch Success for TrainNumber[%s], No of Routes[%s].",trainnumber, len(routeStations))
         models.checkroutestationexists(routeStations)
         index=0
         # We can use a with statement to ensure threads are cleaned up promptly
@@ -228,7 +224,7 @@ def main():
             while index < numberOfStations-1:
                 iterator=index+1
                 while iterator <= numberOfStations -1:
-                    executor.submit(getTrainFare(routeStations[index]["code"],routeStations[iterator]["code"],trainNumber, routeStations[index],routeStations[iterator]))
+                    executor.submit(gettrainfare(routeStations[index]["code"],routeStations[iterator]["code"],trainnumber, routeStations[index],routeStations[iterator]))
                     iterator += 1
                 index += 1
 
@@ -241,9 +237,9 @@ def read():
     return line
 
 
-def readfromlogfile():
-    f = open(logfilename)
-    print logfilename
+def readfromlogfile(filename):
+    f = open(filename)
+    print filename
     lines = f.read().splitlines()
     f.close()
     return lines
@@ -252,53 +248,72 @@ def readfromlogfile():
 def fetchnonexitingfaredata():
     # We can use a with statement to ensure threads are cleaned up promptly
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=8)
-    lines = readfromlogfile()
-    for line in lines:
-        if 'Error Getting Fare Data for TrainNumber' in line:
-            i = str(line).find('[')
-            if i < 0:
-                continue
-            else:
-                line = line[i:]
-                j = line.find(']')
-                if j < 0:
-                    continue
-                else:
-                    trainnumber = line[1:j]
-                    line = line[j:]
-                    k = line.find('[')
-                    if k < 0:
+    trainnumbermap = {}
+    for filename in os.listdir(logfiledir):
+        if filename.endswith('.log'):
+            lines = readfromlogfile(logfiledir+'/'+filename)
+            for line in lines:
+                if 'Error Getting Fare Data for TrainNumber' in line:
+                    i = str(line).find('[')
+                    if i < 0:
                         continue
                     else:
-                        line = line[k:]
-                        l = line.find(']')
-                        if l < 0:
+                        line = line[i:]
+                        j = line.find(']')
+                        if j < 0:
                             continue
                         else:
-                            source = line[1:l]
-                            line = line[l:]
-                            m = line.find('[')
-                            if m < 0:
+                            trainnumber = line[1:j]
+                            line = line[j:]
+                            k = line.find('[')
+                            if k < 0:
                                 continue
                             else:
-                                line = line[m:]
-                                n = line.find(']')
-                                if n < 0:
+                                line = line[k:]
+                                l = line.find(']')
+                                if l < 0:
                                     continue
                                 else:
-                                    destination = line[1:n]
-                                    """ Get Route of Train"""
-                                    logger.info("Fetching data for TrainNumber[%s]",trainnumber)
-                                    jsonResponseTrainRoute=""
-                                    try:
-                                        jsonResponseTrainRoute = urllib.urlopen("http://api.railwayapi.com/route/train/" + trainnumber + "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
-                                    except:
-                                        logger.error("Connection Error Getting Train Route  for TrainNumber[%s]",trainnumber)
-                                    routeStations=parseTrainRouteAsMap(jsonResponseTrainRoute)
-                                    if len(routeStations)==0:
-                                        logger.error("Response Error Getting Train Route  for TrainNumber[%s]",trainnumber)
+                                    source = line[1:l]
+                                    line = line[l:]
+                                    m = line.find('[')
+                                    if m < 0:
+                                        continue
                                     else:
-                                        logger.info("Route Data Fetch Success for TrainNumber[%s], No of Routes[%s].",trainnumber, len(routeStations))
-                                    index=0
-                                    # Start the load operations and mark each future with its URL
-                                    executor.submit(getTrainFare(source,destination,trainnumber, routeStations[source],routeStations[destination]))
+                                        line = line[m:]
+                                        n = line.find(']')
+                                        if n < 0:
+                                            continue
+                                        else:
+                                            destination = line[1:n]
+                                            """ Get Route of Train"""
+                                            logger.debug("Fetching data for TrainNumber[%s]",trainnumber)
+                                            if trainnumber in trainnumbermap.keys():
+                                                routeStations = trainnumbermap[trainnumber]
+                                            else:
+                                                try:
+                                                    jsonResponseTrainRoute = urllib.urlopen("http://api.railwayapi.com/route/train/" + trainnumber + "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
+                                                except:
+                                                    logger.error("Connection Error Getting Train Route  for TrainNumber[%s]",trainnumber)
+                                                    continue
+                                                routeStations = parseTrainRouteAsMap(jsonResponseTrainRoute)
+                                                trainnumbermap[trainnumber] = routeStations
+                                            if len(routeStations)==0:
+                                                logger.error("Response Error Getting Train Route  for TrainNumber[%s]",trainnumber)
+                                            else:
+                                                logger.debug("Route Data Fetch Success for TrainNumber[%s], No of Routes[%s].",trainnumber, len(routeStations))
+                                            # Start the load operations and mark each future with its URL
+                                            if source in routeStations.keys() and destination in routeStations.keys():
+                                                executor.submit(gettrainfare(source,destination,trainnumber, routeStations[source],routeStations[destination]))
+            os.rename(logfiledir+'/'+filename, destdir+'/'+filename)
+
+def getfuturedate(futuredays):
+
+    """
+    Get future date after adding no. of days
+    :param futuredays:
+    :return:
+    """
+    today = datetime.date.today()
+    d = (today + datetime.timedelta(days=futuredays)).strftime('%d-%m')
+    return str(d)

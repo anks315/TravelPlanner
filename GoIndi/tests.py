@@ -4,7 +4,9 @@
 # import dateTimeUtility
 # import models
 import trainDBscript
-trainDBscript.fetchnonexitingfaredata();
+import datetime
+import glob, os
+trainDBscript.fetchnonexitingfaredata()
 #models.testquery()
 # Create your tests here.
 # import trainapiNeo4j
@@ -87,3 +89,24 @@ trainDBscript.fetchnonexitingfaredata();
 
 
 #dateTimeUtility.isjourneypossible('04:35', '09:12','16-02-2016','14-02-2016', 3, 12)
+
+path = "C:/Users/Hello/Downloads/logs"
+destpath = "C:/Users/Hello/Downloads/done"
+def test():
+    today = datetime.date.today()
+    d = (today + datetime.timedelta(days=20)).strftime('%d-%m')
+    print str(d)
+
+def readmultiplefiles():
+    for filename in os.listdir(path):
+        if filename.endswith('.log'):
+            lines = open(path + '/' +filename, 'r').read().splitlines()
+            for line in lines:
+                print line
+
+def movefile():
+    for filename in os.listdir(path):
+        if filename.endswith('.log'):
+            os.rename(path+'/'+filename, destpath+'/'+filename)
+
+# readmultiplefiles()
