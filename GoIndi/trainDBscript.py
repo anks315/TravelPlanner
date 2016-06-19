@@ -58,14 +58,14 @@ def parseandreturnfare(jsonData):
     return route
 
 
-def gettrainfare(sourcestation,destinationstation,trainnumber,srcstationinformation,deststationinformation):
+def gettrainfare(sourcestation,destinationstation,trainnumber,srcstationinformation,deststationinformation, runningdate):
 
     try:
-        jsonResponseTrainFare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainnumber + "/source/"+ sourcestation+ "/dest/"+ destinationstation+ "/age/20/quota/GN/doj/"+ getfuturedate(20)+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
+        jsonresponsetrainfare = urllib.urlopen("http://api.railwayapi.com/fare/train/" + trainnumber + "/source/"+ sourcestation+ "/dest/"+ destinationstation+ "/age/20/quota/GN/doj/"+ getfuturedate(runningdate, int(srcstationinformation["day"]))+ "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
     except:
         logger.error("Connection Error Getting Fare Data for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s] ",trainnumber,sourcestation,destinationstation)
         return
-    faredata = parseandreturnfare(jsonResponseTrainFare)
+    faredata = parseandreturnfare(jsonresponsetrainfare)
     if not faredata:
         logger.error("Response Error Getting Fare Data for TrainNumber[%s] ,SourceStation[%s],DestinationStation[%s] ",trainnumber,sourcestation,destinationstation)
         logger.debug("Adding route relation without fare for TrainNumber[%s]", trainnumber)
@@ -127,12 +127,10 @@ def parseTrainRouteAsMap(jsonData):
 
 def parseAndPopulateTrainRunningDates(jsonData, trainNumber):
     """
-
-
+    To populate train node with running days information
     :rtype : map of days on which train run and doesn't run
-    :param jsonData:
-    :param trainNumber:
-    :return:
+    :param jsonData: train data having running days information
+    :param trainNumber: train number
     """
     if not jsonData:
         logger.error("TrainNumber[%s] doesn't run on any day.", trainNumber)
@@ -155,6 +153,34 @@ def parseAndPopulateTrainRunningDates(jsonData, trainNumber):
 
     models.addRunningDaysToTrain(days, trainNumber)
 
+
+def getnextrunningdate(jsondata):
+
+    """
+    To get next running date of train after one week
+    :param jsondata: train data
+    :return: next runnig date of train after one week from today
+    """
+
+    returneddata = json.loads(jsondata)
+    days = {}
+
+    if returneddata["response_code"]==200:
+        trainData = returneddata["train"]
+        daysData = trainData["days"]
+        if daysData:
+            for day in trainData["days"]:
+                days[day["day-code"]]=day["runs"]
+
+    today = datetime.date.today()
+    nextweekday = (today + datetime.timedelta(days=7))
+
+    for i in range(len(days)):
+        runningdate = (nextweekday + datetime.timedelta(days=i))
+        if models.istrainrunningonjourneydate(days, runningdate):
+            return runningdate
+
+    return nextweekday
 
 
 def consolidaterelationdatatoupdate(srcStationInformation,destStationInformation,fareInformation,trainNumber):
@@ -204,13 +230,14 @@ def main():
         trainnumber, trainname =line.split(",",1)
         """ Get Route of Train"""
         logger.info("Fetching data for TrainNumber[%s]",trainnumber)
-        jsonResponseTrainRoute=""
+        jsonresponsetrainroute=""
         try:
-            jsonResponseTrainRoute = urllib.urlopen("http://api.railwayapi.com/route/train/" + trainnumber + "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
+            jsonresponsetrainroute = urllib.urlopen("http://api.railwayapi.com/route/train/" + trainnumber + "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
         except:
             logger.error("Connection Error Getting Train Route  for TrainNumber[%s]",trainnumber)
-        parseAndPopulateTrainRunningDates(jsonResponseTrainRoute, trainnumber)
-        routeStations=parseTrainRoute(jsonResponseTrainRoute)
+        parseAndPopulateTrainRunningDates(jsonresponsetrainroute, trainnumber)
+        routeStations=parseTrainRoute(jsonresponsetrainroute)
+        runningdate = getnextrunningdate(jsonresponsetrainroute)
         if len(routeStations)==0:
             logger.error("Response Error Getting Train Route  for TrainNumber[%s]",trainnumber)
         else:
@@ -224,7 +251,7 @@ def main():
             while index < numberOfStations-1:
                 iterator=index+1
                 while iterator <= numberOfStations -1:
-                    executor.submit(gettrainfare(routeStations[index]["code"],routeStations[iterator]["code"],trainnumber, routeStations[index],routeStations[iterator]))
+                    executor.submit(gettrainfare(routeStations[index]["code"],routeStations[iterator]["code"],trainnumber, routeStations[index],routeStations[iterator]), runningdate)
                     iterator += 1
                 index += 1
 
@@ -289,31 +316,33 @@ def fetchnonexitingfaredata():
                                             """ Get Route of Train"""
                                             logger.debug("Fetching data for TrainNumber[%s]",trainnumber)
                                             if trainnumber in trainnumbermap.keys():
-                                                routeStations = trainnumbermap[trainnumber]
+                                                routestations = trainnumbermap[trainnumber]
                                             else:
                                                 try:
-                                                    jsonResponseTrainRoute = urllib.urlopen("http://api.railwayapi.com/route/train/" + trainnumber + "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
+                                                    jsonresponsetrainroute = urllib.urlopen("http://api.railwayapi.com/route/train/" + trainnumber + "/apikey/"+trainConstants.ERAILWAYAPI_APIKEY +"/").read()
                                                 except:
                                                     logger.error("Connection Error Getting Train Route  for TrainNumber[%s]",trainnumber)
                                                     continue
-                                                routeStations = parseTrainRouteAsMap(jsonResponseTrainRoute)
-                                                trainnumbermap[trainnumber] = routeStations
-                                            if len(routeStations)==0:
+                                                routestations = parseTrainRouteAsMap(jsonresponsetrainroute)
+                                                trainnumbermap[trainnumber] = routestations
+                                                runningdate = getnextrunningdate(jsonresponsetrainroute)
+                                            if len(routestations)==0:
                                                 logger.error("Response Error Getting Train Route  for TrainNumber[%s]",trainnumber)
                                             else:
-                                                logger.debug("Route Data Fetch Success for TrainNumber[%s], No of Routes[%s].",trainnumber, len(routeStations))
+                                                logger.debug("Route Data Fetch Success for TrainNumber[%s], No of Routes[%s].",trainnumber, len(routestations))
                                             # Start the load operations and mark each future with its URL
-                                            if source in routeStations.keys() and destination in routeStations.keys():
-                                                executor.submit(gettrainfare(source,destination,trainnumber, routeStations[source],routeStations[destination]))
+                                            if source in routestations.keys() and destination in routestations.keys():
+                                                executor.submit(gettrainfare(source,destination,trainnumber, routestations[source],routestations[destination], runningdate))
             os.rename(logfiledir+'/'+filename, destdir+'/'+filename)
 
-def getfuturedate(futuredays):
+
+def getfuturedate(runningdate, futuredays):
 
     """
     Get future date after adding no. of days
-    :param futuredays:
-    :return:
+    :param runningdate next running date from source station of train
+    :param futuredays: no. of days in future
+    :return: running date in future after futuredays from runningdate
     """
-    today = datetime.date.today()
-    d = (today + datetime.timedelta(days=futuredays)).strftime('%d-%m')
+    d = (runningdate + datetime.timedelta(days=(futuredays-1))).strftime('%d-%m')
     return str(d)

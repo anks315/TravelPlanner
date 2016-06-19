@@ -334,6 +334,32 @@ def istrainrunningonjourneydate(train, journeydate, sourcecity, logger):
     return True
 
 
+def getdayabbrevationfromdate(journeydate, diff):
+
+    """
+    this method is used to get day abbrevation of the week(uppercase) on journeydate
+    :param journeydate: date of the journey
+    :param diff: difference in number of days from starting point of train into reaching the station
+    """
+    t = (journeydate - timedelta(days=diff)).weekday()
+    return calendar.day_abbr[t].upper()
+
+def istrainrunningonjourneydate(days, journeydate):
+
+    """
+    Checks whether train runs from given station on particular date or not
+    :param train: train information
+    :param journeydate: date of journey
+    :param sourcecity: source station
+    :param logger: to logger information
+    :return: true if train runs else false
+    """
+    day = getdayabbrevationfromdate(journeydate, 0)
+    if days[day] == 'N':
+        return False
+    return True
+
+
 def isnonduplicatetrain(trainnumberset, trainnumber):
 
     """
