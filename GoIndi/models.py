@@ -90,7 +90,7 @@ def gettrains(results, journeydate, sourcecity, logger, destinationcity, pricecl
 
     trainnumberset = Set()
     for i in range(len(results.elements)):
-        if istrainrunningonjourneydate(results.elements[i], journeydate, sourcecity, logger) and isnonduplicatetrain(trainnumberset, results.elements[i][1]['data']['NUMBER']):
+        if istrainrunningoncurrentdate(results.elements[i], journeydate, sourcecity, logger) and isnonduplicatetrain(trainnumberset, results.elements[i][1]['data']['NUMBER']):
             trainoption = TrainOption()
             trainoption.trainName = results.elements[i][1]['data']['NAME']
             trainoption.trainNumber = results.elements[i][1]['data']['NUMBER']
@@ -314,7 +314,7 @@ def getdayfromdate(journeydate, diff):
     return calendar.day_name[t].upper()
 
 
-def istrainrunningonjourneydate(train, journeydate, sourcecity, logger):
+def istrainrunningoncurrentdate(train, journeydate, sourcecity, logger):
 
     """
     Checks whether train runs from given station on particular date or not

@@ -38,7 +38,7 @@ def convertspartstofulljson(part_1, part_2):
         price = part_1["full"][0]["price"] + part_2["full"][0]["price"]
         part = {"carrierName": "Train","duration": duration, "id": part_1["full"][0]["id"] +  "_" +part_2["full"][0]["id"] + str(1), "mode": "train", "site": "IRCTC", "source": part_1["full"][0]["source"],
                 "destination": part_2["full"][0]["destination"], "arrival": part_2["full"][0]["arrival"], "departure": part_1["full"][0]["departure"], "departureDate": part_1["full"][0]["departureDate"],
-                "arrivalDate": part_2["full"][0]["arrivalDate"], "route" : part_1["full"][0]["source"] + ",train," + part_2["full"][0]["destination"],
+                "arrivalDate": part_2["full"][0]["arrivalDate"], "route" : part_1["full"][0]["source"] + ",train," + part_2["full"][0]["source"] + ",train," + part_2["full"][0]["destination"],
                 "prices": {"1A": part_1["full"][0]["prices"]["1A"] + part_2["full"][0]["prices"]["1A"],
                            "2A": part_1["full"][0]["prices"]["2A"] + part_2["full"][0]["prices"]["2A"],
                            "3A": part_1["full"][0]["prices"]["3A"] + part_2["full"][0]["prices"]["3A"],
