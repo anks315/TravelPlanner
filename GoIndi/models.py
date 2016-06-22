@@ -65,9 +65,11 @@ def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeyda
 
     if nextday:
         nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
+        trains = [] # set train result empty
         gettrains(results,nextdate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains)
         routes.extend(parseandreturnroute(trains, logger, nextdate, trainrouteid))
         nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=2)).strftime('%d-%m-%Y')
+        trains = []
         gettrains(results,nextdate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains)
         routes.extend(parseandreturnroute(trains, logger, nextdate, trainrouteid))
 
