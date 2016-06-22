@@ -14,7 +14,7 @@ import loggerUtil
 import TravelPlanner.trainUtil
 
 
-logger = loggerUtil.getLogger("FlightApi",logging.DEBUG)
+logger = loggerUtil.getLogger("FlightApi",logging.WARNING)
 
 
 class FlightController:
@@ -190,7 +190,7 @@ class FlightController:
                 subpart = otherModesInit[k]["parts"][0]
                 if dateTimeUtility.checkIfApplicable(subpart["arrival"], subpart["arrivalDate"],flightpart["departure"], flightpart["departureDate"], 3):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"],flightpart["departure"],subpart["arrivalDate"],flightpart["departureDate"])
-                    subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(flightpart["departure"], subpart["departure"], flightpart["departureDate"], subpart["departureDate"])
+                    subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(dateTimeUtility.convertflighttime(flightpart["departure"]), subpart["departure"], flightpart["departureDate"], subpart["departureDate"])
                     subparts.append(subpart)
             if len(subparts) > 5:
                 subparts.sort(miscUtility.sortonsubjourneytime)
@@ -210,7 +210,7 @@ class FlightController:
                 subpart = otherModesEnd[k]["parts"][0]
                 if dateTimeUtility.checkIfApplicable(flightpart["arrival"], flightpart["arrivalDate"],subpart["departure"], subpart["departureDate"], 3):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(flightpart["arrival"], subpart["departure"],flightpart["arrivalDate"],subpart["departureDate"])
-                    subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(subpart["arrival"], flightpart["arrival"], subpart["arrivalDate"], flightpart["arrivalDate"])
+                    subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(subpart["arrival"], dateTimeUtility.convertflighttime(flightpart["arrival"]), subpart["arrivalDate"], flightpart["arrivalDate"])
                     subparts.append(subpart)
             if len(subparts) > 5:
                 subparts.sort(miscUtility.sortonsubjourneytime)
@@ -249,7 +249,7 @@ class FlightController:
                 subpart = otherModesEnd[k]["parts"][0]
                 if dateTimeUtility.checkIfApplicable(flightpart["arrival"],flightpart["arrivalDate"],subpart["departure"],subpart["departureDate"],3):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(flightpart["arrival"],subpart["departure"],flightpart["arrivalDate"],subpart["departureDate"])
-                    subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(subpart["arrival"], flightpart["arrival"], subpart["arrivalDate"], flightpart["arrivalDate"])
+                    subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(subpart["arrival"], dateTimeUtility.convertflighttime(flightpart["arrival"]), subpart["arrivalDate"], flightpart["arrivalDate"])
                     subparts.append(subpart)
             if len(subparts) > 5:
                 subparts.sort(miscUtility.sortonsubjourneytime)
@@ -284,7 +284,7 @@ class FlightController:
                 subpart = otherModesInit[k]["parts"][0]
                 if dateTimeUtility.checkIfApplicable(subpart["arrival"], subpart["arrivalDate"],flightpart["departure"], flightpart["departureDate"], 3):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"], flightpart["departure"],subpart["arrivalDate"],flightpart["departureDate"])
-                    subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(flightpart["departure"], subpart["departure"], flightpart["departureDate"], subpart["departureDate"])
+                    subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(dateTimeUtility.convertflighttime(flightpart["departure"]), subpart["departure"], flightpart["departureDate"], subpart["departureDate"])
                     subparts.append(subpart)
 
             if len(subparts) > 5:

@@ -35,9 +35,7 @@ def calculateArrivalTimeAndDate(depDate,depTime,duration):
     if dayCarry>0:
         newDay = theday + datetime.timedelta(days=dayCarry)
         arrivalDate = newDay.strftime('%d-%m-%Y')
-    result = {}
-    result["arrivalTime"]=str(arrHr)+":"+str(arrMin)
-    result["arrivalDate"]=arrivalDate
+    result = {"arrivalTime": str(arrHr) + ":" + str(arrMin), "arrivalDate": arrivalDate}
     return result
 
 def getWaitingTime(arrival,departure,arrivalDate,departureDate):
@@ -174,7 +172,20 @@ def isjourneypossible(arrivaltime, departuretime, arrivaldate, departuredate, mi
 
     timediff = gettimedifference(arrivaltime, departuretime, arrivaldate, departuredate)
     hourdiff = int(timediff.split(':', 1)[0])
-    if hourdiff >= minbuffer and hourdiff <= maxbuffer:
+    if minbuffer <= hourdiff <= maxbuffer:
         return True
     else:
         return False
+
+
+def convertflighttime(time):
+    """
+    Convert flight arrival/departure time to '%H:%M' format
+    :param time: flight arrival/departure time
+    :return: converted time
+    """
+
+    time = str(time)
+    if len(time.split(':')) == 3 :
+        return datetime.datetime.strptime(time, '%H:%M:%S').time().strftime('%H:%M')
+    return time

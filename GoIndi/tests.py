@@ -3,10 +3,10 @@
 # import threading, time
 # import dateTimeUtility
 # import models
-import trainDBscript
+# import trainDBscript
 import datetime
 import glob, os
-trainDBscript.fetchnonexitingfaredata()
+# trainDBscript.fetchnonexitingfaredata()
 #models.testquery()
 # Create your tests here.
 # import trainapiNeo4j
@@ -110,3 +110,9 @@ def movefile():
             os.rename(path+'/'+filename, destpath+'/'+filename)
 
 # readmultiplefiles()
+def convertstringtotime():
+    string = '12:35:00'
+    t = datetime.datetime.strptime(string, '%H:%M:%S')
+    print t.time().strftime('%H:%M')
+
+convertstringtotime()
