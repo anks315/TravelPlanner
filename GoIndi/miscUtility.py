@@ -1,3 +1,6 @@
+import dateTimeUtility
+import datetime
+
 
 def limitResults(results,type):
     if len(results[type])>15:
@@ -10,6 +13,22 @@ def sortOnWaitingTime(x, y):
     if greaterThan(x["waitingTime"],y["waitingTime"]):
         return 1
     elif x["waitingTime"] == y["waitingTime"]:
+        return 0
+    else:
+        return -1
+
+def sortonsubjourneytime(x, y):
+
+    """
+    To sort list of subparts on basis of subJourneyTime (subpart journey + waiting time)
+    :param x:
+    :param y:
+    :return:
+    """
+
+    if greaterThan(x["subJourneyTime"],y["subJourneyTime"]):
+        return 1
+    elif x["subJourneyTime"] == y["subJourneyTime"]:
         return 0
     else:
         return -1

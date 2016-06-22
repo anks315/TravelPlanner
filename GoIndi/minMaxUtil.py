@@ -48,3 +48,15 @@ def getMinMaxValues(subparts):
               "minDep": minDep, "maxDep": maxDep, "minArr": minArr, "maxArr": maxArr}
 
     return result
+
+
+def getprice(subpart):
+
+    """
+    To get price of subpart
+    :param subpart: subpart of journey, either train or bus
+    :return: price of subpart
+    """
+    if subpart["mode"] == "bus":
+        return subpart["price"].split(",")[0]
+    return subpart["price"]
