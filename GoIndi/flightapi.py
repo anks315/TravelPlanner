@@ -200,6 +200,7 @@ class FlightController:
                 continueFurther=1
                 minmax1 = minMaxUtil.getMinMaxValues(subparts)
                 price1 = int(minMaxUtil.getprice(subparts[0]))
+                duration1 = subparts[0]["duration"]
                 newpart = {"subParts": subparts, "mode": subparts[0]["mode"],"id": mixedflight["flight"][j]["full"][0]["id"] + str(0),
                            "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"]}
                 flightpart["id"] = mixedflight["flight"][j]["full"][0]["id"] + str(1)
@@ -219,6 +220,7 @@ class FlightController:
             if subparts and continueFurther==1:
                 minmax2 = minMaxUtil.getMinMaxValues(subparts)
                 price2 = int(minMaxUtil.getprice(subparts[0]))
+                duration2 = subparts[0]["duration"]
                 newpart = {"subParts": subparts, "mode": subparts[0]["mode"],"id": mixedflight["flight"][j]["full"][0]["id"] + str(2),
                            "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"]}
                 mixedflight["flight"][j]["parts"].append(newpart)
@@ -226,7 +228,7 @@ class FlightController:
                 mixedflight["flight"][j]["full"][0]["price"] = int(mixedflight["flight"][j]["full"][0]["price"]) + price1 + price2
                 mixedflight["flight"][j]["full"][0]["minPrice"] = int(mixedflight["flight"][j]["full"][0]["minPrice"]) + int(minmax1["minPrice"]) + int(minmax2["minPrice"])
                 mixedflight["flight"][j]["full"][0]["maxPrice"] = int(mixedflight["flight"][j]["full"][0]["maxPrice"]) + int(minmax1["maxPrice"]) + int(minmax2["maxPrice"])
-                mixedflight["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedflight["flight"][j]["full"][0]["duration"], minmax1["minDuration"]),minmax2["minDuration"])
+                mixedflight["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedflight["flight"][j]["full"][0]["duration"], duration1),duration2)
                 mixedflight["flight"][j]["full"][0]["minDuration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedflight["flight"][j]["full"][0]["minDuration"], minmax1["minDuration"]),minmax2["minDuration"])
                 mixedflight["flight"][j]["full"][0]["maxDuration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedflight["flight"][j]["full"][0]["maxDuration"], minmax1["maxDuration"]),minmax2["maxDuration"])
                 mixedflight["flight"][j]["full"][0]["minDeparture"] = minmax1["minDep"]
@@ -264,7 +266,7 @@ class FlightController:
                 mixedFlightInit["flight"][j]["full"][0]["price"] = int(mixedFlightInit["flight"][j]["full"][0]["price"]) + int(minMaxUtil.getprice(subparts[0]))
                 mixedFlightInit["flight"][j]["full"][0]["minPrice"] = int(mixedFlightInit["flight"][j]["full"][0]["minPrice"]) + int(minmax["minPrice"])
                 mixedFlightInit["flight"][j]["full"][0]["maxPrice"] = int(mixedFlightInit["flight"][j]["full"][0]["maxPrice"]) + int(minmax["maxPrice"])
-                mixedFlightInit["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(mixedFlightInit["flight"][j]["full"][0]["duration"], minmax["minDuration"])
+                mixedFlightInit["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(mixedFlightInit["flight"][j]["full"][0]["duration"], subparts[0]["duration"])
                 mixedFlightInit["flight"][j]["full"][0]["minDuration"] = dateTimeUtility.addDurations(mixedFlightInit["flight"][j]["full"][0]["minDuration"], minmax["minDuration"])
                 mixedFlightInit["flight"][j]["full"][0]["maxDuration"] = dateTimeUtility.addDurations(mixedFlightInit["flight"][j]["full"][0]["maxDuration"], minmax["maxDuration"])
                 mixedFlightInit["flight"][j]["full"][0]["minArrival"] = minmax["minArr"]
@@ -301,7 +303,7 @@ class FlightController:
                 mixedFlightEnd["flight"][j]["full"][0]["price"] = int(mixedFlightEnd["flight"][j]["full"][0]["price"]) + int(minMaxUtil.getprice(subparts[0]))
                 mixedFlightEnd["flight"][j]["full"][0]["minPrice"] = int(mixedFlightEnd["flight"][j]["full"][0]["minPrice"]) +  int(minmax["minPrice"])
                 mixedFlightEnd["flight"][j]["full"][0]["maxPrice"] = int(mixedFlightEnd["flight"][j]["full"][0]["maxPrice"] ) + int(minmax["maxPrice"])
-                mixedFlightEnd["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(mixedFlightEnd["flight"][j]["full"][0]["duration"], minmax["minDuration"])
+                mixedFlightEnd["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(mixedFlightEnd["flight"][j]["full"][0]["duration"], subparts[0]["duration"])
                 mixedFlightEnd["flight"][j]["full"][0]["minDuration"] = dateTimeUtility.addDurations(mixedFlightEnd["flight"][j]["full"][0]["minDuration"], minmax["minDuration"])
                 mixedFlightEnd["flight"][j]["full"][0]["maxDuration"] = dateTimeUtility.addDurations(mixedFlightEnd["flight"][j]["full"][0]["maxDuration"], minmax["maxDuration"])
                 mixedFlightEnd["flight"][j]["full"][0]["minDeparture"] = minmax["minDep"]

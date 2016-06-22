@@ -1,11 +1,11 @@
 import datetime
 from dateutil import relativedelta
+
+
 def getDateArray(date):
-    dateDic = {};
-    dateDic["day"] = int(date.split("-")[0])
-    dateDic["month"] = int(date.split("-")[1])
-    dateDic["year"] = int(date.split("-")[2])
-    return dateDic
+
+    datedic = {"day": int(date.split("-")[0]), "month": int(date.split("-")[1]), "year": int(date.split("-")[2])};
+    return datedic
 
 def getPreviousDate(date):
     dateDic = getDateArray(date)

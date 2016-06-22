@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-import sys
 import time
 import logging
 import requests
-import datetime
 import loggerUtil
 try:
     import lxml.etree as etree
@@ -11,9 +9,7 @@ except ImportError:
     import xml.etree.ElementTree as etree
 
 
-
-
-log = loggerUtil.getLogger("SkyScannerLib",logging.DEBUG)
+log = loggerUtil.getLogger("SkyScannerLib",logging.WARNING)
 
 STRICT, GRACEFUL, IGNORE = 'strict', 'graceful', 'ignore'
 
