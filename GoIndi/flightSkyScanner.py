@@ -7,7 +7,7 @@ import logging
 import loggerUtil
 
 
-logger = loggerUtil.getLogger("FlighSkyScanner",logging.DEBUG)
+logger = loggerUtil.getlogger("FlighSkyScanner", logging.DEBUG)
 
 def getApiResults(sourcecity,destinationcity,journeyDate,id,flightClass='Economy',numberOfAdults=1):
     cityAndStateToStationsMap = {'Jaisalmer':'JSA','Rajahmundry':'RJA','Pantnagar':'PGH','Pathankot':'IXP','Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',

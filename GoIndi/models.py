@@ -13,7 +13,7 @@ from datetime import timedelta
 from sets import Set
 import copy
 import dateTimeUtility
-from multiprocessing import Pool, Process
+
 
 def demo():
     pass
@@ -327,11 +327,12 @@ def istrainrunningoncurrentdate(train, journeydate, sourcecity, logger):
     :return: true if train runs else false
     """
     sourcedaynumber = train[2]['data']['SOURCEDAYNUMBER']
+    trainnumber = train[1]['data']['NUMBER']
     day = getdayfromdate(journeydate, sourcedaynumber - 1)
     if day == 'THURSDAY':
         day = 'THRUSDAY'
     if train[1]['data'][day] == 'N':
-        logger.warning("Skipping train since it doesn't run from [%s] on [%s]", sourcecity, journeydate)
+        logger.warning("Skipping train [%s], since it doesn't run from [%s] on [%s]", trainnumber, sourcecity, journeydate)
         return False
     return True
 
@@ -385,7 +386,7 @@ def loadtraindata(trainstationsmap):
     try:
         trainstations = DATABASE_CONNECTION.query(q)
     except Exception as e:
-        logger = loggerUtil.getLogger("loaddata", logging.WARNING)
+        logger = loggerUtil.getlogger("loaddata", logging.WARNING)
         logger.error("Error in loading train data on startup, reason [%s]", e.message)
         return trainstationsmap
 

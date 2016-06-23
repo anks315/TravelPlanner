@@ -4,7 +4,7 @@ newport_ri = (41.49008, -71.312796)
 cleveland_oh = (41.499498, -81.695391)
 print(vincenty(newport_ri, cleveland_oh).miles)
 
-airportList = [
+airportlist = [
     {
         'City': None,
         'Kind': 'Large',
@@ -3283,40 +3283,40 @@ airportList = [
     }]
 
 
-def findNearestAirport(latitude, longitude):
-    minimumDistance = 0.0
-    sourcePlace = (latitude, longitude)
-    nearestAirport = ""
-    for airport in airportList:
+def findnearestairport(latitude, longitude):
+    minimumdistance = 0.0
+    sourceplace = (latitude, longitude)
+    nearestairport = ""
+    for airport in airportlist:
         airlatitude = airport["Latitude"]
         airlatitude = airlatitude[:-3]
-        distance = vincenty((float(airlatitude), float(airport["Longitude"][:-3])), sourcePlace)
+        distance = vincenty((float(airlatitude), float(airport["Longitude"][:-3])), sourceplace)
         if airport["IATA"] and airport["Kind"] != "Small" and airport["Kind"] != "Closed":
-            if minimumDistance == 0.0:
-                minimumDistance = distance
-                nearestAirport = airport["IATA"]
-            if distance < minimumDistance:
-                minimumDistance = distance
-                nearestAirport = airport["IATA"]
-    return nearestAirport
+            if minimumdistance == 0.0:
+                minimumdistance = distance
+                nearestairport = airport["IATA"]
+            if distance < minimumdistance:
+                minimumdistance = distance
+                nearestairport = airport["IATA"]
+    return nearestairport
 
 
-def findNearestBigAirport(latitude, longitude):
-    minimumDistance = 0.0
-    sourcePlace = (latitude, longitude)
-    nearestAirport = ""
-    for airport in airportList:
+def findnearestbigairport(latitude, longitude):
+    minimumdistance = 0.0
+    sourceplace = (latitude, longitude)
+    nearestairport = ""
+    for airport in airportlist:
         airlatitude = airport["Latitude"]
         airlatitude = airlatitude[:-3]
-        distance = vincenty((float(airlatitude), float(airport["Longitude"][:-3])), sourcePlace)
+        distance = vincenty((float(airlatitude), float(airport["Longitude"][:-3])), sourceplace)
         if airport["IATA"] and airport["Kind"] == "Large":
-            if minimumDistance == 0.0:
-                minimumDistance = distance
-                nearestAirport = airport["IATA"]
-            elif distance < minimumDistance:
-                minimumDistance = distance
-                nearestAirport = airport["IATA"]
-    return nearestAirport
+            if minimumdistance == 0.0:
+                minimumdistance = distance
+                nearestairport = airport["IATA"]
+            elif distance < minimumdistance:
+                minimumdistance = distance
+                nearestairport = airport["IATA"]
+    return nearestairport
 
 
 """def parse():
@@ -3344,7 +3344,7 @@ def findnearestrailwaystation(latitude, longitude, cityname):
     mindistance = 0.0
     sourceplace = (latitude, longitude)
     nearestrailstation = ""
-    for airport in airportList:
+    for airport in airportlist:
         if airport["RailwayStation"] and cityname.upper() != airport["RailwayStation"].upper():
             airlatitude = airport["Latitude"]
             airlatitude = airlatitude[:-3]

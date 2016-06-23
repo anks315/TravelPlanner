@@ -2,13 +2,13 @@ import logging
 import datetime
 
 
-def getLogger(loggerKey,loggerLevel):
+def getlogger(loggerkey, loggerlevel):
 
-    logger = logging.getLogger("TravelPlanner."+loggerKey)
+    logger = logging.getLogger("TravelPlanner."+loggerkey)
     today = datetime.date.today().strftime("%Y-%m-%d")
-    fileHandler = logging.FileHandler('./' + today + '.log')
+    filehandler = logging.FileHandler('./' + today + '.log')
     formatter = logging.Formatter('%(asctime)s %(levelname)s %(thread)d %(filename)s %(funcName)s %(message)s')
-    fileHandler.setFormatter(formatter)
-    logger.addHandler(fileHandler)
-    logger.setLevel(loggerLevel)
+    filehandler.setFormatter(formatter)
+    logger.addHandler(filehandler)
+    logger.setLevel(loggerlevel)
     return logger

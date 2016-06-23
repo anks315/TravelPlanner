@@ -22,7 +22,7 @@ today = datetime.date.today().strftime("%Y-%m-%d")
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
 bigcities = Set(['NEW DELHI', 'MUMBAI', 'BANGALORE', 'KOLKATA', 'HYDERABAD', 'CHENNAI', 'JAIPUR', 'AHMEDABAD', 'BHOPAL', 'LUCKNOW', 'PATNA', 'CHANDIGARH', 'PUNE', 'DELHI', 'AGRA', 'LUDHIANA', 'SURAT', 'KANPUR', 'NAGPUR', 'VISHAKHAPATNAM', 'INDORE', 'THANE','COIMBATORE', 'VADODARA', 'MADURAI', 'VARANASI', 'AMRITSAR', 'ALLAHABAD','KOTA', 'GUWAHATI', 'SOLAPUR', 'TRIVANDRUM'])
 
-logger = loggerUtil.getLogger("TrainApi", logging.WARNING)
+logger = loggerUtil.getlogger("TrainApi", logging.WARNING)
 
 def convertspartstofulljson(part_1, part_2):
     """
@@ -304,7 +304,7 @@ class TrainController:
                 combinedjson = self.combinedata(sourcetobreakingstationtrainjson, breakingtodestinationtrainjson)
                 if len(combinedjson["train"]) > 0:
                     directjson["train"].extend(combinedjson["train"])
-                    # return # return if any breaking train journey is present, no need for bus journey
+                    return # return if any breaking train journey is present, no need for bus journey
 
             breakingtodestinationbusjson = buscontroller.getResults(breakingcity,destination, journeydate,numberffadults)
             breakingtodestinationbusjson["bus"].extend(buscontroller.getResults(breakingcity, destination, nextday,numberffadults)["bus"])
