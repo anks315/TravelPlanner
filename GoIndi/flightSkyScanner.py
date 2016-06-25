@@ -107,10 +107,12 @@ def parseFlightAndReturnFare(apiresult,id,source,destination,journeyDate,numberO
         part["source"] = source
         part["destination"] = destination
         part["arrival"]=(returnedFareData["Legs"][flightcounter]["Arrival"]).split("T")[1]
+        full["arrival"] = part["arrival"]
         part["departureDate"]=journeyDate
         full["minArrival"]=(returnedFareData["Legs"][flightcounter]["Arrival"]).split("T")[1]
         full["maxArrival"]=(returnedFareData["Legs"][flightcounter]["Arrival"]).split("T")[1]
         part["departure"]=returnedFareData["Legs"][flightcounter]["Departure"].split("T")[1]
+        full["departure"]=part["departure"]
         full["minDeparture"]=returnedFareData["Legs"][flightcounter]["Departure"].split("T")[1]
         full["maxDeparture"]=returnedFareData["Legs"][flightcounter]["Departure"].split("T")[1]
         duration = returnedFareData["Legs"][flightcounter]["Duration"]
