@@ -127,6 +127,7 @@ class TrainController:
         :return: trains
         """
         resultjsondata = {"train": []}
+        numberofadults = int(numberofadults)
         try:
             routedata = self.gettrainroutes(sourcecity, destinationstationset, journeydate, trainid, destinationcity, priceclass, numberofadults, nextday)
         except Exception as e:

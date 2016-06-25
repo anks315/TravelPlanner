@@ -1,7 +1,8 @@
 __author__ = 'Hello'
 import loggerUtil, logging
 
-logger = loggerUtil.getlogger("FlightDirectApi", logging.WARNING)
+logger = loggerUtil.getlogger("FlightDirectApi", loggerlevel=logging.WARNING)
+
 
 class FlightDirectController:
 

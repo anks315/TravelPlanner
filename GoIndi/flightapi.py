@@ -53,7 +53,7 @@ class FlightController:
             sourceflight = flightutil.stationtocitymap[sourceairport]
             destinationflight = flightutil.stationtocitymap[destairport]
 
-            if source!=sourceflight:
+            if source != sourceflight:
                 othermodessminitfuture = executor.submit(self.getothermodes,sourcecity, sourceflight, journeydate,trainclass,numberofadults)
                 othermodessminit2future = executor.submit(self.getothermodes, sourcecity, sourceflight, dateTimeUtility.getPreviousDate(journeydate),trainclass,numberofadults)
             if destination != destinationflight:
@@ -63,8 +63,7 @@ class FlightController:
             onlyflightfuture = executor.submit(flightSkyScanner.getApiResults,sourceflight,destinationflight,journeydate,"flight0",flightclass,numberofadults)
 
             finallist = {}
-            mixedflight = {}
-            if (bigsource!='empty')and(bigdestination!='empty')and(bigsource!=destinationflight)and(bigdestination!=sourceflight):
+            if (bigsource != 'empty') and (bigdestination != 'empty') and (bigsource != destinationflight) and (bigdestination != sourceflight):
                 mixedflight = {"flight": []}
                 mixedflightend = {"flight": []}
                 mixedflightinit = {"flight": []}
@@ -72,27 +71,27 @@ class FlightController:
                 othermodesend=[]
                 othermodesinitfuture = []
                 othermodesendfuture = []
-                #if there is only one big airport in between or both source and destination are big airports
-                if (bigsource!=bigdestination) and ((bigsource != sourceflight)and(bigdestination!=destinationflight)):
+
+                # if there is only one big airport in between or both source and destination are big airports
+                if (bigsource != bigdestination) and ((bigsource != sourceflight) and (bigdestination != destinationflight)):
                     mixedflightfuture = executor.submit(flightSkyScanner.getApiResults,bigsource,bigdestination,journeydate,"flight1",flightclass,numberofadults)
                     othermodesinitfuture = executor.submit(self.getothermodes, sourcecity, bigsource, journeydate,trainclass,numberofadults)
                     othermodesinit2future = executor.submit(self.getothermodes, sourcecity, bigsource, dateTimeUtility.getPreviousDate(journeydate),trainclass,numberofadults)
                     othermodesendfuture = executor.submit(self.getothermodes, bigdestination, destinationcity, journeydate,trainclass,numberofadults)
-                    othermodesend2future = executor.submit(self.getothermodes, bigdestination, destinationcity,
-                                                          dateTimeUtility.getNextDate(journeydate),trainclass,numberofadults)
+                    othermodesend2future = executor.submit(self.getothermodes, bigdestination, destinationcity, dateTimeUtility.getNextDate(journeydate),trainclass,numberofadults)
+
                 if bigsource != sourceflight:
-                    mixedflightendfuture =executor.submit(flightSkyScanner.getApiResults,bigsource,destinationflight,journeydate,"flight2",flightclass,numberofadults)
-                    if othermodesinitfuture==[]:
-                        othermodesinitfuture = executor.submit(self.getothermodes,sourcecity, bigsource, journeydate,trainclass,numberofadults)
-                        othermodesinit2future = executor.submit(self.getothermodes, sourcecity, bigsource,
-                                                        dateTimeUtility.getPreviousDate(journeydate),trainclass,numberofadults)
+                    mixedflightendfuture = executor.submit(flightSkyScanner.getApiResults, bigsource, destinationflight, journeydate, "flight2", flightclass, numberofadults)
+                    if not othermodesinitfuture:
+                        othermodesinitfuture = executor.submit(self.getothermodes,sourcecity, bigsource, journeydate, trainclass,numberofadults)
+                        othermodesinit2future = executor.submit(self.getothermodes, sourcecity, bigsource, dateTimeUtility.getPreviousDate(journeydate), trainclass, numberofadults)
 
                 if bigdestination != destinationflight:
-                    mixedflightinitfuture =executor.submit(flightSkyScanner.getApiResults,sourceflight,bigdestination,journeydate,"flight3",flightclass,numberofadults)
-                    if othermodesendfuture==[]:
-                        othermodesendfuture = executor.submit(self.getothermodes,bigdestination, destinationcity, journeydate,trainclass,numberofadults)
-                        othermodesend2future = executor.submit(self.getothermodes, bigdestination, destinationcity,
-                                                       dateTimeUtility.getNextDate(journeydate),trainclass,numberofadults)
+                    mixedflightinitfuture = executor.submit(flightSkyScanner.getApiResults,sourceflight,bigdestination,journeydate,"flight3",flightclass,numberofadults)
+                    if not othermodesendfuture:
+                        othermodesendfuture = executor.submit(self.getothermodes, bigdestination, destinationcity, journeydate,trainclass,numberofadults)
+                        othermodesend2future = executor.submit(self.getothermodes, bigdestination, destinationcity, dateTimeUtility.getNextDate(journeydate),trainclass,numberofadults)
+
                 onlyflight = onlyflightfuture.result()
                 onlyflight = miscUtility.limitResults(onlyflight, "flight")
                 if source != sourceflight and destination != destinationflight:
@@ -100,7 +99,7 @@ class FlightController:
                     othermodessminit2 = othermodessminit2future.result()
                     othermodessmend = othermodessmendfuture.result()
                     othermodessmend2 = othermodessmend2future.result()
-                    onlyflight = self.mixandmatch(onlyflight, othermodessminit,othermodessminit2, othermodessmend,othermodessmend2)
+                    onlyflight = self.mixandmatch(onlyflight, othermodessminit,othermodessminit2, othermodessmend, othermodessmend2)
                 elif source != sourceflight:
                     othermodessminit = othermodessminitfuture.result()
                     othermodessminit2 = othermodessminit2future.result()
@@ -110,30 +109,28 @@ class FlightController:
                     othermodessmend2 = othermodessmend2future.result()
                     onlyflight = self.mixAndMatchInit(onlyflight, othermodessmend, othermodessmend2)
 
-
-                if ((bigsource!=bigdestination) and ((bigsource != sourceflight)and(bigdestination!=destinationflight))):
-                    othermodesinit=othermodesinitfuture.result()
+                if (bigsource != bigdestination) and ((bigsource != sourceflight) and (bigdestination != destinationflight)):
+                    othermodesinit = othermodesinitfuture.result()
                     othermodesinit2 = othermodesinit2future.result()
-                    othermodesend= othermodesendfuture.result()
+                    othermodesend = othermodesendfuture.result()
                     othermodesend2 = othermodesend2future.result()
                     mixedflight = self.mixandmatch(mixedflightfuture.result(), othermodesinit,othermodesinit2, othermodesend,othermodesend2)
-                if(bigsource != sourceflight):
-                    if othermodesinit==[]:
+
+                if bigsource != sourceflight:
+                    if not othermodesinit:
                         othermodesinit = othermodesinitfuture.result()
                         othermodesinit2 = othermodesinit2future.result()
                     if destination != destinationflight:
-                        mixedflightend = self.mixandmatch(mixedflightendfuture.result(), othermodesinit, othermodesinit2,
-                                                   othermodessmend, othermodessmend2)
+                        mixedflightend = self.mixandmatch(mixedflightendfuture.result(), othermodesinit, othermodesinit2, othermodessmend, othermodessmend2)
                     else:
                         mixedflightend = self.mixAndMatchEnd(mixedflightendfuture.result(), othermodesinit, othermodesinit2)
-                if(bigdestination != destinationflight):
-                    if othermodesend==[]:
+
+                if bigdestination != destinationflight:
+                    if not othermodesend:
                         othermodesend = othermodesendfuture.result()
                         othermodesend2 = othermodesend2future.result()
                     if source != sourceflight:
-                        mixedflightinit = self.mixandmatch(mixedflightinitfuture.result(), othermodessminit,
-                                                          othermodessminit2,
-                                                           othermodesend, othermodesend2)
+                        mixedflightinit = self.mixandmatch(mixedflightinitfuture.result(), othermodessminit, othermodessminit2, othermodesend, othermodesend2)
                     else:
                         mixedflightinit = self.mixAndMatchInit(mixedflightinitfuture.result(), othermodesend,othermodesend2)
 
@@ -146,8 +143,7 @@ class FlightController:
                     othermodessminit2 = othermodessminit2future.result()
                     othermodessmend = othermodessmendfuture.result()
                     othermodessmend2 = othermodessmend2future.result()
-                    onlyflight = self.mixandmatch(onlyflight, othermodessminit, othermodessminit2, othermodessmend,
-                                                  othermodessmend2)
+                    onlyflight = self.mixandmatch(onlyflight, othermodessminit, othermodessminit2, othermodessmend, othermodessmend2)
                 elif source != sourceflight:
                     othermodessminit = othermodessminitfuture.result()
                     othermodessminit2 = othermodessminit2future.result()
@@ -158,19 +154,18 @@ class FlightController:
                     onlyflight = self.mixAndMatchInit(onlyflight, othermodessmend, othermodessmend2)
 
                 finallist["flight"] = onlyflight["flight"]
-            logger.debug("[END]-Get Results From FlightApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",sourcecity,destinationcity,journeydate)
+            logger.debug("[END]-Get Results From FlightApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ", sourcecity, destinationcity, journeydate)
             return finallist
 
-    def getothermodes(self, source,destination, journeydate,trainClass='3A',numberOfAdults=1):
+    def getothermodes(self, source, destination, journeydate, trainclass='3A', numberofadults=1):
 
         traincontrollerneo = trainapiNeo4j.TrainController()
         logger.debug("[START] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
-        resultjsondata = traincontrollerneo.getroutes(source, destination, journeydate, priceclass=trainClass,
-                                                      numberofadults=numberOfAdults)["train"]
+        resultjsondata = traincontrollerneo.getroutes(source, destination, journeydate, priceclass=trainclass, numberofadults=numberofadults)["train"]
         if not resultjsondata:
             logger.debug("No Data From Train,Retrieving From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
             buscontroller = busapi.BusController()
-            resultjsondata = buscontroller.getResults(source, destination, journeydate,numberOfAdults)["bus"]
+            resultjsondata = buscontroller.getResults(source, destination, journeydate,numberofadults)["bus"]
         if not resultjsondata:
             logger.debug("No Data From Train and Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
 
@@ -178,7 +173,7 @@ class FlightController:
 
         return resultjsondata
 
-    def mixandmatch(self, mixedflight,othermodesinit,othermodesinit2,othermodesend,othermodesend2):
+    def mixandmatch(self, mixedflight, othermodesinit, othermodesinit2, othermodesend, othermodesend2):
         logger.debug("[START]")
         othermodesend = othermodesend + othermodesend2
         othermodesinit = othermodesinit + othermodesinit2
@@ -200,7 +195,7 @@ class FlightController:
                 continueFurther=1
                 minmax1 = minMaxUtil.getMinMaxValues(subparts)
                 price1 = int(minMaxUtil.getprice(subparts[0]))
-                duration1 = subparts[0]["duration"]
+                subJourneyTime1 = subparts[0]["subJourneyTime"]
                 waitingtime1 = subparts[0]["waitingTime"]
                 departuredate1 = subparts[0]["departureDate"]
                 departure1 = subparts[0]["departure"]
@@ -226,6 +221,7 @@ class FlightController:
                 price2 = int(minMaxUtil.getprice(subparts[0]))
                 destination = subparts[0]["destination"]
                 duration2 = subparts[0]["duration"]
+                subJourneyTime2 = subparts[0]["subJourneyTime"]
                 newpart = {"subParts": subparts, "mode": subparts[0]["mode"],"id": mixedflight["flight"][j]["full"][0]["id"] + str(2),
                            "destination": subparts[0]["destination"], "source": subparts[0]["source"],"carrierName": subparts[0]["carrierName"]}
                 mixedflight["flight"][j]["parts"].append(newpart)
@@ -233,7 +229,7 @@ class FlightController:
                 mixedflight["flight"][j]["full"][0]["price"] = int(mixedflight["flight"][j]["full"][0]["price"]) + price1 + price2
                 mixedflight["flight"][j]["full"][0]["minPrice"] = int(mixedflight["flight"][j]["full"][0]["minPrice"]) + int(minmax1["minPrice"]) + int(minmax2["minPrice"])
                 mixedflight["flight"][j]["full"][0]["maxPrice"] = int(mixedflight["flight"][j]["full"][0]["maxPrice"]) + int(minmax1["maxPrice"]) + int(minmax2["maxPrice"])
-                mixedflight["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedflight["flight"][j]["full"][0]["duration"], duration1),duration2)
+                mixedflight["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedflight["flight"][j]["full"][0]["duration"], subJourneyTime1),subJourneyTime2)
                 mixedflight["flight"][j]["full"][0]["minDuration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedflight["flight"][j]["full"][0]["minDuration"], minmax1["minDuration"]),minmax2["minDuration"])
                 mixedflight["flight"][j]["full"][0]["maxDuration"] = dateTimeUtility.addDurations(dateTimeUtility.addDurations(mixedflight["flight"][j]["full"][0]["maxDuration"], minmax1["maxDuration"]),minmax2["maxDuration"])
                 mixedflight["flight"][j]["full"][0]["minDeparture"] = minmax1["minDep"]
@@ -289,7 +285,7 @@ class FlightController:
                 mixedFlightInit["flight"][j]["full"][0]["price"] = int(mixedFlightInit["flight"][j]["full"][0]["price"]) + int(minMaxUtil.getprice(subparts[0]))
                 mixedFlightInit["flight"][j]["full"][0]["minPrice"] = int(mixedFlightInit["flight"][j]["full"][0]["minPrice"]) + int(minmax["minPrice"])
                 mixedFlightInit["flight"][j]["full"][0]["maxPrice"] = int(mixedFlightInit["flight"][j]["full"][0]["maxPrice"]) + int(minmax["maxPrice"])
-                mixedFlightInit["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(mixedFlightInit["flight"][j]["full"][0]["duration"], subparts[0]["duration"])
+                mixedFlightInit["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(mixedFlightInit["flight"][j]["full"][0]["duration"], subparts[0]["subJourneyTime"])
                 mixedFlightInit["flight"][j]["full"][0]["minDuration"] = dateTimeUtility.addDurations(mixedFlightInit["flight"][j]["full"][0]["minDuration"], minmax["minDuration"])
                 mixedFlightInit["flight"][j]["full"][0]["maxDuration"] = dateTimeUtility.addDurations(mixedFlightInit["flight"][j]["full"][0]["maxDuration"], minmax["maxDuration"])
                 mixedFlightInit["flight"][j]["full"][0]["minArrival"] = minmax["minArr"]
@@ -305,7 +301,7 @@ class FlightController:
         logger.debug("[FlightApi.mixAndMatchInit]-[END]")
         return mixedFlightInit
 
-    def mixAndMatchEnd(self, mixedflightend, otherModesInit,otherModesInit2):
+    def mixAndMatchEnd(self, mixedflightend, otherModesInit, otherModesInit2):
 
         """
         Join flight with other modes, with flight in the end
@@ -341,7 +337,7 @@ class FlightController:
                 mixedflightend["flight"][j]["full"][0]["price"] = int(mixedflightend["flight"][j]["full"][0]["price"]) + int(minMaxUtil.getprice(subparts[0]))
                 mixedflightend["flight"][j]["full"][0]["minPrice"] = int(mixedflightend["flight"][j]["full"][0]["minPrice"]) +  int(minmax["minPrice"])
                 mixedflightend["flight"][j]["full"][0]["maxPrice"] = int(mixedflightend["flight"][j]["full"][0]["maxPrice"] ) + int(minmax["maxPrice"])
-                mixedflightend["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(mixedflightend["flight"][j]["full"][0]["duration"], subparts[0]["duration"])
+                mixedflightend["flight"][j]["full"][0]["duration"] = dateTimeUtility.addDurations(mixedflightend["flight"][j]["full"][0]["duration"], subparts[0]["subJourneyTime"])
                 mixedflightend["flight"][j]["full"][0]["minDuration"] = dateTimeUtility.addDurations(mixedflightend["flight"][j]["full"][0]["minDuration"], minmax["minDuration"])
                 mixedflightend["flight"][j]["full"][0]["maxDuration"] = dateTimeUtility.addDurations(mixedflightend["flight"][j]["full"][0]["maxDuration"], minmax["maxDuration"])
                 mixedflightend["flight"][j]["full"][0]["minDeparture"] = minmax["minDep"]
