@@ -61,10 +61,9 @@ def flightdirectapi(request):
     sourcecity = request.GET['sourcecity']
     destinationcity = request.GET['destinationcity']
     journeydate = request.GET['journeyDate']
-    trainclass = request.GET["trainClass"]
     flightclass = request.GET["flightClass"]
     numberofadults = request.GET["adults"]
-    resultjsondata = flightdirectcontroller.getresults(sourcecity, destinationcity, journeydate, trainclass, flightclass, numberofadults)
+    resultjsondata = flightdirectcontroller.getresults(sourcecity, destinationcity, journeydate, flightclass, numberofadults)
     return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
 
 def trainapi(request):

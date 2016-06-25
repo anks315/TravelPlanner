@@ -60,3 +60,19 @@ class FareData:
     fare_SL = 0
     fare_2S = 0
     fare_GN = 0
+
+
+class NearestAirports:
+    """
+    Entity for nearest airport & nearest big airport to given
+    """
+    near = ""
+    big = ""
+
+
+class Airports:
+    """
+    Entity for nearest airports to a given source & destination city
+    """
+    sourceairports = NearestAirports()
+    destinationairports = NearestAirports()
