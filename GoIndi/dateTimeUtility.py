@@ -157,7 +157,7 @@ def gettimedifference(arrivaltime, departuretime, arrivaldate, departuredate):
     return str(diff.days * 24 + diff.hours) + ":" + str(diff.minutes)
 
 
-def isjourneypossible(arrivaltime, departuretime, arrivaldate, departuredate, minbuffer, maxbuffer):
+def isjourneypossible(arrivaltime, departuretime, arrivaldate, departuredate, minbuffer=3, maxbuffer=24):
 
     """
     To check whether combine journey is feasible or not. For feasible journey total difference between arrival & departure must be within min & max buffer

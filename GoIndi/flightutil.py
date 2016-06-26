@@ -125,7 +125,7 @@ def mixandmatch(directflight, othermodesinit, othermodesend, logger):
             subparts = []
             for k in range(len(othermodesinit)):
                 subpart = othermodesinit[k]["parts"][0]
-                if dateTimeUtility.checkIfApplicable(subpart["arrival"], subpart["arrivalDate"],flightpart["departure"], flightpart["departureDate"], 3):
+                if dateTimeUtility.isjourneypossible(subpart["arrival"], dateTimeUtility.convertflighttime(flightpart["departure"]), subpart["arrivalDate"], flightpart["departureDate"], 3, 24):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"],flightpart["departure"],subpart["arrivalDate"],flightpart["departureDate"])
                     subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(dateTimeUtility.convertflighttime(flightpart["departure"]), subpart["departure"], flightpart["departureDate"], subpart["departureDate"])
                     subparts.append(copy.deepcopy(subpart))
@@ -152,7 +152,7 @@ def mixandmatch(directflight, othermodesinit, othermodesend, logger):
             subparts = []
             for k in range(len(othermodesend)):
                 subpart = othermodesend[k]["parts"][0]
-                if dateTimeUtility.checkIfApplicable(flightpart["arrival"], flightpart["arrivalDate"],subpart["departure"], subpart["departureDate"], 3):
+                if dateTimeUtility.isjourneypossible(dateTimeUtility.convertflighttime(flightpart["arrival"]), subpart["departure"], flightpart["arrivalDate"], subpart["departureDate"], 3, 24):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(flightpart["arrival"], subpart["departure"],flightpart["arrivalDate"],subpart["departureDate"])
                     subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(subpart["arrival"], dateTimeUtility.convertflighttime(flightpart["arrival"]), subpart["arrivalDate"], flightpart["arrivalDate"])
                     subparts.append(copy.deepcopy(subpart))
@@ -211,7 +211,7 @@ def mixandmatchinit(mixedflightinit, othermodesend, logger):
         subparts = []
         for k in range(len(othermodesend)):
             subpart = othermodesend[k]["parts"][0]
-            if dateTimeUtility.checkIfApplicable(flightpart["arrival"],flightpart["arrivalDate"],subpart["departure"],subpart["departureDate"],3):
+            if dateTimeUtility.isjourneypossible(dateTimeUtility.convertflighttime(flightpart["arrival"]), subpart["departure"], flightpart["arrivalDate"], subpart["departureDate"],3, 24):
                 subpart["waitingTime"] = dateTimeUtility.getWaitingTime(flightpart["arrival"],subpart["departure"],flightpart["arrivalDate"],subpart["departureDate"])
                 subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(subpart["arrival"], dateTimeUtility.convertflighttime(flightpart["arrival"]), subpart["arrivalDate"], flightpart["arrivalDate"])
                 subparts.append(copy.deepcopy(subpart))
@@ -261,7 +261,7 @@ def mixandmatchend(mixedflightend, otherModesInit, logger):
         subparts = []
         for k in range(len(otherModesInit)):
             subpart = otherModesInit[k]["parts"][0]
-            if dateTimeUtility.checkIfApplicable(subpart["arrival"], subpart["arrivalDate"],flightpart["departure"], flightpart["departureDate"], 3):
+            if dateTimeUtility.isjourneypossible(subpart["arrival"], dateTimeUtility.convertflighttime(flightpart["departure"]), subpart["arrivalDate"], flightpart["departureDate"], 3, 24):
                 subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"], flightpart["departure"],subpart["arrivalDate"],flightpart["departureDate"])
                 subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(dateTimeUtility.convertflighttime(flightpart["departure"]), subpart["departure"], flightpart["departureDate"], subpart["departureDate"])
                 subparts.append(copy.deepcopy(subpart))
