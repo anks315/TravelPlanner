@@ -1,4 +1,4 @@
-import time
+import time, datetime
 
 
 class TrainOption:
@@ -8,8 +8,6 @@ class TrainOption:
     srcStationCode = ""
     destStation = ""
     destStationCode = ""
-    srcDepartureTime = time.time()
-    destArrivalTime = time.time()
     prices = {}
     price = 0
     priceClass = ""
@@ -17,6 +15,12 @@ class TrainOption:
     trainNumber = ""
     duration = time.time()
     numadults=1
+    srcDepartureTime = time.time()
+    destArrivalTime = time.time()
+    srcDepartureDay = ""
+    destArrivalDay = ""
+    srcDepartureDate = datetime.date.today()
+    destArrivalDate = datetime.date.today()
 
 
 class StationToTrainRelation:
@@ -76,3 +80,15 @@ class Airports:
     """
     sourceairports = NearestAirports()
     destinationairports = NearestAirports()
+
+
+class FlightRequest:
+    """
+    Entity for flight http request
+    """
+    sourcecity = ""
+    destinationcity = ""
+    journeydate = datetime.date.today()
+    trainclass = '3A'
+    flightclass = 'economy'
+    numberofadults = 1

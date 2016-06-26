@@ -102,7 +102,12 @@ def gettrains(results, journeydate, sourcecity, logger, destinationcity, pricecl
             trainoption.srcStation = str(results.elements[i][0]['data']['CITY']).title()
             trainoption.srcStationCode = results.elements[i][0]['data']['CODE']
             trainoption.destStationCode = results.elements[i][2]['type']
+            trainoption.duration = getduration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
             trainoption.destStation = str(destinationcity).title()
+            trainoption.srcDepartureDate = journeydate
+            trainoption.destArrivalDate = dateTimeUtility.calculatearrivaltimeanddate(journeydate, trainoption.srcDepartureTime, trainoption.duration)["arrivalDate"]
+            trainoption.srcDepartureDay = getdayabbrevationfromdate(journeydate, 0)
+            trainoption.destArrivalDay = getdayabbrevationfromdate(trainoption.destArrivalDate, 0)
             trainoption.prices = {"1A": 0, "2A": 0, "3A": 0, "3E": 0, "FC": 0, "CC": 0, "SL": 0, "2S": 0, "GN": 0} #empty dictionary
             trainoption.price = 0
             trainoption.priceClass=priceclass
@@ -111,11 +116,10 @@ def gettrains(results, journeydate, sourcecity, logger, destinationcity, pricecl
             if 'FARE_'+priceclass in results.elements[i][2]['data']:
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,int(results.elements[i][2]['data']['FARE_'+priceclass]),priceclass,numberofadults)
 
-            trainoption.duration = getduration(trainoption.srcDepartureTime, results.elements[i][2]['data']['SOURCEDAYNUMBER'], trainoption.destArrivalTime, results.elements[i][2]['data']['DESTINATIONDAYNUMBER'])
 
             if 'FARE_3A' in results.elements[i][2]['data']:
-                trainoption.prices["3A"] = int(results.elements[i][2]['data']['FARE_3A'])*numberofadults
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["3A"],"3A",numberofadults)
+                trainoption.prices["3A"] = int(results.elements[i][2]['data']['FARE_3A'])*numberofadults
 
             if 'FARE_CC' in results.elements[i][2]['data']:
                 trainoption.prices["CC"] = int(results.elements[i][2]['data']['FARE_CC'])*numberofadults
@@ -136,7 +140,7 @@ def gettrains(results, journeydate, sourcecity, logger, destinationcity, pricecl
             if 'FARE_2S' in results.elements[i][2]['data']:
                 trainoption.prices["2S"] = int(results.elements[i][2]['data']['FARE_2S'])*numberofadults
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["2S"],"2S",numberofadults)
-            
+
             if 'FARE_FC' in results.elements[i][2]['data']:
                 trainoption.prices["FC"] = int(results.elements[i][2]['data']['FARE_FC'])*numberofadults
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["FC"],"FC",numberofadults)
@@ -338,7 +342,7 @@ def istrainrunningoncurrentdate(train, journeydate, sourcecity, logger):
     return True
 
 
-def getdayabbrevationfromdate(journeydate, diff):
+def getdayabbrevationfromdate(journeydate, diff=0):
 
     """
     this method is used to get day abbrevation of the week(uppercase) on journeydate
@@ -346,7 +350,7 @@ def getdayabbrevationfromdate(journeydate, diff):
     :param diff: difference in number of days from starting point of train into reaching the station
     """
     t = (journeydate - timedelta(days=diff)).weekday()
-    return calendar.day_abbr[t].upper()
+    return calendar.day_abbr[t].title()
 
 def istrainrunningonjourneydate(days, journeydate):
 
@@ -545,11 +549,10 @@ def gettrainroute(trainroute, trainid, traincounter, journeydate, logger):
     try:
         full = {"carrierName": trainroute.trainName, "duration": trainroute.duration, "id": trainid + str(traincounter), "mode": "train",
                 "site": "IRCTC", "source": trainroute.srcStation, "destination": trainroute.destStation, "arrival": trainroute.destArrivalTime,
-                "sourceStation": trainroute.srcStationCode, "destinationStation": trainroute.destStationCode,
-                "arrivalDate": dateTimeUtility.calculateArrivalTimeAndDate(journeydate, trainroute.srcDepartureTime,trainroute.duration)["arrivalDate"],
+                "sourceStation": trainroute.srcStationCode, "destinationStation": trainroute.destStationCode, "arrivalDate": trainroute.destArrivalDate,
                 "departure": trainroute.srcDepartureTime, "departureDate": journeydate, "prices": trainroute.prices, "price": trainroute.price,
-                "priceClass": trainroute.priceClass, "route": trainroute.srcStation + ",train," + trainroute.destStation, "trainNumber": trainroute.trainNumber
-                }
+                "priceClass": trainroute.priceClass, "route": trainroute.srcStation + ",train," + trainroute.destStation, "trainNumber": trainroute.trainNumber,
+                "arrivalDay" : trainroute.srcDepartureDay, "departureDay" : trainroute.destArrivalDay }
         part = copy.deepcopy(full)
         part["id"] = full["id"] + str(1)
         part["subParts"] = []

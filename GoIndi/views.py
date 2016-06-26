@@ -1,21 +1,23 @@
 # Create your views here.
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from django.template import RequestContext,loader,Context
+from django.template import RequestContext
 import json
 import trainapi
-import flightapi, flightdirectapi, flightfromnearestairportapi, flightfrombigairportapi
-import distanceutil
+import flightapi, flightdirectandnearairportapi, flightfrombigairportapi, flightnearbigapi, flightbignearapi
+import distanceutil, flightutil
 import busapi
 import trainapiNeo4j
 
+# bus, train, flight controller to get results
 traincontroller = trainapi.TrainController()
 traincontrollerneo = trainapiNeo4j.TrainController()
 flightcontroller = flightapi.FlightController()
-flightdirectcontroller = flightdirectapi.FlightDirectController()
 buscontroller = busapi.BusController()
-flightnearcontroller = flightfromnearestairportapi.FlightFromNearestAirportController()
+flightdirectandnearcontroller = flightdirectandnearairportapi.FlightDirectAndNearAirportController()
 flightbigcontroller = flightfrombigairportapi.FlightFromBigAirportController()
+flightnearbigcontroller = flightnearbigapi.FlightNearBigAirportController()
+flightbignearcontroller = flightbignearapi.FlightBigNearAirportController()
 
 
 def home(request):
@@ -38,51 +40,42 @@ def test(request):
 
 def flightapi(request):
 
-    sourcecity = request.GET['sourcecity']
-    #sourcestate = request.GET['sourcestate']
-    destinationcity = request.GET['destinationcity']
-    #destinationstate = request.GET['destinationstate']
-    journeydate = request.GET['journeyDate']
-    trainclass = request.GET["trainClass"]
-    flightclass = request.GET["flightClass"]
-    numberofadults = request.GET["adults"]
-    # request.session['source']=source
-    # request.session['destination']=destination
-    resultjsondata = flightcontroller.getresults(sourcecity, destinationcity, journeydate, trainclass, flightclass,
-                                                 numberofadults)
+    # #sourcestate = request.GET['sourcestate']
+    # #destinationstate = request.GET['destinationstate']
+    flightrequest = flightutil.getflightrequestparams(request)
+    resultjsondata = flightcontroller.getresults(flightrequest.sourcecity, flightrequest.destinationcity, flightrequest.journeydate, flightrequest.trainclass, flightrequest.flightclass, flightrequest.numberofadults)
     return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
 
 
-def flightdirectapi(request):
-
-    """
-    To fetch only direct flight between source & destination
-    :param request: Http request from gui
-    :return: http response having direct flight data
-    """
-    sourcecity = request.GET['sourcecity']
-    destinationcity = request.GET['destinationcity']
-    journeydate = request.GET['journeyDate']
-    flightclass = request.GET["flightClass"]
-    numberofadults = request.GET["adults"]
-    resultjsondata = flightdirectcontroller.getresults(sourcecity, destinationcity, journeydate, flightclass, numberofadults)
-    return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
-
-
-def flightnearapi(request):
+def flightdirectandnearapi(request):
     """
     To fetch flight journey between source & destination via nearest airports
     :param request: http request
     :return: flight journey between source & destination
     """
+    flightrequest = flightutil.getflightrequestparams(request)
+    resultjsondata = flightdirectandnearcontroller.getresults(flightrequest.sourcecity, flightrequest.destinationcity, flightrequest.journeydate, flightrequest.trainclass, flightrequest.flightclass, flightrequest.numberofadults)
+    return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
 
-    sourcecity = request.GET['sourcecity']
-    destinationcity = request.GET['destinationcity']
-    journeydate = request.GET['journeyDate']
-    trainclass = request.GET["trainClass"]
-    flightclass = request.GET["flightClass"]
-    numberofadults = request.GET["adults"]
-    resultjsondata = flightnearcontroller.getresults(sourcecity, destinationcity, journeydate, trainclass, flightclass, numberofadults)
+def flightnearbigapi(request):
+    """
+    To fetch flight journey between source & destination via biggest airport near destination and nearest airport of source
+    :param request: http request
+    :return: flight journey between source & destination
+    """
+    flightrequest = flightutil.getflightrequestparams(request)
+    resultjsondata = flightnearbigcontroller.getresults(flightrequest.sourcecity, flightrequest.destinationcity, flightrequest.journeydate, flightrequest.trainclass, flightrequest.flightclass, flightrequest.numberofadults)
+    return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
+
+
+def flightbignearapi(request):
+    """
+    To fetch flight journey between source & destination via biggest airport near source and nearest airport of destination
+    :param request: http request
+    :return: flight journey between source & destination
+    """
+    flightrequest = flightutil.getflightrequestparams(request)
+    resultjsondata = flightbignearcontroller.getresults(flightrequest.sourcecity, flightrequest.destinationcity, flightrequest.journeydate, flightrequest.trainclass, flightrequest.flightclass, flightrequest.numberofadults)
     return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
 
 
@@ -92,14 +85,8 @@ def flightbigapi(request):
     :param request: http request
     :return: flight journey between source & destination
     """
-
-    sourcecity = request.GET['sourcecity']
-    destinationcity = request.GET['destinationcity']
-    journeydate = request.GET['journeyDate']
-    trainclass = request.GET["trainClass"]
-    flightclass = request.GET["flightClass"]
-    numberofadults = request.GET["adults"]
-    resultjsondata = flightbigcontroller.getresults(sourcecity, destinationcity, journeydate, trainclass, flightclass, numberofadults)
+    flightrequest = flightutil.getflightrequestparams(request)
+    resultjsondata = flightbigcontroller.getresults(flightrequest.sourcecity, flightrequest.destinationcity, flightrequest.journeydate, flightrequest.trainclass, flightrequest.flightclass, flightrequest.numberofadults)
     return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
 
 def trainapi(request):
@@ -120,6 +107,6 @@ def busapi(request):
     numberofAdults=request.GET["adults"]
     #request.session['source']=source
     #request.session['destination']=destination
-    resultJsonData = buscontroller.getResults(source,destination,journeyDate,numberofAdults)
+    resultJsonData = buscontroller.getresults(source,destination,journeyDate,numberofAdults)
     return HttpResponse(json.dumps(resultJsonData), content_type='application/json')
 

@@ -33,6 +33,12 @@ def sortonsubjourneytime(x, y):
 
 
 def greaterThan(t1,t2):
+    """
+    return True if t1 is greater than t2
+    :param t1: time in HH:MM format
+    :param t2: time in HH:MM format
+    :return: True/False
+    """
     t1Hr = int(t1.split(":")[0])
     t1Min = int(t1.split(":")[1])
     t2Hr = int(t2.split(":")[0])
@@ -43,6 +49,6 @@ def greaterThan(t1,t2):
         if t1Min>t2Min:
             return True
         else:
-            return  False
+            return False
     else:
         return False

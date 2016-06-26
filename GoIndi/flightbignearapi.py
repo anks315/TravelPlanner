@@ -6,10 +6,10 @@ import miscUtility
 import concurrent
 import TravelPlanner
 
-logger = loggerUtil.getlogger("FlightFromBigAirportApi", loggerlevel=logging.WARNING)
+logger = loggerUtil.getlogger("FlightBigNearApi", loggerlevel=logging.WARNING)
 
 
-class FlightFromBigAirportController:
+class FlightBigNearAirportController:
 
     """
     To get flights between source and destination cities, via big airports
@@ -17,7 +17,7 @@ class FlightFromBigAirportController:
 
     def getresults(self, sourcecity, destinationcity, journeydate, trainclass='3A', flightclass='economy', numberofadults=1):
 
-        logger.debug("[START]-Get Results From FlightFromBigAirportApi for Source:[%s] to Destination:[%s] on JourneyDate:[%s] ", sourcecity, destinationcity, journeydate)
+        logger.debug("[START]-Get Results From FlightBigNearApi for Source:[%s] to Destination:[%s] on JourneyDate:[%s] ", sourcecity, destinationcity, journeydate)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
 
@@ -33,41 +33,36 @@ class FlightFromBigAirportController:
             if sourcenear == destinationnear:
                 logger.warning("Nearest airports to source [%s] and destination [%s] are same [%s]. Hence no flight journey possible", source, destination, sourcenear)
                 return {"flight": []}
-            elif sourcebig == destinationbig:
-                logger.warning("Big airports to source [%s] and destination [%s] are same [%s]. Hence no flight journey possible", source, destination, sourcebig)
+            elif source == sourcebig:
+                logger.warning("Source city [%s] is same as source big airport [%s]", source, sourcebig)
                 return {"flight": []}
-            elif source == sourcebig and destination == destinationbig:
-                logger.warning("Big airports sourcebig [%s] and destinationbig [%s] are same as given cities source [%s] and destination [%s]", sourcebig, destinationbig, source, destination)
-                return {"flight": []}
-            elif sourcebig == sourcenear:
-                logger.warning("source nearest [%s] & big airport [%s] are same", sourcenear, sourcebig)
-                return {"flight": []}
-            elif destinationbig == destinationnear:
-                logger.warning("destination nearest [%s] & big airport [%s] are same", destinationnear, destinationbig)
+            elif sourcenear == sourcebig:
+                logger.warning("Big and nearest airports [%s] of source [%s] are same", destinationbig, destination)
                 return {"flight": []}
 
             logger.debug("Fetching direct flights possible between sourcebig [%s] and destinationbig [%s] on [%s]", sourcenear, destinationnear, journeydate)
 
             if source != sourcebig:
                 othermodesinitfuture = executor.submit(flightutil.getothermodes, sourcecity, sourcebig, journeydate, logger, trainclass,numberofadults)
-            if destination != destinationbig:
-                othermodesendfuture = executor.submit(flightutil.getothermodes, destinationbig, destinationcity, journeydate, logger, trainclass,numberofadults)
+            if destination != destinationnear:
+                othermodesendfuture = executor.submit(flightutil.getothermodes, destinationnear, destinationcity, journeydate, logger, trainclass,numberofadults)
 
-            directflightfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationbig, journeydate, "flightbig", flightclass, numberofadults)
+            directflightfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationnear, journeydate, "flightnearbig", flightclass, numberofadults)
             directflight = directflightfuture.result()
+
             if len(directflight["flight"]) == 0:
                 logger.warning("No flight available between sourcenear [%s] and destinationnear [%s] on [%s]", sourcenear, destinationnear, journeydate)
                 return directflight
             directflight = miscUtility.limitResults(directflight, "flight")
 
-            if source != sourcebig and destination != destinationbig:
+            if source != sourcebig and destination != destinationnear:
                 othermodessminit = othermodesinitfuture.result()
                 othermodessmend = othermodesendfuture.result()
                 directflight = flightutil.mixandmatch(directflight, othermodessminit, othermodessmend, logger)
             elif source != sourcebig:
                 othermodessminit = othermodesinitfuture.result()
                 directflight = flightutil.mixandmatchend(directflight, othermodessminit, logger)
-            elif destination != destinationbig:
+            elif destination != destinationnear:
                 othermodessmend = othermodesendfuture.result()
                 directflight = flightutil.mixandmatchinit(directflight, othermodessmend, logger)
 

@@ -25,13 +25,15 @@ class FlightDirectController:
             destination = TravelPlanner.trainUtil.gettraincity(destinationcity).title()
 
             airports = flightutil.getnearestairports(source, destination)
+            sourcenear = airports.sourceairports.near
+            destinationnear = airports.destinationairports.near
 
-            if source != airports.sourceairports.near and destination != airports.destinationairports.near:
+            if source != sourcenear and destination != destinationnear:
                 logger.warning("No direct flight possible between source [%s] and destination [%s]", source, destination)
                 return {"flight": []}
             else:
                 logger.debug("Fetching direct possible flights between source [%s] and destination [%s] on [%s]", source, destination, journeydate)
-                onlyflightfuture = executor.submit(flightSkyScanner.getApiResults, source, destination, journeydate, "flight0", flightclass, numberofadults)
+                onlyflightfuture = executor.submit(flightSkyScanner.getApiResults, source, destination, journeydate, "flightdirect", flightclass, numberofadults)
                 onlyflight = onlyflightfuture.result()
                 onlyflight = miscUtility.limitResults(onlyflight, "flight")
                 return onlyflight

@@ -19,7 +19,9 @@ def getNextDate(date):
     prevday = theday + datetime.timedelta(days=1)
     return prevday.strftime('%d-%m-%Y')
 
-def calculateArrivalTimeAndDate(depDate,depTime,duration):
+
+def calculatearrivaltimeanddate(depDate,depTime,duration):
+
     arrivalDate = depDate
     dateDic = getDateArray(depDate)
     theday = datetime.date(dateDic["year"], dateDic["month"], dateDic["day"])

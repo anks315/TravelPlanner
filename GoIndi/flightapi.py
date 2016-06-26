@@ -165,7 +165,7 @@ class FlightController:
         if not resultjsondata:
             logger.debug("No Data From Train,Retrieving From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
             buscontroller = busapi.BusController()
-            resultjsondata = buscontroller.getResults(source, destination, journeydate,numberofadults)["bus"]
+            resultjsondata = buscontroller.getresults(source, destination, journeydate,numberofadults)["bus"]
         if not resultjsondata:
             logger.debug("No Data From Train and Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
 
@@ -243,8 +243,8 @@ class FlightController:
                 mixedflight["flight"][j]["full"][0]["departure"] = departure1
                 mixedflight["flight"][j]["full"][0]["arrivalDate"] = subparts[0]["arrivalDate"]
                 mixedflight["flight"][j]["full"][0]["departureDate"] = departuredate1
-                mixedflight["flight"][j]["full"][0]["arrivalDay"] = models.getdayfromdate(subparts[0]["arrivalDate"], 0)
-                mixedflight["flight"][j]["full"][0]["departureDay"] = models.getdayfromdate(departuredate1, 0)
+                mixedflight["flight"][j]["full"][0]["arrivalDay"] = models.getdayabbrevationfromdate(subparts[0]["arrivalDate"], 0)
+                mixedflight["flight"][j]["full"][0]["departureDay"] = models.getdayabbrevationfromdate(departuredate1, 0)
 
         mixedflight["flight"] = [x for x in mixedflight["flight"] if len(x["parts"]) == 3]
         logger.debug("[END]")
@@ -294,8 +294,8 @@ class FlightController:
                 mixedFlightInit["flight"][j]["full"][0]["waitingTime"] = subparts[0]["waitingTime"]
                 mixedFlightInit["flight"][j]["full"][0]["arrival"] = subparts[0]["arrival"]
                 mixedFlightInit["flight"][j]["full"][0]["arrivalDate"] = subparts[0]["arrivalDate"]
-                mixedFlightInit["flight"][j]["full"][0]["arrivalDay"] = models.getdayfromdate(subparts[0]["arrivalDate"], 0)
-                mixedFlightInit["flight"][j]["full"][0]["departureDay"] = models.getdayfromdate(flightpart["departureDate"], 0)
+                mixedFlightInit["flight"][j]["full"][0]["arrivalDay"] = models.getdayabbrevationfromdate(subparts[0]["arrivalDate"], 0)
+                mixedFlightInit["flight"][j]["full"][0]["departureDay"] = models.getdayabbrevationfromdate(flightpart["departureDate"], 0)
 
         mixedFlightInit["flight"] = [x for x in mixedFlightInit["flight"] if len(x["parts"]) == 2]
         logger.debug("[FlightApi.mixAndMatchInit]-[END]")
@@ -346,8 +346,8 @@ class FlightController:
                 mixedflightend["flight"][j]["full"][0]["waitingTime"] = subparts[0]["waitingTime"]
                 mixedflightend["flight"][j]["full"][0]["departure"] = subparts[0]["departure"]
                 mixedflightend["flight"][j]["full"][0]["departureDate"] = subparts[0]["departureDate"]
-                mixedflightend["flight"][j]["full"][0]["departureDay"] = models.getdayfromdate(subparts[0]["departureDate"], 0)
-                mixedflightend["flight"][j]["full"][0]["arrivalDay"] = models.getdayfromdate(flightpart["arrivalDate"], 0)
+                mixedflightend["flight"][j]["full"][0]["departureDay"] = models.getdayabbrevationfromdate(subparts[0]["departureDate"], 0)
+                mixedflightend["flight"][j]["full"][0]["arrivalDay"] = models.getdayabbrevationfromdate(flightpart["arrivalDate"], 0)
 
         mixedflightend["flight"] = [x for x in mixedflightend["flight"] if len(x["parts"]) == 2]
         logger.debug("[END]")
