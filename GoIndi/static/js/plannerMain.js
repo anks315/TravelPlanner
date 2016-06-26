@@ -13,11 +13,11 @@ function showPlanner(plannerContainer){
 		var trainClass = "<div class='btn-group'><a class='btn btn-default dropdown-toggle'  data-toggle='dropdown' href='#'>Sleeper&nbsp<span class='caret'></span></a><ul class='dropdown-menu'><li><a href='#' value='SL' type='trainClass'>SL&nbsp</a></li><li><a href='#' value='3A' type='trainClass'>3A&nbsp</a></li><li><a href='#' value='3E' type='trainClass'>3E&nbsp</a></li><li><a href='#' value='2A' type='trainClass'>2A&nbsp</a></li><li><a href='#' value='1A' type='trainClass'>1A&nbsp</a></li><li><a href='#' value='FA' type='trainClass'>FA&nbsp</a></li><li><a href='#' value='CC' type='trainClass'>CC&nbsp</a></li></ul></div>"
 
 		var out ="";
-			 out = out + "<div ng-app='myApp' ng-controller='myCtrl'><div class='panel panel-default''><div class='panel-body'><div class='row'><div class='col-sm-6 col-height col-middle'></br><div class='input-group'><input class='form-control' id='from' placeholder='From:' type='text' autofocus autocomplete='off' ng-focus='disableTap()'><span class='input-group-addon'><span class='glyphicon glyphicon-home'></span></span></div></div><div class='col-sm-6 col-height col-middle'></br><div class='input-group'><input class='form-control' id='to' placeholder='To:' type='text' autofocus autocomplete='off'><span class='input-group-addon'><span class='glyphicon glyphicon-home'></span></span></div></div></div><div class='row'><div class='col-sm-6 col-height col-middle'></br><div class='input-group' id='departure'><input class='form-control' type='text' id='departureBox' class='form-control' placeholder= 'Departure'/><span class='input-group-addon'><span class='glyphicon glyphicon-calendar'></span></span></div></div><div class='col-sm-6 col-height col-middle'></div></div><div class='row'><div class='col-sm-4 col-height col-middle'><br/><table width='100%' style='text-align:left'><tr><td width='5%' style='white-space: nowrap;'><label class='mainLabel' >Persons&nbsp;&nbsp;&nbsp;</label></td><td><div class='input-group'><input type='number' id ='persons' value='1' min='1' max='6' class='form-control' style='width:60px;'/></div></td></tr></table></div><div class='col-sm-4 col-height col-middle' ><br/><table width='100%' style='text-align:center'><tr><label class='mainLabel'>Flight Class&nbsp;&nbsp;&nbsp;</label></tr><tr>"+flightClass+"</tr></table></div><div class='col-sm-4 col-height col-middle' ><br/><table width='100%' style='text-align:right'><tr><label class='mainLabel'>Train Class&nbsp;&nbsp;&nbsp;</label></tr><tr>"+trainClass+"</tr></table></div></div><div class='row'><div class='col-sm-6 col-height col-middle'></br><input type='submit' id='search' class='btn btn-info' value='Search..'></div><div class='col-sm-6 col-height col-middle'></div></div></div></div></div>";
+			 out = out + "<div ng-app='myApp' ng-controller='myCtrl'><div class='panel panel-default''><div class='panel-body'><div class='row'><div class='col-sm-6 col-height col-middle'></br><div class='input-group'><input class='form-control' id='from' placeholder='From:' type='text' autofocus autocomplete='off' ng-focus='disableTap()'><span class='input-group-addon'><span class='glyphicon glyphicon-home'></span></span></div></div><div class='col-sm-6 col-height col-middle'></br><div class='input-group'><input class='form-control' id='to' placeholder='To:' type='text' autofocus autocomplete='off'><span class='input-group-addon'><span class='glyphicon glyphicon-home'></span></span></div></div></div><div class='row'><div class='col-sm-6 col-height col-middle'></br><div class='input-group' id='departure'><input class='form-control' type='text' id='departureBox' class='form-control' placeholder= 'Departure'/><span class='input-group-addon'><a href='#' class='depIcon'><span class='glyphicon glyphicon-calendar'></a></span></span></div></div><div class='col-sm-6 col-height col-middle'></div></div><div class='row'><div class='col-sm-4 col-height col-middle'><br/><table width='100%' style='text-align:left'><tr><td width='5%' style='white-space: nowrap;'><label class='mainLabel' >Persons&nbsp;&nbsp;&nbsp;</label></td><td><div class='input-group'><input type='number' id ='persons' value='1' min='1' max='6' class='form-control' style='width:60px;'/></div></td></tr></table></div><div class='col-sm-4 col-height col-middle' ><br/><table width='100%' style='text-align:center'><tr><label class='mainLabel'>Flight Class&nbsp;&nbsp;&nbsp;</label></tr><tr>"+flightClass+"</tr></table></div><div class='col-sm-4 col-height col-middle' ><br/><table width='100%' style='text-align:right'><tr><label class='mainLabel'>Train Class&nbsp;&nbsp;&nbsp;</label></tr><tr>"+trainClass+"</tr></table></div></div><div class='row'><div class='col-sm-6 col-height col-middle'></br><input type='submit' id='search' class='btn btn-info' value='Search..'></div><div class='col-sm-6 col-height col-middle'></div></div></div></div></div>";
 
 		document.getElementById("planner").innerHTML = out;
 		$('#departureBox').datepicker({ minDate: 0, maxDate: "+1Y" });
-		$('#returnBox').datepicker({ minDate: 0, maxDate: "+1Y" });
+		
 		//setting min date as today
 		var dt= new Date();
 		   var yyyy = dt.getFullYear().toString();
@@ -27,6 +27,9 @@ function showPlanner(plannerContainer){
 		//$('#departureBox').prop('min',min);
 //$('#returnBox').prop('min',min);
 		$("#return").hide();
+		$(".depIcon").click(function(){
+			$('#departureBox').datepicker("show");
+		});
 		
 		$(".dropdown-menu li a").click(function(){
 			
@@ -52,15 +55,18 @@ function showPlanner(plannerContainer){
 				var failure = "FALSE";
 			    if(placeFrom == "EMPTY" || IsFromChange==false){
 					document.getElementById("from").value="";
+					$('#from').css('border-color', 'red');
 					failure = "TRUE"
 				}
 				if(placeTo == "EMPTY" || IsToChange==false){
 					document.getElementById("to").value="";
+					$('#to').css('border-color', 'red');
 					failure = "TRUE"
 				}
 				var depDate = document.getElementById("departureBox").value;
 				if(depDate == ""){
 					document.getElementById("departureBox").value="";
+					$('#departureBox').css('border-color', 'red');
 					failure = "TRUE"
 				}
 				

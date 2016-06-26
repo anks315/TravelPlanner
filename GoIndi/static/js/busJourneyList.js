@@ -15,7 +15,7 @@ function showBusJourneyList(busList){
 		var priceList = busDetails.price;
 		var priceArr = priceList.split(",");
 		var price = priceArr[0]
-		var travelSpecificWid = travelSpecificsWidget(busDetails.source,busDetails.destination,busDetails.arrival,busDetails.departure,busDetails.duration);
+		var travelSpecificWid = travelSpecificsWidget(busDetails.source,busDetails.destination,busDetails.arrival,busDetails.departure,busDetails.duration,busDetails.arrivalDay,busDetails.departureDay);
 		var startingFrom='';
 		if (priceArr.length>1){
 			startingFrom="Staring from&nbsp;&nbsp;"

@@ -26,7 +26,6 @@ function showPlanner(plannerContainer){
 		document.getElementById("planner").innerHTML = out;
 		//setting min date as today
 		$('#departureBox').datepicker({ minDate: 0, maxDate: "+1Y" });
-		$('#returnBox').datepicker({ minDate: 0, maxDate: "+1Y" });
 		var dt= new Date();
 		   var yyyy = dt.getFullYear().toString();
 		   var mm = (dt.getMonth()+1).toString(); // getMonth() is zero-based
@@ -61,14 +60,17 @@ function showPlanner(plannerContainer){
 				var failure = "FALSE";
 			    if(placeFrom == "EMPTY" || IsFromChange==false){
 					document.getElementById("from").value="";
+					$('#from').css('border-color', 'red');
 					failure = "TRUE"
 				}
 				if(placeTo == "EMPTY" || IsToChange==false){
 					document.getElementById("to").value="";
+					$('#to').css('border-color', 'red');
 					failure = "TRUE"
 				}
 				if(document.getElementById("departureBox").value == ""){
 					document.getElementById("departureBox").value="";
+					$('#departureBox').css('border-color', 'red');
 					failure = "TRUE"
 				}
 				

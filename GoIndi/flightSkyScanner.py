@@ -101,10 +101,10 @@ def parseflightandreturnfare(apiresult,id,source,destination,journeydate,numberO
         route["full"].append(full)
         route["parts"]=[]
         route["parts"].append(part)
-        part["price"]=itinerary["PricingOptions"][0]["Price"]
-        full["price"]=itinerary["PricingOptions"][0]["Price"]
-        full["minPrice"]=itinerary["PricingOptions"][0]["Price"]
-        full["maxPrice"]=itinerary["PricingOptions"][0]["Price"]
+        part["price"]=int(itinerary["PricingOptions"][0]["Price"])
+        full["price"]=int(itinerary["PricingOptions"][0]["Price"])
+        full["minPrice"]=int(itinerary["PricingOptions"][0]["Price"])
+        full["maxPrice"]=int(itinerary["PricingOptions"][0]["Price"])
         part["id"]= str(id)+str(flightcounter)+str(partno)
         part["mode"]="flight"
         part["source"] = source
@@ -112,6 +112,7 @@ def parseflightandreturnfare(apiresult,id,source,destination,journeydate,numberO
         part["arrival"]=(returnedfaredata["Legs"][flightcounter]["Arrival"]).split("T")[1]
         full["arrival"] = part["arrival"]
         part["departureDate"]=journeydate
+        part["departureDay"] = models.getdayabbrevationfromdatestr(journeydate, 0)
         full["minArrival"]=(returnedfaredata["Legs"][flightcounter]["Arrival"]).split("T")[1]
         full["maxArrival"]=(returnedfaredata["Legs"][flightcounter]["Arrival"]).split("T")[1]
         part["departure"]=returnedfaredata["Legs"][flightcounter]["Departure"].split("T")[1]
@@ -123,6 +124,7 @@ def parseflightandreturnfare(apiresult,id,source,destination,journeydate,numberO
         minutes = int(duration)%60
         part["duration"]= str(hours)+":"+str(minutes)
         part["arrivalDate"] = dateTimeUtility.calculatearrivaltimeanddate(journeydate, part["departure"],part["duration"])["arrivalDate"]
+        part["arrivalDay"] = models.getdayabbrevationfromdatestr(part["arrivalDate"], 0)
         full["duration"]=str(hours)+":"+str(minutes)
         full["minDuration"]=str(hours)+":"+str(minutes)
         full["maxDuration"]=str(hours)+":"+str(minutes)

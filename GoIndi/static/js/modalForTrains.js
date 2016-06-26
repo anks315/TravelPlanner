@@ -56,7 +56,7 @@ function getTrainPart(train,id){
 			var transportDetails = train.subParts[j];
 			if(j==0){
 				//source and details of begining station
-				details = details + "<table width='100%' style='color:grey'><tr><td><table width='100%'><tr><td width='20%'>"+transportDetails.source+"("+transportDetails.sourceStation+")&nbsp;&nbsp;</td><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(transportDetails.departure)+"</td></tr></table></td></tr>";
+				details = details + "<table width='100%' style='color:grey'><tr><td><table width='100%'><tr><td width='20%'>"+transportDetails.source+"("+transportDetails.sourceStation+")&nbsp;&nbsp;</td><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(transportDetails.departure)+", "+transportDetails.departureDay+"</td></tr></table></td></tr>";
 			}
 
 			var siteName = "";
@@ -78,11 +78,11 @@ function getTrainPart(train,id){
 			
 			if(j==train.subParts.length-1){
 				//details of last station
-				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"("+transportDetails.destinationStation+")&nbsp;&nbsp;</td><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(transportDetails.arrival)+"</td></tr></table></td></tr></table>";
+				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"("+transportDetails.destinationStation+")&nbsp;&nbsp;</td><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(transportDetails.arrival)+", "+transportDetails.arrivalDay+"</td></tr></table></td></tr></table>";
 			} else {
 				//datails of intermediate station
 				k=j+1;
-				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"("+transportDetails.destinationStation+")&nbsp;&nbsp;</td><td><table><tr><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(transportDetails.arrival)+"</td></tr><tr><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(train.subParts[j+1].departure)+"</td></tr></table></td></tr></table></td></tr></td>"
+				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"("+transportDetails.destinationStation+")&nbsp;&nbsp;</td><td><table><tr><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(transportDetails.arrival)+", "+transportDetails.arrivalDay+"</td></tr><tr><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(train.subParts[j+1].departure)+", "+train.subParts[j+1].departureDay+"</td></tr></table></td></tr></table></td></tr></td>"
 			}
 			
 	
@@ -106,7 +106,7 @@ function getBusPart(bus, id){
 			var priceArr = priceList.split(",");
 			var price = priceArr[0]
 			
-			details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td width='40%'>&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+bus.id+"' "+isChecked+" value = '"+price+"' bookingLink='"+transportDetails.bookingLink+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr><tr><td bgcolor='#C5EFFD' colspan = '4' style='text-align:center' class='detailsDuration'>Waiting Time : "+transportDetails.waitingTime+" Hrs</td></tr>";
+			details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td width='40%'>&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+bus.id+"' "+isChecked+" value = '"+price+"' bookingLink='"+transportDetails.bookingLink+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+", "+transportDetails.departureDay+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+", "+transportDetails.arrivalDay+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr><tr><td bgcolor='#C5EFFD' colspan = '4' style='text-align:center' class='detailsDuration'>Waiting Time : "+transportDetails.waitingTime+" Hrs</td></tr>";
 	
 	}
 	details = details+"</table>";

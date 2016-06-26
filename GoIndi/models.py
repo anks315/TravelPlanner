@@ -563,7 +563,7 @@ def gettrainroute(trainroute, trainid, traincounter, journeydate, logger):
                 "sourceStation": trainroute.srcStationCode, "destinationStation": trainroute.destStationCode, "arrivalDate": trainroute.destArrivalDate,
                 "departure": trainroute.srcDepartureTime, "departureDate": journeydate, "prices": trainroute.prices, "price": trainroute.price,
                 "priceClass": trainroute.priceClass, "route": trainroute.srcStation + ",train," + trainroute.destStation, "trainNumber": trainroute.trainNumber,
-                "arrivalDay" : trainroute.srcDepartureDay, "departureDay" : trainroute.destArrivalDay }
+                "arrivalDay" : trainroute.destArrivalDay, "departureDay" : trainroute.srcDepartureDay }
         part = copy.deepcopy(full)
         part["id"] = full["id"] + str(1)
         part["subParts"] = []
