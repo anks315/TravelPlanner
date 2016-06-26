@@ -1,8 +1,12 @@
 function showBusJourneyList(busList){
 	if(busList.length==0){
-		var noData = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Sorry! We could not find any Buses on this Route<br/>Check out Train or flight for more options</td></tr><tr><td><br/></td></tr></table></div>'
-		document.getElementById("busData").innerHTML = noData;
+		
 		return;
+	}
+	if($( "#priceSort" ).hasClass("active")){
+		SortListByPrice(busList);
+	} else {
+		SortListByDuration(busList);
 	}
 	
 	var output = "<br/><div id='busBox' hidden><table width='100%'><tr>";
@@ -16,11 +20,13 @@ function showBusJourneyList(busList){
 		if (priceArr.length>1){
 			startingFrom="Staring from&nbsp;&nbsp;"
 		}
-		output = output + "<tr><td bgcolor='WhiteSmoke'><div class='row-eq-height'><table width = '100%'><tr><td width = '75%' style ='text-align:left'>&nbsp;&nbsp;<font color = '#056273'><b>"+busDetails.carrierName+"</b></td><td width = '25%' style ='text-align:right'><button type='button' class='btn btn-warning onlyBus' id = '"+busDetails.id+"' onmouseover='this.html=\"Select\"' onmouseout='this.html=\""+busDetails.availableSeats+" Seats\"' bookingLink='"+busDetails.bookingLink+"'>"+busDetails.availableSeats+" Seats</button>&nbsp;&nbsp;</td></tr></table></div></td></tr><tr><td><br/><div class='row-eq-height'><div class='col-sm-3 col-height col-middle' style ='text-align:left'><font color = 'grey' size='1'>"+busDetails.busType+"<br/>&nbsp;</div><div class='col-sm-6 col-height col-middle' style ='text-align:center'>"+travelSpecificWid+"</div></font><div class='col-sm-3 col-height col-middle'><table width = '100%' style ='text-align:right'><tr><td><font color='grey' size='1'>"+startingFrom+"</font><h4 style='white-space: nowrap;'><font color='green'>&#8377 "+price+"/-</font></h4></td></tr></table></div></div></td></tr>"
+		output = output + "<tr ><td>&nbsp;</td></tr><tr><td bgcolor='#dcdcdc'><div class='row-eq-height'><table width = '100%'><tr><td width = '75%' style ='text-align:left'><div class='carrierLabel'>&nbsp;&nbsp;"+busDetails.carrierName+"</td><td width = '25%' style ='text-align:right'><button type='button' class='btn btn-warning onlyBus' id = '"+busDetails.id+"'bookingLink='"+busDetails.bookingLink+"'>Book</button>&nbsp;&nbsp;</td></tr></table></div></td></tr><tr><td bgcolor='WhiteSmoke'><br/><div class='row-eq-height'><div class='col-sm-3 col-height col-middle' style ='text-align:left'><font color = 'grey' size='1'>"+busDetails.busType+"<br/>&nbsp;</div><div class='col-sm-6 col-height col-middle' style ='text-align:center'>"+travelSpecificWid+"</div></font><div class='col-sm-3 col-height col-middle'><table width = '100%' style ='text-align:right'><tr><td><font color='grey' size='1'>"+startingFrom+"</font><h4 style='white-space: nowrap;'><font color='green'>&#8377 "+price+"/-</font></h4></td></tr></table></div></div></td></tr>"
 	}
 	output = output +"</table></div>";
-	$("#busData").empty();
-	document.getElementById("busData").innerHTML = output;
+	$("#resultsWid").empty();
+	document.getElementById("resultsWid").innerHTML = output;
+	document.getElementById("resultsWid").setAttribute("route",busList[0].full[0].route)
+	document.getElementById("resultsWid").setAttribute("routeType","bus")
 	$("#busBox").fadeIn();	
 	$(".onlyBus").click(function() {
 			var bookingLink = $(this).attr('bookingLink')

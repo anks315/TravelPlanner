@@ -43,13 +43,14 @@ table {
 .journeySpecifics{
 	font-size : 85%;
 	color:grey;
-	font-weight:bold;
+	font-weight:normal;
 }
 .journeySpecificsArrow{
 	font-size : 250%;
 }
 .journeySpecificsDuration{
-	font-size : 100%;
+	font-size : 130%;
+	color:#6499be;
 }
 
 .detailsCity{
@@ -164,4 +165,9 @@ table {
 .btn-arrow-right:before,
 .btn-arrow-left:after { /* hide arrow tails background */
     background-color: white;
+}
+
+.divContainer {
+  display: flex;
+  justify-content: space-between;
 }

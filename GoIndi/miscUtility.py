@@ -25,11 +25,11 @@ def sortonsubjourneytime(x, y):
     """
 
     if greaterThan(x["subJourneyTime"],y["subJourneyTime"]):
-        return -1
+        return 1
     elif x["subJourneyTime"] == y["subJourneyTime"]:
         return 0
     else:
-        return 1
+        return -1
 
 
 def greaterThan(t1,t2):

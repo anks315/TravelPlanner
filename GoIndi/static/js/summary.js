@@ -6,10 +6,12 @@ function showSummary(){
 	 var output = "<div class='panel panel-default'><div class='panel-body'><br/><table width = '100%' style='text-align:center;'><tr><td valign='top' width = '5%'><div id = busSum></div></td><td width = '70%'><div id = busSumWid ></div></td><td valign='top'><div id = busSumPrice></div></td><td valign='top'><div id = busSumDur></div></td></tr><tr><td width = '5%' valign='top'><div id = trainSum></div></td><td width = '70%'><div id = trainSumWid ></div></td><td valign='top'><div id = trainSumPrice></div></td><td valign='top'><div id = trainSumDur></div></td></tr><tr><td width = '5%' valign='top'><div id = flightSum  ></div></td><td width = '70%'><div id = flightSumWid></div></td><td valign='top'><div id = flightSumPrice></div></td><td valign='top'><div id = flightSumDur></div></td></tr></table></div></div>";
 	 
 	 document.getElementById("summary").innerHTML = output;
-	 var progressBar = "<div class='progress'><div class='progress-bar progress-bar-warning progress-bar-striped active' role='progressbar' aria-valuenow='45' aria-valuemin='0' aria-valuemax='100' style='width: 100%'><span class='sr-only'>100% Complete</span></div></div>"
-	document.getElementById("busSumWid").innerHTML = progressBar;
-	document.getElementById("trainSumWid").innerHTML = progressBar;
-	document.getElementById("flightSumWid").innerHTML = progressBar;
+	 var progressBarWarning = "<div class='progress'><div class='progress-bar progress-bar-warning progress-bar-striped active' role='progressbar' aria-valuenow='45' aria-valuemin='0' aria-valuemax='100' style='width: 100%'><span class='sr-only'>100% Complete</span></div></div>"
+	 var progressBarSuccess = "<div class='progress'><div class='progress-bar progress-bar-success progress-bar-striped active' role='progressbar' aria-valuenow='45' aria-valuemin='0' aria-valuemax='100' style='width: 100%'><span class='sr-only'>100% Complete</span></div></div>"
+	 var progressBarDanger = "<div class='progress'><div class='progress-bar progress-bar-danger progress-bar-striped active' role='progressbar' aria-valuenow='45' aria-valuemin='0' aria-valuemax='100' style='width: 100%'><span class='sr-only'>100% Complete</span></div></div>"
+	document.getElementById("busSumWid").innerHTML = progressBarDanger;
+	document.getElementById("trainSumWid").innerHTML = progressBarSuccess;
+	document.getElementById("flightSumWid").innerHTML = progressBarWarning;
 	document.getElementById("busSum").innerHTML = "<img  src='/static/images/bus.png'>";
 	document.getElementById("trainSum").innerHTML = "<img  src='/static/images/train.png'>";
 	document.getElementById("flightSum").innerHTML = "<img  src='/static/images/flight.png'>";

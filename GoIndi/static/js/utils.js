@@ -4,6 +4,12 @@ function travelSpecificsWidget(source,destination,arrival,departure,duration){
 	var out = "<table class='journeySpecifics' width = '100%' ><tr><td width='33%' style ='text-align:left'>"+source+"</td><td class = 'journeySpecificsDuration' width='34%' style ='text-align:center'>"+duration+" Hrs</td><td width='33%' style ='text-align:right'>"+destination+"</td></tr><tr><td width='33%' style ='text-align:left'>"+departure+"</td><td class = 'journeySpecificsArrow' width='34%' style ='text-align:center'>&#8594;</td><td width='34%'style ='text-align:right'>"+arrival+"</td></tr></td></tr></table>";
 	return out;
 }
+function travelSpecificsWidget(source,destination,arrival,departure,duration,arrivalDay,departureDay){
+	arrival = getIn12HrFormat(arrival);
+	departure = getIn12HrFormat(departure);
+	var out = "<table class='journeySpecifics' width = '100%' ><tr><td width='33%' style ='text-align:left'>"+source+"</td><td class = 'journeySpecificsDuration' width='34%' style ='text-align:center'>"+duration+" Hrs</td><td width='33%' style ='text-align:right'>"+destination+"</td></tr><tr><td width='33%' style ='text-align:left'>"+departure+", "+departureDay+"</td><td class = 'journeySpecificsArrow' width='34%' style ='text-align:center'>&#8594;</td><td width='34%'style ='text-align:right'>"+arrival+", "+arrivalDay+"</td></tr></td></tr></table>";
+	return out;
+}
 
 function getIn12HrFormat(time){
 	var tmHr = time.split(":")[0];

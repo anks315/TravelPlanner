@@ -211,7 +211,7 @@ airportlist = [
     },
     {
         'City': 'Bhatinda',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Bhatinda',
         'IATA': 'BUP',
@@ -415,7 +415,7 @@ airportlist = [
     },
     {
         'City': 'Ludhiana',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Ludhiana',
         'IATA': 'LUH',
@@ -1015,7 +1015,7 @@ airportlist = [
     },
     {
         'City': 'Kanpur',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Kanpur',
         'IATA': 'KNU',
@@ -1279,7 +1279,7 @@ airportlist = [
     },
     {
         'City': 'Muzaffarpur',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Muzaffarpur',
         'IATA': 'MZU',
@@ -1387,7 +1387,7 @@ airportlist = [
     },
     {
         'City': 'Dhanbad',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Dhanbad',
         'IATA': 'DBD',

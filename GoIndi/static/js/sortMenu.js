@@ -1,19 +1,12 @@
 function showSortMenuMain(){
-	var sortMenuMain = "" + "<br/><div class='btn-group btn-group-justified' role='group' aria-label='...'><div class='btn-group' role='group'><button type='button' id='priceSort' class='btn btn-default active' >Cheapest</button></div><div class='btn-group' role='group'><button type='button' id = 'durationSort' class='btn btn-default'>Fastest</button></div></div><br/>"
+	var sortMenuMain = "" + "<div class='btn-group btn-group-justified ' role='group' aria-label='...'><div class='btn-group' role='group'><button type='button' id='priceSort' class='btn btn-info active' >Cheapest</button></div><div class='btn-group' role='group'><button type='button' id = 'durationSort' class='btn btn-info'>Fastest</button></div></div><br/>"
 	
-	var modeMenuMain = "" + "<ul class='nav nav-tabs'><li class='active' id ='busDataHead'><a data-toggle='tab'  href='#busData' >&nbsp;&nbsp<img src='/static/images/bus.png'/>&nbsp;&nbsp</a></li><li id ='trainDataHead'><a data-toggle='tab' href='#trainData'>&nbsp;&nbsp<img src='/static/images/train.png'/>&nbsp;&nbsp</a></li><li id ='flightDataHead'><a data-toggle='tab' href='#flightData'>&nbsp;&nbsp<img src='/static/images/flight.png'/>&nbsp;&nbsp</a></li></ul><div class='tab-content'><div class='tab-pane fade in active' id='busData'></div><div class='tab-pane fade' id='flightData'></div><div class='tab-pane fade' id='trainData' id='trainData'></div>"
+	var modeMenuMain = "" + "<ul class='nav nav-tabs'><li class='active' id ='allDataHead'><a data-toggle='tab'  href='#allData' >&nbsp;&nbspALL&nbsp;&nbsp</a><li id ='busDataHead'><a data-toggle='tab'  href='#busData' >&nbsp;&nbsp<img src='/static/images/bus.png'/>&nbsp;&nbsp</a></li><li id ='trainDataHead'><a data-toggle='tab' href='#trainData'>&nbsp;&nbsp<img src='/static/images/train.png'/>&nbsp;&nbsp</a></li><li id ='flightDataHead'><a data-toggle='tab' href='#flightData'>&nbsp;&nbsp<img src='/static/images/flight.png'/>&nbsp;&nbsp</a></li></ul><div class='tab-content'><div class='tab-pane fade in active' id='busData'></div><div class='tab-pane fade' id='flightData'></div><div class='tab-pane fade' id='trainData' id='trainData'></div>"
 	
-	document.getElementById("sortMenuMain").innerHTML = sortMenuMain;
 	document.getElementById("modeMenuMain").innerHTML = modeMenuMain;
+	document.getElementById("sortMenuMain").innerHTML = sortMenuMain;
 	
-	var loadingBus = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Loading best bus options<br/></td></tr><tr><td><br/><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></td></tr></table></div>'
-	document.getElementById("busData").innerHTML = loadingBus;
-	
-	var loadingTrain = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Loading best train options<br/></td></tr><tr><td><br/><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></td></tr></table></div>'
-	document.getElementById("trainData").innerHTML = loadingTrain;
-	
-	var loadingFlight = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Loading best flight options<br/></td></tr><tr><td><br/><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></td></tr></table></div>'
-	document.getElementById("flightData").innerHTML = loadingFlight;
+
 	
 	//showBusJourneyList(busList);
 	//showtransportJourneyList(trainList,"train");
@@ -23,62 +16,102 @@ function showSortMenuMain(){
 	//busFilters();
 	
 	$( "#busDataHead" ).click(function() {
-				$("#flightFilters").hide();
-				$("#trainFilters").hide();
-				$("#busFilters").show();
+				var route = document.getElementById("resultsWid").getAttribute('route');
+				
+				if(route!=""){
+					route = route.replace(/,/g , "");
+					route = route.replace(/ /g , "");
+					$("#filter"+route).collapse('hide');
+				}
+					
+				$(".flightRouteMenu").hide();
+				$(".trainRouteMenu").hide();
+				$(".busRouteMenu").show();
 		});
 	$( "#trainDataHead" ).click(function() {
-				$("#flightFilters").hide();
-				$("#busFilters").hide();
-				$("#trainFilters").show();
+				var route = document.getElementById("resultsWid").getAttribute('route');
+				
+				if(route!=""){
+					route = route.replace(/,/g , "");
+					route = route.replace(/ /g , "");
+					$("#filter"+route).collapse('hide');
+				}
+		
+				$(".flightRouteMenu").hide();
+				$(".busRouteMenu").hide();
+				$(".trainRouteMenu").show();
 		});
 	$( "#flightDataHead" ).click(function() {
-				$("#busFilters").hide();
-				$("#trainFilters").hide();
-				$("#flightFilters").show();
+				var route = document.getElementById("resultsWid").getAttribute('route');
+				
+				if(route!=""){
+					route = route.replace(/,/g , "");
+					route = route.replace(/ /g , "");
+					$("#filter"+route).collapse('hide');
+				}	
+				$(".busRouteMenu").hide();
+				$(".trainRouteMenu").hide();
+				$(".flightRouteMenu").show();
+		});
+	$( "#allDataHead" ).click(function() {
+				var route = document.getElementById("resultsWid").getAttribute('route');
+				
+				if(route!=""){
+					route = route.replace(/,/g , "");
+					route = route.replace(/ /g , "");
+					$("#filter"+route).collapse('hide');
+				}
+				$(".busRouteMenu").show();
+				$(".trainRouteMenu").show();
+				$(".flightRouteMenu").show();
 		});
 		
 	$( "#priceSort" ).click(function() {
-				if(flightList.length!=0){
-					resetSummary("flight","price");
+				if(flightList.length>0){
+				resetSummary("flight","price");
 				}
-				SortListByPrice(newflightList);
-				showtransportJourneyList(newflightList,"flight");
-				if(busList.length!=0){
-					resetSummary("bus","price");
+				if(busList.length>0){
+				resetSummary("bus","price");
 				}
-				SortListByPrice(newbusList);
-				showBusJourneyList(newbusList);
-				if(trainList.length!=0){
-					resetSummary("train","price");
+				if(trainList.length>0){
+				resetSummary("train","price");
 				}
-				SortListByPrice(newtrainList);
-				showtransportJourneyList(newtrainList,"train");
 				document.getElementById("durationSort").classList.remove("active");
 				document.getElementById("priceSort").classList.add("active");
+				var routeType = document.getElementById("resultsWid").getAttribute("routeType")
+				if(routeType=="flight"){
+					showtransportJourneyList(newVisibleList,"flight")
+				}else if(routeType=="train"){
+					showtransportJourneyList(newVisibleList,"train")
+				}else if(routeType=="bus"){
+					showBusJourneyList(newVisibleList)
+				}
+				
 				
 		});
 	$( "#durationSort" ).click(function() {
-				if(flightList.length!=0){
-					resetSummary("flight","duration");
+				if(flightList.length>0){
+				resetSummary("flight","duration");
 				}
-				SortListByDuration(newflightList);
-				showtransportJourneyList(newflightList,"flight");
-				if(busList.length!=0){
-					resetSummary("bus","duration");
+				if(busList.length>0){
+				resetSummary("bus","duration");
 				}
-				SortListByDuration(newbusList);
-				showBusJourneyList(newbusList);
-				if(trainList.length!=0){
-					resetSummary("train","duration");
+				if(trainList.length>0){
+				resetSummary("train","duration");
 				}
-				SortListByDuration(newtrainList);
-				showtransportJourneyList(newtrainList,"train");
-				document.getElementById("priceSort").classList.remove("active");
 				document.getElementById("durationSort").classList.add("active");
+				document.getElementById("priceSort").classList.remove("active");
+				var routeType = document.getElementById("resultsWid").getAttribute("routeType")
+				if(routeType=="flight"){
+					showtransportJourneyList(newVisibleList,"flight")
+				}else if(routeType=="train"){
+					showtransportJourneyList(newVisibleList,"train")
+				}else if(routeType=="bus"){
+					showBusJourneyList(newVisibleList)
+				}
+				
 				
 		});
 		
-	SortListByDuration
 	
 }

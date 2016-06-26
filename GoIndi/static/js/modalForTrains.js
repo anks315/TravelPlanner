@@ -106,7 +106,7 @@ function getBusPart(bus, id){
 			var priceArr = priceList.split(",");
 			var price = priceArr[0]
 			
-			details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+bus.id+"' "+isChecked+" value = '"+price+"' bookingLink='"+transportDetails.bookingLink+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
+			details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td width='40%'>&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+bus.id+"' "+isChecked+" value = '"+price+"' bookingLink='"+transportDetails.bookingLink+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr><tr><td bgcolor='#C5EFFD' colspan = '4' style='text-align:center' class='detailsDuration'>Waiting Time : "+transportDetails.waitingTime+" Hrs</td></tr>";
 	
 	}
 	details = details+"</table>";

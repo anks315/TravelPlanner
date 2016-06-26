@@ -7,6 +7,12 @@
 .filterLabel { 
 	border:0; 
 	font-weight:bold;
+	color:grey; 
+}
+
+.carrierLabel { 
+	border:0; 
+	font-weight:bold;
 	color:#056273; 
 }
 .modal-header
@@ -60,8 +66,15 @@
    padding: 2px !important;
    margin: 0 !important;
 }
+.nopaddingatall {
+   padding: 0px !important;
+   margin: 0 !important;
+}
 .modal-wide .modal-dialog {
   width: 90% !important; /* or whatever you wish */
+}
+.summaryBox {
+	background-color: WhiteSmoke; 
 }
 td a {
     display:block;
@@ -97,7 +110,8 @@ hr { margin: 0.1em auto;
 	color:grey
 }
 .sameLine{
-	display: inline-block
+	display: inline-block;
+	zoom: 1;
 }
 
 .summaryBar{

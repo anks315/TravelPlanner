@@ -12,27 +12,83 @@ var filterbusTypeList = new Object();
 
 function busFilters(){
 	
-	var busTypeFilter = getCheckFilterWid(busList,"busTypeFilter","Bus Type","busType")
+	var route=busRouteList[0]
+	var list = routeMap["bus"][route]
+	SortListByPrice(list);
+	minPrice = list[0].full[0].price;
+	SortListByDuration(list);
+	minDuration = list[0].full[0].duration;
+	route = route.replace(/,/g , "");
+	route = route.replace(/ /g , "");
 	
-	var output = "<div class='panel panel-default'><div class='panel-body'><p><label for='busAmount' class='filterLabel'>Price range:</label><div id='busAmount' class='filterValue'></div></p><div id='busPriceRange'></div><br/><p><label for='busTime' class='filterLabel'>Travel time range:</label><div id='busTime' class='filterValue'></div></p><div id='busDurationRange'></div><br/><p><label for='busDeparture' class='filterLabel'>Departure time range:</label><div id='busDeparture' class='filterValue'></div></p><div id='busDepartureTimeRange'></div><br/><p><label for='busArrival' class='filterLabel'>Arrival time range:</label><div id='busArrival' class='filterValue'></div></p><div id='busArrivalTimeRange'></div><br/>"+busTypeFilter+"<br/></div></div></div>"
+	busFilterList = routeMap["bus"][busRouteList[0]];
+	routeArr = busRouteList[0].split(",")
 	
-	document.getElementById("busFilters").innerHTML = output;
-	if($("#busDataHead").hasClass("active")){
-		$("#busFilters").show();
-	}else{
-		$("#busFilters").hide();
+	var routeContent = "<div class='routeLabel sameLine'>"+routeArr[0]+"</div>";
+	for(var j =1;j<routeArr.length;j++){
+		routeContent = routeContent + "<div class='sameLine'><img src='/static/images/"+routeArr[j]+"2.png'></img></div>"
+		j++
+		routeContent=routeContent+"<div class='routeLabel sameLine'>"+routeArr[j]+"</div>"
 	}
-	busLeastPrice = busList[0].full[0].price.split(",")[0];
-	busLeastDuration = busList[0].full[0].duration;
+	
+	routeContent="<table width=100%><tr><td><div class='divContainer'>"+routeContent+"</div><table width='100%'><tr><td style='text-align:left'><span class='label label-success'>&#8377 "+minPrice.split(',')[0]+"/-</span></td><td style='text-align:right'><span class='label label-default'>"+minDuration+" Hrs</span></td></tr></table></td><td width='5%'>&nbsp;<span class='glyphicon glyphicon-play'></span></td></tr></table>"
+
+	var filtersForOption = "<table width='100%'><tr><td width='5%'></td><td><p><label for='busAmount' class='filterLabel'>Price range:</label><div id='busAmount' class='filterValue'></div></p><div id='busPriceRange'></div><br/><p><label for='busTime' class='filterLabel'>Travel time range:</label><div id='busTime' class='filterValue'></div></p><div id='busDurationRange'></div><br/><p><label for='busDeparture' class='filterLabel'>Departure time range:</label><div id='busDeparture' class='filterValue'></div></p><div id='busDepartureTimeRange'></div><br/><p><label for='busArrival' class='filterLabel'>Arrival time range:</label><div id='busArrival' class='filterValue'></div></p><div id='busArrivalTimeRange'></div><br/></td><td width='5%'></td></tr></table>"
+	var loading = '<br/><br/><br/><br/><br/><div class="tabLoading"><table width="100%" style="text-align:center"><tr><td>Loading...<br/></td></tr><tr><td><br/></td></tr></table></div>'
+	var routeOption="<a href='#filter"+route+"' id='"+route+"' route='"+busRouteList[0]+"' class='list-group-item list-group-item-danger busRouteMenu' data-toggle='collapse' data-parent='#RouteMenu'>"+routeContent+"</a><div class='collapse '  id='filter"+route+"' route='"+busRouteList[0]+"'>"+filtersForOption+"</div>"
+
+	$("#routeMenuList").append(routeOption);
+	if (!($("#allDataHead").hasClass("active")||$("#busDataHead").hasClass("active"))){
+					 $(".busRouteMenu").hide()
+				}
+	
+			$("#filter"+route).on('shown.bs.collapse', function () {
+					$("#summaryBox").hide()
+					document.getElementById("resultsWid").innerHTML = loading;
+					visibleList = routeMap["bus"][$(this).attr('route')]
+					createbusFilter(visibleList)
+			});
+
+			$("#filter"+route).on('hidden.bs.collapse', function () {
+					newVisibleList = new Array();
+					document.getElementById("resultsWid").setAttribute("route","")
+					document.getElementById("resultsWid").innerHTML = "";
+					$("#summaryBox").show()
+			});
+	//<br/>"+busTypeFilter+"<br/>
+	
+
+	
+	
+	/*for (i = 0; i < busFilterList.length; i++) {
+			var busType = busFilterList[i].full[0].busType;
+			if(busType in filterbusTypeList){
+			}else{
+				filterbusTypeList[busType] = true;
+			}
+	}
+	$('#busTypeFilter').on('change', 'input[type="checkbox"]', function () {
+				filterbusTypeList=new Object();
+                $('#busTypeFilter').find('input:checked').each(function () {
+					filterbusTypeList[$(this).attr('rel')]="true"
+                });
+				busFilter();
+            });*/
+						
+}
+function createbusFilter(busFilterList){
+		
+	busLeastPrice = busFilterList[0].full[0].price.split(",")[0];
+	busLeastDuration = busFilterList[0].full[0].duration;
 	var leastDurArr = busLeastDuration.split(":");
 	busLeastDuration = leastDurArr[1]*1+leastDurArr[0]*60;
 	maxPrice = busLeastPrice;
 	var maxDuration = busLeastDuration;
-	for (i = 1; i < busList.length; i++) { 
-		var PriceList = busList[i].full[0].price.split(",");
+	for (i = 1; i < busFilterList.length; i++) { 
+		var PriceList = busFilterList[i].full[0].price.split(",");
 		var firstPrice = PriceList[0];
 		var lastPrice = PriceList[PriceList.length-2];
-		var duration = busList[i].full[0].duration;
+		var duration = busFilterList[i].full[0].duration;
 		var durArr = duration.split(":");
 		duration = durArr[1]*1+durArr[0]*60;
 		
@@ -121,38 +177,25 @@ function busFilters(){
 	filterbusMinArrival=0;
 	filterbusMaxArrival=1440;
     document.getElementById("busArrival").innerHTML = "12:00 AM - 12:00 PM";
-	
-	for (i = 0; i < busList.length; i++) {
-			var busType = busList[i].full[0].busType;
-			if(busType in filterbusTypeList){
-			}else{
-				filterbusTypeList[busType] = true;
-			}
-	}
-	$('#busTypeFilter').on('change', 'input[type="checkbox"]', function () {
-				filterbusTypeList=new Object();
-                $('#busTypeFilter').find('input:checked').each(function () {
-					filterbusTypeList[$(this).attr('rel')]="true"
-                });
-				busFilter();
-            });
-						
+	newVisibleList = busFilterList
+	showBusJourneyList(busFilterList);
 }
 function busFilter(){
 	var j=0;
-	 newbusList = new Array();
-		for (i = 0; i < busList.length; i++) { 
-		busType = busList[i].full[0].busType;
-		durationArr = busList[i].full[0].duration.split(":");
+	 newVisibleList = new Array();
+		for (i = 0; i < visibleList.length; i++) { 
+		busType = visibleList[i].full[0].busType;
+		durationArr = visibleList[i].full[0].duration.split(":");
 		durationVal = durationArr[0]*60 + 1*durationArr[1];
-		arrivalArr = busList[i].full[0].arrival.split(":");
+		arrivalArr = visibleList[i].full[0].arrival.split(":");
 		arrivalVal = arrivalArr[0]*60 + 1*arrivalArr[1];
-		departureArr = busList[i].full[0].departure.split(":");
+		departureArr = visibleList[i].full[0].departure.split(":");
 		departureVal = departureArr[0]*60 + 1*departureArr[1]
-		if((busList[i].full[0].price.split(",")[0] <=filterbusPrice)&&(durationVal <= filterbusDuration)&&(arrivalVal <= filterbusMaxArrival)&&(arrivalVal >= filterbusMinArrival)&&(departureVal <= filterbusMaxDeparture)&&(departureVal >= filterbusMinDeparture)&&(busType in filterbusTypeList)){
-			newbusList[j]=busList[i];
+		if((visibleList[i].full[0].price.split(",")[0] <=filterbusPrice)&&(durationVal <= filterbusDuration)&&(arrivalVal <= filterbusMaxArrival)&&(arrivalVal >= filterbusMinArrival)&&(departureVal <= filterbusMaxDeparture)&&(departureVal >= filterbusMinDeparture)){
+			newVisibleList[j]=visibleList[i];
 			j++;
 		}
 		}
-		showBusJourneyList(newbusList);
+		showBusJourneyList(newVisibleList);
+		//&&(busType in filterbusTypeList)
 }

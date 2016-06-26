@@ -74,9 +74,12 @@ function getFlightPart(flight,id){
 			
 	
 	}
-	var pricesWid = ''
-	
-	for(var z =0;z<flight.bookingOptions.length;z++){
+	var pricesWid = "<table class='table table-striped' style='text-align:left'>"
+	var noOfOptions = flight.bookingOptions.length
+	if(noOfOptions>4){
+		noOfOptions=4
+	}
+	for(var z =0;z<noOfOptions;z++){
 		var bookingOption = flight.bookingOptions[z];
 		var isCheckedPrice = ''
 		var agent = bookingOption.Agents
@@ -85,8 +88,9 @@ function getFlightPart(flight,id){
 			//var agent = "<img src='"+bookingOption.AgentsImg+"'></img>"
 		}
 		
-		pricesWid = pricesWid + "<div class='agent'>"+agent+"</div>" +"<input type='radio' value = '"+bookingOption.Price+"' bookingLink='"+bookingOption.DeeplinkUrl+"' class = '"+id+"' name='radio"+flight.id+"' "+isCheckedPrice+">&nbsp;&nbsp;<div class = 'detailsPrice sameLine'>&#8377 "+bookingOption.Price+"/-</div><br/>"
+		pricesWid = pricesWid + "<tr><td><div class='agent'>"+agent+"</div></td></tr><tr><td>" +"<input type='radio' value = '"+bookingOption.Price+"' bookingLink='"+bookingOption.DeeplinkUrl+"' class = '"+id+"' name='radio"+flight.id+"' "+isCheckedPrice+">&nbsp;&nbsp;<div class = 'detailsPrice sameLine'>&#8377 "+bookingOption.Price+"/-</div></td></tr>"
 	}
+	pricesWid = pricesWid + "</table>";
 	details=details+"<td width=50% style='text-align:center' >"+pricesWid+"</td></tr></table>";
 	var length =  radionames.length
 	radionames[length] = "radio"+flight.id
@@ -106,7 +110,7 @@ function getOtherPart(other, id){
 			var priceList = transportDetails.price;
 			var priceArr = priceList.split(",");
 			var price = priceArr[0]
-				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+other.id+"' "+isChecked+" value = '"+price+"' bookingLink='"+transportDetails.bookingLink+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
+				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td width='40%'>&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+other.id+"' "+isChecked+" value = '"+price+"' bookingLink='"+transportDetails.bookingLink+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr><tr><td colspan = '4' style='text-align:center' class='detailsDuration' bgcolor='#C5EFFD'>Waiting Time : "+transportDetails.waitingTime+" Hrs</td></tr>";
 		
 	}
 	details = details+"</table>";
@@ -128,7 +132,7 @@ function getTrainOptionsPart(train, id){
 			var price = transportDetails.price;
 			
 
-				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td >&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+train.id+"' "+isChecked+" value = '"+price+"' bookingLink='http://irctc.co.in'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.trainNumber+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"<br/>"+transportDetails.source+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"<br/>"+transportDetails.destination+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr>";
+				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td width='40%'>&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+train.id+"' "+isChecked+" value = '"+price+"' bookingLink='http://irctc.co.in'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.trainNumber+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+"<br/>"+transportDetails.source+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+"<br/>"+transportDetails.destination+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr><tr><td colspan = '4' style='text-align:center' class='detailsDuration' bgcolor='#C5EFFD'>Waiting Time : "+transportDetails.waitingTime+" Hrs</td></tr>";
 			
 	}
 	details = details+"</table>";
