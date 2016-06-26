@@ -74,7 +74,8 @@ def getApiResults(sourcecity,destinationcity,journeydate,id,flightClass='Economy
                 break
             logger.debug("Retrying... Empty Response From SkyScanner for Source:[%s] and Destination:[%s],journeyDate:[%s]",source,destination,journeydate)
             retries=retries-1
-    except:
+    except Exception as e:
+        logger.error("Exception while fetching flights from [%s] to destination [%s] on [%s]", sourcecity, destinationcity, journeydate)
         pass
 
     logger.info("[END]-Get Results From SkyScanner for Source:[%s]-[%s] and Destination:[%s]-[%s],JourneyDate:[%s] ",sourcecity,source,destinationcity,destination,journeydate)
@@ -126,9 +127,9 @@ def parseflightandreturnfare(apiresult,id,source,destination,journeydate,numberO
         full["minDuration"]=str(hours)+":"+str(minutes)
         full["maxDuration"]=str(hours)+":"+str(minutes)
         full["departureDate"] = journeydate
-        full["departureDay"] = models.getdayabbrevationfromdate(journeydate, 0)
+        full["departureDay"] = models.getdayabbrevationfromdatestr(journeydate, 0)
         full["arrivalDate"] = part["arrivalDate"]
-        full["arrivalDay"] = models.getdayabbrevationfromdate(full["arrivalDate"], 0)
+        full["arrivalDay"] = models.getdayabbrevationfromdatestr(full["arrivalDate"], 0)
         full["route"]=part["source"]+",flight,"+part["destination"]
         part["bookingOptions"] = itinerary["PricingOptions"]
         for option in part["bookingOptions"]:

@@ -58,7 +58,7 @@ def convertspartstofulljson(part_1, part_2):
         route["full"] = []
         full = {"id": part_1["full"][0]["id"]+ "_" +part_2["full"][0]["id"], "minPrice": price, "maxPrice": price, "minDuration": duration, "maxDuration": duration, "minArrival": part_2["full"][0]["arrival"],"maxArrival": part_2["full"][0]["arrival"],
                 "minDeparture": part_1["full"][0]["departure"], "maxDeparture": part_1["full"][0]["departure"], "route": part["route"], "duration":duration, "price":price, "destination":part["destination"], "source":part["arrival"],
-                "departureDate":part["departureDate"], "departureDay": models.getdayabbrevationfromdate(part["departureDate"], 0), "arrivalDate":part["arrivalDate"], "arrivalDay" : models.getdayabbrevationfromdate(part["arrivalDate"], 0),
+                "departureDate":part["departureDate"], "departureDay": models.getdayabbrevationfromdatestr(part["departureDate"], 0), "arrivalDate":part["arrivalDate"], "arrivalDay" : models.getdayabbrevationfromdatestr(part["arrivalDate"], 0),
                 "departure":part["departure"], "arrival":part["arrival"]}
 
         # sourcetobreakingtrainjson["train"][j]["full"][0]["destination"] = subparts[0]["destination"]
@@ -387,8 +387,8 @@ class TrainController:
                 breakingtodestinationtrainjson["train"][j]["full"][0]["waitingTime"] = subparts[0]["waitingTime"]
                 breakingtodestinationtrainjson["train"][j]["full"][0]["departure"] = subparts[0]["departure"]
                 breakingtodestinationtrainjson["train"][j]["full"][0]["departureDate"] = subparts[0]["departureDate"]
-                breakingtodestinationtrainjson["train"][j]["full"][0]["departureDay"] = models.getdayabbrevationfromdate(subparts[0]["departureDate"], 0)
-                breakingtodestinationtrainjson["train"][j]["full"][0]["arrivalDay"] = models.getdayabbrevationfromdate(breakingtodestinationtrainjson["train"][j]["full"][0]["arrivalDate"], 0)
+                breakingtodestinationtrainjson["train"][j]["full"][0]["departureDay"] = models.getdayabbrevationfromdatestr(subparts[0]["departureDate"], 0)
+                breakingtodestinationtrainjson["train"][j]["full"][0]["arrivalDay"] = models.getdayabbrevationfromdatestr(breakingtodestinationtrainjson["train"][j]["full"][0]["arrivalDate"], 0)
 
         combinedjson["train"] = [x for x in breakingtodestinationtrainjson["train"] if len(x["parts"]) == 2]
         return combinedjson
@@ -435,8 +435,8 @@ class TrainController:
                 sourcetobreakingtrainjson["train"][j]["full"][0]["waitingTime"] = subparts[0]["waitingTime"]
                 sourcetobreakingtrainjson["train"][j]["full"][0]["arrival"] = subparts[0]["arrival"]
                 sourcetobreakingtrainjson["train"][j]["full"][0]["arrivalDate"] = subparts[0]["arrivalDate"]
-                sourcetobreakingtrainjson["train"][j]["full"][0]["arrivalDay"] = models.getdayabbrevationfromdate(subparts[0]["arrivalDate"], 0)
-                sourcetobreakingtrainjson["train"][j]["full"][0]["departureDay"] = models.getdayabbrevationfromdate(sourcetobreakingtrainjson["train"][j]["full"][0]["departureDate"], 0)
+                sourcetobreakingtrainjson["train"][j]["full"][0]["arrivalDay"] = models.getdayabbrevationfromdatestr(subparts[0]["arrivalDate"], 0)
+                sourcetobreakingtrainjson["train"][j]["full"][0]["departureDay"] = models.getdayabbrevationfromdatestr(sourcetobreakingtrainjson["train"][j]["full"][0]["departureDate"], 0)
 
         combinedjson["train"] = [x for x in sourcetobreakingtrainjson["train"] if len(x["parts"]) == 2]
         return combinedjson

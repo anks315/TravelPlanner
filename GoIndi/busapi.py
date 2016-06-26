@@ -81,9 +81,9 @@ class BusController:
                         part["inventoryType"] = option["inventoryType"]
                         part["routeScheduleId"]= option["routeScheduleId"]
                         part["departureDate"] = journeydate
-                        part["departureDay"] = models.getdayabbrevationfromdate(journeydate)
+                        part["departureDay"] = models.getdayabbrevationfromdatestr(journeydate)
                         part["arrivalDate"] = dateTimeUtility.calculatearrivaltimeanddate(journeydate, part["departure"], part["duration"])["arrivalDate"]
-                        part["arrivalDay"] = models.getdayabbrevationfromdate(part["arrivalDate"])
+                        part["arrivalDay"] = models.getdayabbrevationfromdatestr(part["arrivalDate"])
                         part["bookingLink"] = "http://www.etravelsmart.com/bus/seat-book.htm?source="+source+"&destination="+destination+"&jdate="+newformatjourneydate+"&routeid="+option["routeScheduleId"]+"&apiType="+str(option["inventoryType"])+"&userId=eazzer&txnId=000111"
                         route["parts"].append(part)
                         full = part

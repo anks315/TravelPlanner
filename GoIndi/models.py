@@ -106,8 +106,8 @@ def gettrains(results, journeydate, sourcecity, logger, destinationcity, pricecl
             trainoption.destStation = str(destinationcity).title()
             trainoption.srcDepartureDate = journeydate
             trainoption.destArrivalDate = dateTimeUtility.calculatearrivaltimeanddate(journeydate, trainoption.srcDepartureTime, trainoption.duration)["arrivalDate"]
-            trainoption.srcDepartureDay = getdayabbrevationfromdate(journeydate, 0)
-            trainoption.destArrivalDay = getdayabbrevationfromdate(trainoption.destArrivalDate, 0)
+            trainoption.srcDepartureDay = getdayabbrevationfromdatestr(journeydate, 0)
+            trainoption.destArrivalDay = getdayabbrevationfromdatestr(trainoption.destArrivalDate, 0)
             trainoption.prices = {"1A": 0, "2A": 0, "3A": 0, "3E": 0, "FC": 0, "CC": 0, "SL": 0, "2S": 0, "GN": 0} #empty dictionary
             trainoption.price = 0
             trainoption.priceClass=priceclass
@@ -340,6 +340,17 @@ def istrainrunningoncurrentdate(train, journeydate, sourcecity, logger):
         logger.warning("Skipping train [%s], since it doesn't run from [%s] on [%s]", trainnumber, sourcecity, journeydate)
         return False
     return True
+
+
+def getdayabbrevationfromdatestr(journeydate, diff=0):
+
+    """
+    this method is used to get day abbrevation of the week(uppercase) on journeydate
+    :param journeydate: date of the journey
+    :param diff: difference in number of days from starting point of train into reaching the station
+    """
+    t = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') - timedelta(days=diff)).weekday()
+    return calendar.day_abbr[t].title()
 
 
 def getdayabbrevationfromdate(journeydate, diff=0):
