@@ -47,7 +47,8 @@ def getApiResults(sourcecity,destinationcity,journeydate,id,flightClass='Economy
                                  'Gujarat': 'RAJ', 'Jharkhand': 'IXR', 'Meghalaya': 'SHL', 'Mizoram': 'IXS',
                                  'J & K': 'SXR', 'Gujrat': 'STV', 'Assam': 'TEZ', 'Tamil Nadu': 'TRZ',
                                  'Andhra Pradesh': 'TIR', 'Kerala': 'TRV', 'Rajasthan': 'UDR', 'Gujarat': 'BDQ',
-                                 'Uttar Pradesh': 'VNS', 'Andhra Pradesh': 'VGA', 'Andhra Pradesh': 'VTZ','Shimla':'SLV'}
+                                 'Uttar Pradesh': 'VNS', 'Andhra Pradesh': 'VGA', 'Andhra Pradesh': 'VTZ','Shimla':'SLV',
+                                 'Keshod' : 'IXK'}
 
     resultjson = {"flight": []}
     try:

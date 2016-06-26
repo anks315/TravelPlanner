@@ -32,6 +32,7 @@ def testquery():
     results = DATABASE_CONNECTION.query("""MATCH (a:TRAINSTATION {CITY : '"""+source+"""'})-[r:BPL]->(b:TRAIN) RETURN a as station ,b as train ,r as route union MATCH (c:TRAINSTATION {CITY : '"""+other+"""'})-[e:NDLS]->(d:TRAIN) RETURN c as station,d as train ,e as route""")
     print results
 
+
 def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeydate, destinationcity, trainrouteid, priceclass='3A', numberofadults=1, nextday=False):
 
     """

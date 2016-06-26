@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext,loader,Context
 import json
 import trainapi
-import flightapi, flightdirectapi
+import flightapi, flightdirectapi, flightfromnearestairportapi, flightfrombigairportapi
 import distanceutil
 import busapi
 import trainapiNeo4j
@@ -14,6 +14,8 @@ traincontrollerneo = trainapiNeo4j.TrainController()
 flightcontroller = flightapi.FlightController()
 flightdirectcontroller = flightdirectapi.FlightDirectController()
 buscontroller = busapi.BusController()
+flightnearcontroller = flightfromnearestairportapi.FlightFromNearestAirportController()
+flightbigcontroller = flightfrombigairportapi.FlightFromBigAirportController()
 
 
 def home(request):
@@ -64,6 +66,40 @@ def flightdirectapi(request):
     flightclass = request.GET["flightClass"]
     numberofadults = request.GET["adults"]
     resultjsondata = flightdirectcontroller.getresults(sourcecity, destinationcity, journeydate, flightclass, numberofadults)
+    return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
+
+
+def flightnearapi(request):
+    """
+    To fetch flight journey between source & destination via nearest airports
+    :param request: http request
+    :return: flight journey between source & destination
+    """
+
+    sourcecity = request.GET['sourcecity']
+    destinationcity = request.GET['destinationcity']
+    journeydate = request.GET['journeyDate']
+    trainclass = request.GET["trainClass"]
+    flightclass = request.GET["flightClass"]
+    numberofadults = request.GET["adults"]
+    resultjsondata = flightnearcontroller.getresults(sourcecity, destinationcity, journeydate, trainclass, flightclass, numberofadults)
+    return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
+
+
+def flightbigapi(request):
+    """
+    To fetch flight journey between source & destination via nearest airports
+    :param request: http request
+    :return: flight journey between source & destination
+    """
+
+    sourcecity = request.GET['sourcecity']
+    destinationcity = request.GET['destinationcity']
+    journeydate = request.GET['journeyDate']
+    trainclass = request.GET["trainClass"]
+    flightclass = request.GET["flightClass"]
+    numberofadults = request.GET["adults"]
+    resultjsondata = flightbigcontroller.getresults(sourcecity, destinationcity, journeydate, trainclass, flightclass, numberofadults)
     return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
 
 def trainapi(request):

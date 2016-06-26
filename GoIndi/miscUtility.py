@@ -14,6 +14,7 @@ def sortOnWaitingTime(x, y):
     else:
         return -1
 
+
 def sortonsubjourneytime(x, y):
 
     """
@@ -24,11 +25,12 @@ def sortonsubjourneytime(x, y):
     """
 
     if greaterThan(x["subJourneyTime"],y["subJourneyTime"]):
-        return 1
+        return -1
     elif x["subJourneyTime"] == y["subJourneyTime"]:
         return 0
     else:
-        return -1
+        return 1
+
 
 def greaterThan(t1,t2):
     t1Hr = int(t1.split(":")[0])
