@@ -210,8 +210,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 	showSortMenuMain();
 	showSummary();
 	$("#mainPanel").show();	
-	$("#map").show();
-	initMap();
+	//initMap();
 	calculateAndDisplayRoute(directionsService, directionsDisplay);
 });
 
@@ -238,9 +237,10 @@ function getUrlVars() {
 					  routeFilter(flightRouteTemp,"flight")
 
 					  }
+					  flightFilters();
 					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
 						setSummary(flightList,"flight","price")
-						flightFilters();						
+												
 					  }
 					}
 				});
@@ -257,9 +257,10 @@ function getUrlVars() {
 					  routeFilter(flightRouteTemp,"flight")
 
 					  }
+					  flightFilters();
 					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
 						setSummary(flightList,"flight","price")
-						flightFilters();						
+												
 					  }
 					}
 				});
@@ -277,9 +278,10 @@ function getUrlVars() {
 
 					 
 					  }
+					  flightFilters();
 					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
 						setSummary(flightList,"flight","price")
-						flightFilters();						
+												
 					  }
 				  }
 				});
@@ -297,9 +299,10 @@ function getUrlVars() {
 					  routeFilter(flightRouteTemp,"flight")
 					
 					  }
+					  flightFilters();
 					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
 						setSummary(flightList,"flight","price")
-						flightFilters();						
+												
 					  }
 				  }
 				});			
