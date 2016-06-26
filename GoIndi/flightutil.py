@@ -129,8 +129,8 @@ def mixandmatch(directflight, othermodesinit, othermodesend, logger):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"],flightpart["departure"],subpart["arrivalDate"],flightpart["departureDate"])
                     subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(dateTimeUtility.convertflighttime(flightpart["departure"]), subpart["departure"], flightpart["departureDate"], subpart["departureDate"])
                     subparts.append(copy.deepcopy(subpart))
+            subparts.sort(miscUtility.sortonsubjourneytime)
             if len(subparts) > 5:
-                subparts.sort(miscUtility.sortonsubjourneytime)
                 subparts = subparts[0:5]
             continueFurther = 0;
 
@@ -156,8 +156,8 @@ def mixandmatch(directflight, othermodesinit, othermodesend, logger):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(flightpart["arrival"], subpart["departure"],flightpart["arrivalDate"],subpart["departureDate"])
                     subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(subpart["arrival"], dateTimeUtility.convertflighttime(flightpart["arrival"]), subpart["arrivalDate"], flightpart["arrivalDate"])
                     subparts.append(copy.deepcopy(subpart))
+            subparts.sort(miscUtility.sortonsubjourneytime)
             if len(subparts) > 5:
-                subparts.sort(miscUtility.sortonsubjourneytime)
                 subparts = subparts[0:5]
 
             if subparts and continueFurther==1:
@@ -215,8 +215,8 @@ def mixandmatchinit(mixedflightinit, othermodesend, logger):
                 subpart["waitingTime"] = dateTimeUtility.getWaitingTime(flightpart["arrival"],subpart["departure"],flightpart["arrivalDate"],subpart["departureDate"])
                 subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(subpart["arrival"], dateTimeUtility.convertflighttime(flightpart["arrival"]), subpart["arrivalDate"], flightpart["arrivalDate"])
                 subparts.append(copy.deepcopy(subpart))
+        subparts.sort(miscUtility.sortonsubjourneytime)
         if len(subparts) > 5:
-            subparts.sort(miscUtility.sortonsubjourneytime)
             subparts = subparts[0:5]
 
         if subparts:
@@ -265,9 +265,8 @@ def mixandmatchend(mixedflightend, otherModesInit, logger):
                 subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"], flightpart["departure"],subpart["arrivalDate"],flightpart["departureDate"])
                 subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(dateTimeUtility.convertflighttime(flightpart["departure"]), subpart["departure"], flightpart["departureDate"], subpart["departureDate"])
                 subparts.append(copy.deepcopy(subpart))
-
+        subparts.sort(miscUtility.sortonsubjourneytime)
         if len(subparts) > 5:
-            subparts.sort(miscUtility.sortonsubjourneytime)
             subparts = subparts[0:5]
 
         if subparts:
