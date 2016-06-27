@@ -408,7 +408,7 @@ class TrainController:
             subparts = []
             for k in range(len(breakingtodestinationbusjson["bus"])):
                 subpart = breakingtodestinationbusjson["bus"][k]["parts"][0]
-                if dateTimeUtility.isjourneypossible(trainpart["arrival"], subpart["departure"], trainpart["arrivalDate"], subpart["departureDate"], 3, 24):
+                if dateTimeUtility.isjourneypossible(trainpart["arrival"], subpart["departure"], trainpart["arrivalDate"], subpart["departureDate"], 3, 10):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(trainpart["arrival"], subpart["departure"],trainpart["arrivalDate"],subpart["departureDate"])
                     subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(subpart["arrival"], trainpart["arrival"], subpart["arrivalDate"], trainpart["arrivalDate"])
                     subparts.append(copy.deepcopy(subpart))

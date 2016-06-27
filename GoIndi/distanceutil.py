@@ -5,18 +5,7 @@ cleveland_oh = (41.499498, -81.695391)
 print(vincenty(newport_ri, cleveland_oh).miles)
 
 airportlist = [
-    {
-        'City': None,
-        'Kind': 'Large',
-        'Name': None,
-        'RailwayStation': None,
-        'IATA': None,
-        'Longitude': '45.230(E)',
-        'ICAO': None,
-        'Latitude': '34.450(N)',
-        'FAA': None,
-        'MaxRunway': None
-    },
+
     {
         'City': None,
         'Kind': 'Small',
@@ -112,18 +101,6 @@ airportlist = [
         'Latitude': '20.434(N)',
         'FAA': None,
         'MaxRunway': '5909ft'
-    },
-    {
-        'City': None,
-        'Kind': 'Closed',
-        'Name': None,
-        'RailwayStation': None,
-        'IATA': None,
-        'Longitude': '73.097(E)',
-        'ICAO': None,
-        'Latitude': '26.142(N)',
-        'FAA': None,
-        'MaxRunway': None
     },
     {
         'City': None,
@@ -227,18 +204,6 @@ airportlist = [
         'Name': None,
         'RailwayStation': None,
         'IATA': None,
-        'Longitude': '74.868(E)',
-        'ICAO': None,
-        'Latitude': '24.431(N)',
-        'FAA': None,
-        'MaxRunway': '3610ft'
-    },
-    {
-        'City': None,
-        'Kind': 'Small',
-        'Name': None,
-        'RailwayStation': None,
-        'IATA': None,
         'Longitude': '74.976(E)',
         'ICAO': 'VIAW',
         'Latitude': '33.877(N)',
@@ -256,18 +221,6 @@ airportlist = [
         'Latitude': '29.561(N)',
         'FAA': None,
         'MaxRunway': '8987ft'
-    },
-    {
-        'City': None,
-        'Kind': 'Small',
-        'Name': None,
-        'RailwayStation': None,
-        'IATA': None,
-        'Longitude': '75.026(E)',
-        'ICAO': None,
-        'Latitude': '23.381(N)',
-        'FAA': None,
-        'MaxRunway': '3753ft'
     },
     {
         'City': None,

@@ -224,7 +224,7 @@ function getUrlVars() {
   }
   
  function makeAsyncCalls(fromStation,toStation,depDate,flightClassSelected,trainClassSelected,persons) {
-	 $.getJSON('direct?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	 $.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/flight/direct?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  flightDirect = 1
 				  if (err != "success") {
 					  
@@ -244,7 +244,7 @@ function getUrlVars() {
 					  }
 					}
 				});
-	$.getJSON('biggest?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/flight/biggest?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  flightBiggest = 1
 				  if (err != "success") {
 					  
@@ -264,7 +264,7 @@ function getUrlVars() {
 					  }
 					}
 				});
-	$.getJSON('bigtonear?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/flight/bigtonear?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  flightBigToNear =1
 				  if (err != "success") {
 					  
@@ -285,7 +285,7 @@ function getUrlVars() {
 					  }
 				  }
 				});
-	$.getJSON('neartobig?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/flight/neartobig?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  flightNearToBig=1
 				  if (err != "success") {
 					  flightList = []
@@ -306,7 +306,7 @@ function getUrlVars() {
 					  }
 				  }
 				});			
-	$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 					
 				  if (err != "success") {
 					  trainList=[]
@@ -322,7 +322,7 @@ function getUrlVars() {
 				  
 				});
 	
-	 $.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&adults="+persons, function(data, err) {
+	 $.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&adults="+persons, function(data, err) {
 				  if (err != "success") {
 					  busList=[]
 				  } else {

@@ -24,8 +24,8 @@ def home(request):
      #getPossibleBreakingPlacesForTrain('x',"Kanpur")
      #models.isCityExist("ADRA")
      #getApiResults()
-     print(distanceutil.findnearestbigairport(32.7218,74.8577))
-     return render_to_response('eazzer.html',{},context_instance = RequestContext(request))
+     #print(distanceutil.findnearestbigairport(32.7218,74.8577))
+     return render_to_response('index.html',{},context_instance = RequestContext(request))
 
 
 def main(request):
