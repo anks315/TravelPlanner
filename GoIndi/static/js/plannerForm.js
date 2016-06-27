@@ -95,6 +95,7 @@ function showPlanner(plannerContainer){
 					 flightBigToNear = 0
 					 flightNearToBig = 0
 					 flightRouteAdded=new Object()
+					 trainRouteAdded=new Object()
 					 $("#summaryBox").show()
 					document.getElementById("resultsWid").innerHTML = "";
 				// change in documeent ready as well, if changed here
@@ -237,11 +238,13 @@ function getUrlVars() {
 					  if(flightRouteTemp.length>0){
 
 					  routeFilter(flightRouteTemp,"flight")
-
+						setSummary(flightList,"flight","price")
 					  }
 					  flightFilters();
+					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
 						setSummary(flightList,"flight","price")
 												
+					  }
 					}
 				});
 
@@ -256,12 +259,13 @@ function getUrlVars() {
 					  if(flightRouteTemp.length>0){
 
 					  routeFilter(flightRouteTemp,"flight")
-
+						setSummary(flightList,"flight","price")
 					  }
 					  flightFilters();
+					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
 						setSummary(flightList,"flight","price")
 												
-					  
+					  }
 					}
 				});
 
@@ -276,12 +280,14 @@ function getUrlVars() {
 					  if(flightRouteTemp.length>0){
 
 					  routeFilter(flightRouteTemp,"flight")
-
+						setSummary(flightList,"flight","price")
 					 
 					  }
 					  flightFilters();
+					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
 						setSummary(flightList,"flight","price")
 												
+					  }
 				  }
 				});
 
@@ -295,15 +301,17 @@ function getUrlVars() {
 					  flightList = flightList.concat(flightRouteTemp)
 				  
 				  	
-					  if(flightList.length>0){
+					  if(flightRouteTemp.length>0){
 
 					  routeFilter(flightRouteTemp,"flight")
+					  setSummary(flightList,"flight","price")
 					
 					  }
 					  flightFilters();
+					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
 						setSummary(flightList,"flight","price")
 												
-					  
+					  }
 				  }
 				});			
 	$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {

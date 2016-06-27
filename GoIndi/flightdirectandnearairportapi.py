@@ -1,7 +1,7 @@
 __author__ = 'Hello'
 
 
-import loggerUtil, logging, flightutil, flightSkyScanner
+import loggerUtil, logging, flightutil, flightSkyScanner, datetime
 import miscUtility
 import concurrent
 import TravelPlanner
@@ -39,11 +39,14 @@ class FlightDirectAndNearAirportController:
 
             if source != sourcenear:
                 othermodesinitfuture = executor.submit(flightutil.getothermodes, sourcecity, sourcenear, journeydate, logger, trainclass,numberofadults)
+                directflightNextDayfuture = executor.submit(flightSkyScanner.getApiResults, sourcenear, destinationnear, (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'), "flightnear", flightclass, numberofadults)
             if destination != destinationnear:
                 othermodesendfuture = executor.submit(flightutil.getothermodes, destinationnear, destinationcity, journeydate, logger, trainclass,numberofadults)
 
             directflightfuture = executor.submit(flightSkyScanner.getApiResults, sourcenear, destinationnear, journeydate, "flightnear", flightclass, numberofadults)
             directflight = directflightfuture.result()
+
+
             if len(directflight["flight"]) == 0:
                 logger.warning("No flight available between sourcenear [%s] and destinationnear [%s] on [%s]", sourcenear, destinationnear, journeydate)
                 return directflight
@@ -53,6 +56,8 @@ class FlightDirectAndNearAirportController:
             if source != sourcenear and destination != destinationnear:
                 othermodessminit = othermodesinitfuture.result()
                 othermodessmend = othermodesendfuture.result()
+                directflightNextDay = directflightNextDayfuture.result()
+                directflight['flight'].extend(directflightNextDay['flight'])
                 directflight = flightutil.mixandmatch(directflight, othermodessminit, othermodessmend, logger)
             elif source != sourcenear:
                 othermodessminit = othermodesinitfuture.result()

@@ -1,7 +1,7 @@
 __author__ = 'Hello'
 
 
-import loggerUtil, logging, flightutil, flightSkyScanner
+import loggerUtil, logging, flightutil, flightSkyScanner, datetime
 import miscUtility
 import concurrent
 import TravelPlanner
@@ -47,7 +47,11 @@ class FlightBigNearAirportController:
                 othermodesendfuture = executor.submit(flightutil.getothermodes, destinationnear, destinationcity, journeydate, logger, trainclass,numberofadults)
 
             directflightfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationnear, journeydate, "flightnearbig", flightclass, numberofadults)
+            directflightNextDayfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationnear,(datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'), "flightnearbig", flightclass, numberofadults)
+
             directflight = directflightfuture.result()
+            directflightNextDay = directflightNextDayfuture.result()
+            directflight['flight'].extend(directflightNextDay['flight'])
 
             if len(directflight["flight"]) == 0:
                 logger.warning("No flight available between sourcenear [%s] and destinationnear [%s] on [%s]", sourcenear, destinationnear, journeydate)
