@@ -26,7 +26,6 @@ class FlightNearBigAirportController:
 
             airports = flightutil.getnearestairports(source, destination)
             sourcenear = airports.sourceairports.near
-            sourcebig = airports.sourceairports.big
             destinationnear = airports.destinationairports.near
             destinationbig = airports.destinationairports.big
 
@@ -47,7 +46,7 @@ class FlightNearBigAirportController:
             if destination != destinationbig:
                 othermodesendfuture = executor.submit(flightutil.getothermodes, destinationbig, destinationcity, journeydate, logger, trainclass,numberofadults)
 
-            directflightfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationbig, journeydate, "flightnearbig", flightclass, numberofadults)
+            directflightfuture = executor.submit(flightSkyScanner.getApiResults, sourcenear, destinationbig, journeydate, "flightnearbig", flightclass, numberofadults)
             directflight = directflightfuture.result()
 
             if len(directflight["flight"]) == 0:

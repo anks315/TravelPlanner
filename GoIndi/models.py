@@ -21,8 +21,8 @@ def demo():
 # pool = Pool(processes=5)
 citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai",}
 
-#DATABASE_CONNECTION= GraphDatabase("http://ec2-54-179-130-192.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
-DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="shekhar")
+DATABASE_CONNECTION= GraphDatabase("http://ec2-54-254-171-20.ap-southeast-1.compute.amazonaws.com:7474/db/data/", username="neo4j", password="ankurjain")
+#DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="rkdaimpwd")
 
 #DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
 
