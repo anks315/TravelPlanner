@@ -28,7 +28,6 @@ class FlightBigNearAirportController:
             sourcenear = airports.sourceairports.near
             sourcebig = airports.sourceairports.big
             destinationnear = airports.destinationairports.near
-            destinationbig = airports.destinationairports.big
 
             if sourcenear == destinationnear:
                 logger.warning("Nearest airports to source [%s] and destination [%s] are same [%s]. Hence no flight journey possible", source, destination, sourcenear)
@@ -37,10 +36,10 @@ class FlightBigNearAirportController:
                 logger.warning("Source city [%s] is same as source big airport [%s]", source, sourcebig)
                 return {"flight": []}
             elif sourcenear == sourcebig:
-                logger.warning("Big and nearest airports [%s] of source [%s] are same", destinationbig, destination)
+                logger.warning("Big and nearest airports [%s] of source [%s] are same", sourcebig, sourcecity)
                 return {"flight": []}
 
-            logger.debug("Fetching direct flights possible between sourcebig [%s] and destinationbig [%s] on [%s]", sourcenear, destinationnear, journeydate)
+            logger.debug("Fetching direct flights possible between sourcebig [%s] and destinationnear [%s] on [%s]", sourcebig, destinationnear, journeydate)
 
             if source != sourcebig:
                 othermodesinitfuture = executor.submit(flightutil.getothermodes, sourcecity, sourcebig, journeydate, logger, trainclass,numberofadults)

@@ -98,11 +98,11 @@ def getothermodes(source, destination, journeydate, logger, trainclass='3A', num
     previousdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') - datetime.timedelta(days=1)).strftime('%d-%m-%Y')
 
     logger.debug("[START] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
-    resultjsondata = traincontrollerneo.getroutes(source, destination, previousdate, priceclass=trainclass, numberofadults=numberofadults)["train"]
+    resultjsondata = traincontrollerneo.getroutes(source, destination, previousdate, priceclass=trainclass, numberofadults=numberofadults, nextday=True)["train"]
     if not resultjsondata:
         logger.debug("No Data From Train,Retrieving From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
         buscontroller = busapi.BusController()
-        resultjsondata = buscontroller.getresults(source, destination, previousdate,numberofadults)
+        resultjsondata = buscontroller.getresults(source, destination, previousdate, numberofadults)
         resultjsondata["bus"].extend(buscontroller.getresults(source, destination, journeydate, numberofadults)["bus"])
         resultjsondata["bus"].extend(buscontroller.getresults(source, destination, nextdate, numberofadults)["bus"])
         resultjsondata = resultjsondata["bus"]
