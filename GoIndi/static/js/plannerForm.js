@@ -21,7 +21,7 @@ function showPlanner(plannerContainer){
 		var trainClass = "<div class='btn-group'><a class='btn btn-default dropdown-toggle'  data-toggle='dropdown' href='#'>"+trainClassSelected+"&nbsp<span class='caret'></span></a><ul class='dropdown-menu'><li><a href='#' value='SL' type='trainClass'>SL&nbsp</a></li><li><a href='#' value='3A' type='trainClass'>3A&nbsp</a></li><li><a href='#' value='3E' type='trainClass'>3E&nbsp</a></li><li><a href='#' value='2A' type='trainClass'>2A&nbsp</a></li><li><a href='#' value='1A' type='trainClass'>1A&nbsp</a></li><li><a href='#' value='FA' type='trainClass'>FA&nbsp</a></li><li><a href='#' value='CC' type='trainClass'>CC&nbsp</a></li></ul></div>"
 		
 		var out ="";
-			 out = out + "<nav role='navigation' class='navbar navbar-default'><div class='navbar-header' style='padding-bottom: 15px;'><a class='navbar-brand' href='/test'><img src='/static/images/logo-main.png' class='sameLine'></a><button type='button' data-target='#navbarCollapse' data-toggle='collapse' class='navbar-toggle'><span class='sr-only'>Toggle navigation</span><span class='icon-bar'></span><span class='icon-bar'></span><span class='icon-bar'></span></button></div></img><div id='navbarCollapse' class='collapse navbar-collapse'><ul class='nav navbar-nav navbar-center'><li><div style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' id='from' placeholder='From:' type='text' autofocus autocomplete='off' ng-focus='disableTap()'></div></li><li><div style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' id='to' placeholder='To:' type='text' autofocus autocomplete='off'></div></li><li><div id='departure' style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' type='text' id='departureBox' class='form-control' placeholder= 'Departure'/><div></li><li><table><tr><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><label class='mainLabel' >Persons</label></td><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><div class='input-group'><input type='number' id ='persons' value='"+persons+"' min='1' max='6' class='form-control' style='width:60px;'/></div></td></tr></table></li><li><table><tr><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><label class='mainLabel'>Flight Class</label></td><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'>"+flightClass+"</td></tr></table></li><li><table><tr><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><label class='mainLabel'>Train Class</label></td><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'>"+trainClass+"</td></tr></table></li><li><div style='padding-bottom: 15px;padding-left: 5px;padding-right: 1px;padding-top: 15px;text-align:right'><input type='submit' id='search' class='btn btn-info' value='Search'></div></li></ul></div></nav>";
+			 out = out + "<nav role='navigation' class='navbar navbar-default'><div class='navbar-header' style='padding-bottom: 15px;'><a class='navbar-brand' href='/'><img src='/static/images/logo-main.png' class='sameLine'></a><button type='button' data-target='#navbarCollapse' data-toggle='collapse' class='navbar-toggle'><span class='sr-only'>Toggle navigation</span><span class='icon-bar'></span><span class='icon-bar'></span><span class='icon-bar'></span></button></div></img><div id='navbarCollapse' class='collapse navbar-collapse'><ul class='nav navbar-nav navbar-center'><li><div style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' id='from' placeholder='From:' type='text' autofocus autocomplete='off' ng-focus='disableTap()'></div></li><li><div style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' id='to' placeholder='To:' type='text' autofocus autocomplete='off'></div></li><li><div id='departure' style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' type='text' id='departureBox' class='form-control' placeholder= 'Departure'/><div></li><li><table><tr><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><label class='mainLabel' >Persons</label></td><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><div class='input-group'><input type='number' id ='persons' value='"+persons+"' min='1' max='6' class='form-control' style='width:60px;'/></div></td></tr></table></li><li><table><tr><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><label class='mainLabel'>Flight Class</label></td><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'>"+flightClass+"</td></tr></table></li><li><table><tr><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><label class='mainLabel'>Train Class</label></td><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'>"+trainClass+"</td></tr></table></li><li><div style='padding-bottom: 15px;padding-left: 5px;padding-right: 1px;padding-top: 15px;text-align:right'><input type='submit' id='search' class='btn btn-info' value='Search'></div></li></ul></div></nav>";
 
 		document.getElementById("planner").innerHTML = out;
 		//setting min date as today
@@ -224,7 +224,7 @@ function getUrlVars() {
   }
   
  function makeAsyncCalls(fromStation,toStation,depDate,flightClassSelected,trainClassSelected,persons) {
-	 $.getJSON('direct?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	 $.getJSON('flight/direct?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  flightDirect = 1
 				  if (err != "success") {
 					  
@@ -238,13 +238,11 @@ function getUrlVars() {
 
 					  }
 					  flightFilters();
-					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
 						setSummary(flightList,"flight","price")
 												
-					  }
 					}
 				});
-	$.getJSON('biggest?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('flight/biggest?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  flightBiggest = 1
 				  if (err != "success") {
 					  
@@ -258,13 +256,12 @@ function getUrlVars() {
 
 					  }
 					  flightFilters();
-					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
 						setSummary(flightList,"flight","price")
 												
-					  }
+					  
 					}
 				});
-	$.getJSON('bigtonear?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('flight/bigtonear?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  flightBigToNear =1
 				  if (err != "success") {
 					  
@@ -279,13 +276,11 @@ function getUrlVars() {
 					 
 					  }
 					  flightFilters();
-					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
 						setSummary(flightList,"flight","price")
 												
-					  }
 				  }
 				});
-	$.getJSON('neartobig?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('flight/neartobig?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  flightNearToBig=1
 				  if (err != "success") {
 					  flightList = []
@@ -300,10 +295,9 @@ function getUrlVars() {
 					
 					  }
 					  flightFilters();
-					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
 						setSummary(flightList,"flight","price")
 												
-					  }
+					  
 				  }
 				});			
 	$.getJSON('train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {

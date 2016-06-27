@@ -1,7 +1,7 @@
 var trainLeastDuration = 0;
 var trainLeastPrice = 0;
 var maxPrice = 0;
-
+var trainRouteAdded=new Object()
 var filtertrainPrice;
 var filtertrainDuration;
 var filtertrainMinDeparture;
@@ -14,6 +14,11 @@ function trainFilters(){
 	var routeOptions =""
 		for (var k =0;k<trainRouteList.length;k++){
 			var route=trainRouteList[k]
+			if(route in trainRouteAdded ){
+				continue
+			} else {
+				trainRouteAdded[route]=1
+			}
 			var list = routeMap["train"][route]
 			SortListByPrice(list);
 			minPrice = list[0].full[0].price;
