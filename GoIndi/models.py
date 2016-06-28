@@ -21,8 +21,8 @@ def demo():
 # pool = Pool(processes=5)
 citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai",}
 
-DATABASE_CONNECTION= GraphDatabase("http://ec2-54-254-171-20.ap-southeast-1.compute.amazonaws.com:7474/db/data/", username="neo4j", password="ankurjain")
-#DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="rkdaimpwd")
+#DATABASE_CONNECTION= GraphDatabase("http://ec2-54-254-171-20.ap-southeast-1.compute.amazonaws.com:7474/db/data/", username="neo4j", password="ankurjain")
+DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="rkdaimpwd")
 
 #DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
 
@@ -393,11 +393,12 @@ def isnonduplicatetrain(trainnumberset, trainnumber):
     return False
 
 
-def loadtraindata(trainstationsmap):
+def loadtraindata():
     """
     To load train stations on startup
     :return: Map of train stations with code as key and train station as value
     """
+    trainstationsmap = {}
     q = "MATCH (n:TRAINSTATION) return n"
     try:
         trainstations = DATABASE_CONNECTION.query(q)
