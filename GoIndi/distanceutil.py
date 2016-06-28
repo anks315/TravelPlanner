@@ -20,7 +20,7 @@ airportlist = [
     },
     {
         'City': 'Keshod',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Keshod',
         'IATA': 'IXK',
@@ -32,7 +32,7 @@ airportlist = [
     },
     {
         'City': 'Jaisalmer',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Jaisalmer',
         'IATA': 'JSA',
@@ -56,7 +56,7 @@ airportlist = [
     },
     {
         'City': 'Agatti Island',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': None,
         'IATA': 'AGX',
@@ -80,7 +80,7 @@ airportlist = [
     },
     {
         'City': 'Surat',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Surat',
         'IATA': 'STV',
@@ -92,7 +92,7 @@ airportlist = [
     },
     {
         'City': 'Daman',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Daman',
         'IATA': 'NMB',
@@ -116,7 +116,7 @@ airportlist = [
     },
     {
         'City': 'Ratnagiri',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Ratnagiri',
         'IATA': 'RTC',
@@ -164,7 +164,7 @@ airportlist = [
     },
     {
         'City': 'Kolhapur',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Kolhapur',
         'IATA': 'KLH',
@@ -212,7 +212,7 @@ airportlist = [
     },
     {
         'City': None,
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': None,
         'IATA': None,
@@ -222,9 +222,10 @@ airportlist = [
         'FAA': None,
         'MaxRunway': '8987ft'
     },
+    
     {
         'City': None,
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': None,
         'IATA': None,
@@ -308,7 +309,7 @@ airportlist = [
     },
     {
         'City': 'Pathankot',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Pathankot',
         'IATA': 'IXP',
@@ -440,7 +441,7 @@ airportlist = [
     },
     {
         'City': None,
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': None,
         'IATA': None,
@@ -476,7 +477,7 @@ airportlist = [
     },
     {
         'City': 'Akola',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Akola',
         'IATA': 'AKD',
@@ -488,7 +489,7 @@ airportlist = [
     },
     {
         'City': 'Shimla',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Shimla',
         'IATA': 'SLV',
@@ -500,7 +501,7 @@ airportlist = [
     },
     {
         'City': 'Kullu',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Chandigarh',
         'IATA': 'KUU',
@@ -560,7 +561,7 @@ airportlist = [
     },
     {
         'City': None,
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': None,
         'IATA': None,
@@ -644,7 +645,7 @@ airportlist = [
     },
     {
         'City': 'Agra',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Agra',
         'IATA': 'AGR',
@@ -668,7 +669,7 @@ airportlist = [
     },
     {
         'City': 'Salem',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Salem',
         'IATA': 'SXV',
@@ -752,7 +753,7 @@ airportlist = [
     },
     {
         'City': 'Cuddapah',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Cuddapah',
         'IATA': 'CDP',
@@ -860,7 +861,7 @@ airportlist = [
     },
     {
         'City': 'Bareli',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Bareli',
         'IATA': 'BEK',
@@ -896,7 +897,7 @@ airportlist = [
     },
     {
         'City': 'Pondicherry',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Pondicherry',
         'IATA': 'PNY',
@@ -1004,7 +1005,7 @@ airportlist = [
     },
     {
         'City': 'Satna',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Satna',
         'IATA': 'TNI',
@@ -1088,7 +1089,7 @@ airportlist = [
     },
     {
         'City': 'Bilaspur',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Bilaspur',
         'IATA': 'PAB',
@@ -1184,7 +1185,7 @@ airportlist = [
     },
     {
         'City': 'Rourkela',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Rourkela',
         'IATA': 'RRK',
@@ -1208,7 +1209,7 @@ airportlist = [
     },
     {
         'City': 'Gaya',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Gaya',
         'IATA': 'GAY',
@@ -1316,7 +1317,7 @@ airportlist = [
     },
     {
         'City': 'Tatanagar',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Tatanagar',
         'IATA': 'IXW',
@@ -1448,7 +1449,7 @@ airportlist = [
     },
     {
         'City': None,
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': None,
         'IATA': None,
@@ -1532,7 +1533,7 @@ airportlist = [
     },
     {
         'City': 'Kailashahar',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Guwahati',
         'IATA': 'IXH',
@@ -1544,7 +1545,7 @@ airportlist = [
     },
     {
         'City': 'Tezpur',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Guwahati',
         'IATA': 'TEZ',
@@ -1556,7 +1557,7 @@ airportlist = [
     },
     {
         'City': 'Car Nicobar',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': None,
         'IATA': 'CBD',
@@ -1568,7 +1569,7 @@ airportlist = [
     },
     {
         'City': 'Zero',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Dibrugarh',
         'IATA': 'ZER',
@@ -1628,7 +1629,7 @@ airportlist = [
     },
     {
         'City': 'Along',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Dibrugarh',
         'IATA': 'IXV',
@@ -1724,7 +1725,7 @@ airportlist = [
     },
     {
         'City': 'Ahmedabad',
-        'Kind': 'Medium',
+        'Kind': 'Large',
         'Name': None,
         'RailwayStation': 'Ahmedabad',
         'IATA': 'AMD',
@@ -1736,7 +1737,7 @@ airportlist = [
     },
     {
         'City': 'Aizwal',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Guwahati',
         'IATA': 'AJL',
@@ -1760,7 +1761,7 @@ airportlist = [
     },
     {
         'City': 'Allahabad',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Allahabad',
         'IATA': 'IXD',
@@ -1832,18 +1833,6 @@ airportlist = [
     },
     {
         'City': 'Bangalore',
-        'Kind': 'Medium',
-        'Name': None,
-        'RailwayStation': 'Bangalore',
-        'IATA': None,
-        'Longitude': '77.668(E)',
-        'ICAO': 'VOBG',
-        'Latitude': '12.950(N)',
-        'FAA': None,
-        'MaxRunway': '10850ft'
-    },
-    {
-        'City': 'Bangalore',
         'Kind': 'Large',
         'Name': None,
         'RailwayStation': 'Bangalore',
@@ -1880,7 +1869,7 @@ airportlist = [
     },
     {
         'City': 'Belgaum',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Belgaum',
         'IATA': 'IXG',
@@ -1892,7 +1881,7 @@ airportlist = [
     },
     {
         'City': 'Bellary',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Bellary',
         'IATA': 'BEP',
@@ -1904,7 +1893,7 @@ airportlist = [
     },
     {
         'City': 'Bhavnagar',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Bhavnagar',
         'IATA': 'BHU',
@@ -1952,7 +1941,7 @@ airportlist = [
     },
     {
         'City': 'Bikaner',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Bikaner',
         'IATA': 'BKB',
@@ -1988,7 +1977,7 @@ airportlist = [
     },
     {
         'City': 'Cochin',
-        'Kind': 'Medium',
+        'Kind': 'Large',
         'Name': None,
         'RailwayStation': 'Kochi',
         'IATA': 'COK',
@@ -2012,7 +2001,7 @@ airportlist = [
     },
     {
         'City': 'Dabolim',
-        'Kind': 'Medium',
+        'Kind': 'Large',
         'Name': None,
         'RailwayStation': 'Goa',
         'IATA': 'GOI',
@@ -2047,20 +2036,8 @@ airportlist = [
         'MaxRunway': '12500ft'
     },
     {
-        'City': 'Delhi',
-        'Kind': 'Medium',
-        'Name': None,
-        'RailwayStation': 'New Delhi',
-        'IATA': None,
-        'Longitude': '77.206(E)',
-        'ICAO': 'VIDD',
-        'Latitude': '28.585(N)',
-        'FAA': None,
-        'MaxRunway': '4260ft'
-    },
-    {
         'City': 'Dhubulia',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Dhubulia',
         'IATA': None,
@@ -2108,7 +2085,7 @@ airportlist = [
     },
     {
         'City': 'Dimapur',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Dimapur',
         'IATA': 'DMU',
@@ -2156,7 +2133,7 @@ airportlist = [
     },
     {
         'City': 'Gaggal',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Pathankot',
         'IATA': 'DHM',
@@ -2168,7 +2145,7 @@ airportlist = [
     },
     {
         'City': 'Gorakhpur',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Gorakhpur',
         'IATA': 'GOP',
@@ -2180,7 +2157,7 @@ airportlist = [
     },
     {
         'City': 'Guwahati',
-        'Kind': 'Medium',
+        'Kind': 'Large',
         'Name': None,
         'RailwayStation': 'Guwahati',
         'IATA': 'GAU',
@@ -2192,7 +2169,7 @@ airportlist = [
     },
     {
         'City': 'Gwalior',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Gwalior',
         'IATA': 'GWL',
@@ -2216,7 +2193,7 @@ airportlist = [
     },
     {
         'City': 'Hubli',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Hubli',
         'IATA': 'HBX',
@@ -2225,18 +2202,6 @@ airportlist = [
         'Latitude': '15.362(N)',
         'FAA': None,
         'MaxRunway': '5304ft'
-    },
-    {
-        'City': 'Hyderabad',
-        'Kind': 'Medium',
-        'Name': None,
-        'RailwayStation': 'Hyderabad',
-        'IATA': None,
-        'Longitude': '78.403(E)',
-        'ICAO': 'VODG',
-        'Latitude': '17.627(N)',
-        'FAA': None,
-        'MaxRunway': '8250ft'
     },
     {
         'City': 'Hyderabad',
@@ -2249,18 +2214,6 @@ airportlist = [
         'Latitude': '17.231(N)',
         'FAA': None,
         'MaxRunway': None
-    },
-    {
-        'City': 'Hyderabad',
-        'Kind': 'Small',
-        'Name': None,
-        'RailwayStation': 'Hyderabad',
-        'IATA': 'BPM',
-        'Longitude': '78.468(E)',
-        'ICAO': 'VOHY',
-        'Latitude': '17.453(N)',
-        'FAA': None,
-        'MaxRunway': '9025ft'
     },
     {
         'City': 'Imphal',
@@ -2300,7 +2253,7 @@ airportlist = [
     },
     {
         'City': 'Jaipur',
-        'Kind': 'Medium',
+        'Kind': 'Large',
         'Name': None,
         'RailwayStation': 'Jaipur',
         'IATA': 'JAI',
@@ -2312,7 +2265,7 @@ airportlist = [
     },
     {
         'City': 'Jalpaiguri',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Jalpaiguri',
         'IATA': None,
@@ -2336,7 +2289,7 @@ airportlist = [
     },
     {
         'City': 'Jamnagar',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Jamnagar',
         'IATA': 'JGA',
@@ -2372,7 +2325,7 @@ airportlist = [
     },
     {
         'City': 'Jorhat',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Jorhat',
         'IATA': 'JRH',
@@ -2408,7 +2361,7 @@ airportlist = [
     },
     {
         'City': 'Kandla',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Gandhidham',
         'IATA': 'IXY',
@@ -2432,7 +2385,7 @@ airportlist = [
     },
     {
         'City': 'Kozhikode',
-        'Kind': 'Medium',
+        'Kind': 'Large',
         'Name': None,
         'RailwayStation': 'Kozhikode',
         'IATA': 'CCJ',
@@ -2444,7 +2397,7 @@ airportlist = [
     },
     {
         'City': 'Khajuraho',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Khajuraho',
         'IATA': 'HJR',
@@ -2516,7 +2469,7 @@ airportlist = [
     },
     {
         'City': 'Kumbhigram',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Guwahati',
         'IATA': 'IXS',
@@ -2540,7 +2493,7 @@ airportlist = [
     },
     {
         'City': 'Latur',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Latur',
         'IATA': 'LTU',
@@ -2564,7 +2517,7 @@ airportlist = [
     },
     {
         'City': 'Lucknow',
-        'Kind': 'Medium',
+        'Kind': 'Large',
         'Name': None,
         'RailwayStation': 'Lucknow',
         'IATA': 'LKO',
@@ -2663,18 +2616,6 @@ airportlist = [
         'Kind': 'Large',
         'Name': None,
         'RailwayStation': 'Mumbai',
-        'IATA': None,
-        'Longitude': '72.834(E)',
-        'ICAO': 'VAJJ',
-        'Latitude': '19.098(N)',
-        'FAA': None,
-        'MaxRunway': '3700ft'
-    },
-    {
-        'City': 'Mumbai',
-        'Kind': 'Large',
-        'Name': None,
-        'RailwayStation': 'Mumbai',
         'IATA': 'BOM',
         'Longitude': '72.868(E)',
         'ICAO': 'VABB',
@@ -2708,7 +2649,7 @@ airportlist = [
     },
     {
         'City': 'Nanded',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Nanded',
         'IATA': 'NDC',
@@ -2720,7 +2661,7 @@ airportlist = [
     },
     {
         'City': 'Nashik',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Nashik',
         'IATA': 'ISK',
@@ -2744,7 +2685,7 @@ airportlist = [
     },
     {
         'City': 'NorthLakhimpur',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Guwahati',
         'IATA': 'IXI',
@@ -2756,7 +2697,7 @@ airportlist = [
     },
     {
         'City': 'Pantnagar',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Pantnagar',
         'IATA': 'PGH',
@@ -2804,7 +2745,7 @@ airportlist = [
     },
     {
         'City': 'Porbandar',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Porbandar',
         'IATA': 'PBD',
@@ -2828,7 +2769,7 @@ airportlist = [
     },
     {
         'City': 'Prasanthinilayam',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'New Delhi',
         'IATA': 'PUT',
@@ -2840,7 +2781,7 @@ airportlist = [
     },
     {
         'City': 'Pune',
-        'Kind': 'Medium',
+        'Kind': 'Large',
         'Name': None,
         'RailwayStation': 'Pune',
         'IATA': 'PNQ',
@@ -2876,7 +2817,7 @@ airportlist = [
     },
     {
         'City': 'Raipur',
-        'Kind': 'Small',
+        'Kind': 'Medium',
         'Name': None,
         'RailwayStation': 'Raipur',
         'IATA': 'RPR',
@@ -2984,7 +2925,7 @@ airportlist = [
     },
     {
         'City': 'Shillong',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Guwahati',
         'IATA': 'SHL',
@@ -3020,7 +2961,7 @@ airportlist = [
     },
     {
         'City': 'Solapur',
-        'Kind': 'Medium',
+        'Kind': 'Small',
         'Name': None,
         'RailwayStation': 'Solapur',
         'IATA': 'SSE',
@@ -3092,7 +3033,7 @@ airportlist = [
     },
     {
         'City': 'Tirupati',
-        'Kind': 'Small',
+        'Kind': 'Medium',
         'Name': None,
         'RailwayStation': 'Tirupati',
         'IATA': 'TIR',
@@ -3104,7 +3045,7 @@ airportlist = [
     },
     {
         'City': 'Trivandrum',
-        'Kind': 'Medium',
+        'Kind': 'Large',
         'Name': None,
         'RailwayStation': 'Trivandrum',
         'IATA': 'TRV',
@@ -3200,7 +3141,7 @@ airportlist = [
     },
     {
         'City': 'Visakhapatnam',
-        'Kind': 'Small',
+        'Kind': 'Medium',
         'Name': None,
         'RailwayStation': 'Visakhapatnam',
         'IATA': 'VTZ',

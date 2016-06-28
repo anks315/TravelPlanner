@@ -151,7 +151,7 @@ class TrainController:
                 if dateTimeUtility.isjourneypossible(possiblesrctobreakroute["parts"][0]["arrival"],
                                                      possiblebreaktodestroute["parts"][0]["departure"],
                                                      possiblesrctobreakroute["parts"][0]["arrivalDate"],
-                                                     possiblebreaktodestroute["parts"][0]["departureDate"], 3, 24):
+                                                     possiblebreaktodestroute["parts"][0]["departureDate"], 1, 24):
                     combinedjson = convertspartstofulljson(possiblesrctobreakroute, possiblebreaktodestroute)
                     resultjsondata["train"].append(combinedjson)
         return resultjsondata
@@ -360,7 +360,7 @@ class TrainController:
             subparts = []
             for k in range(len(sourcetobreakingbusjson["bus"])):
                 subpart = sourcetobreakingbusjson["bus"][k]["parts"][0]
-                if dateTimeUtility.isjourneypossible(subpart["arrival"], trainpart["departure"], subpart["arrivalDate"], trainpart["departureDate"], 3, 24):
+                if dateTimeUtility.isjourneypossible(subpart["arrival"], trainpart["departure"], subpart["arrivalDate"], trainpart["departureDate"], 2, 24):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"], trainpart["departure"],subpart["arrivalDate"],trainpart["departureDate"])
                     subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(trainpart["departure"], subpart["departure"], trainpart["departureDate"], subpart["departureDate"])
                     subparts.append(copy.deepcopy(subpart))
@@ -408,7 +408,7 @@ class TrainController:
             subparts = []
             for k in range(len(breakingtodestinationbusjson["bus"])):
                 subpart = breakingtodestinationbusjson["bus"][k]["parts"][0]
-                if dateTimeUtility.isjourneypossible(trainpart["arrival"], subpart["departure"], trainpart["arrivalDate"], subpart["departureDate"], 3, 10):
+                if dateTimeUtility.isjourneypossible(trainpart["arrival"], subpart["departure"], trainpart["arrivalDate"], subpart["departureDate"], 2, 10):
                     subpart["waitingTime"] = dateTimeUtility.getWaitingTime(trainpart["arrival"], subpart["departure"],trainpart["arrivalDate"],subpart["departureDate"])
                     subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(subpart["arrival"], trainpart["arrival"], subpart["arrivalDate"], trainpart["arrivalDate"])
                     subparts.append(copy.deepcopy(subpart))
