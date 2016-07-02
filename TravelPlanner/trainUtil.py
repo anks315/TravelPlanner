@@ -21,6 +21,7 @@ def loadtraindata():
     """
     To load all train station on startup and create city to station map cache
     """
+    print "hiiiiiiiiiii"
     global trainmapping
     trainmapping = GoIndi.models.loadtraindata()
 
