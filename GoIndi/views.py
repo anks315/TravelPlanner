@@ -8,6 +8,7 @@ import flightapi, flightdirectandnearairportapi, flightfrombigairportapi, flight
 import distanceutil, flightutil
 import busapi
 import trainapiNeo4j
+import TravelPlanner.trainUtil as startup
 
 # bus, train, flight controller to get results
 traincontroller = trainapi.TrainController()
@@ -31,6 +32,11 @@ def home(request):
 def main(request):
 
      return render_to_response('main.html',{},context_instance = RequestContext(request))
+
+def traininit(request):
+
+     startup.loadtraindata()
+     return render_to_response('index.html',{},context_instance = RequestContext(request))
 
 
 def test(request):
