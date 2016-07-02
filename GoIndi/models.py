@@ -23,7 +23,7 @@ citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar
 
 
 DATABASE_CONNECTION= GraphDatabase("http://ec2-54-254-171-20.ap-southeast-1.compute.amazonaws.com:7474/db/data/", username="neo4j", password="ankurjain")
-#DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="rkdaimpwd")
+#DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="ankurjain")
 
 #DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
 
@@ -405,10 +405,12 @@ def loadtraindata():
         trainstations = DATABASE_CONNECTION.query(q)
     except Exception as e:
         logger = loggerUtil.getlogger("loaddata", logging.WARNING)
+        print "Error"
         logger.error("Error in loading train data on startup, reason [%s]", e.message)
         return trainstationsmap
 
     if len(trainstations.elements) == 0:
+        print "empty"
         return trainstationsmap
 
     for i in range(len(trainstations.elements)):
@@ -417,7 +419,7 @@ def loadtraindata():
         trainstation.name = trainstations.elements[i][0]['data']['NAME']
         trainstation.city = trainstations.elements[i][0]['data']['CITY']
         trainstationsmap[trainstation.code]= trainstation
-
+    print "success"
     return trainstationsmap
 
 
