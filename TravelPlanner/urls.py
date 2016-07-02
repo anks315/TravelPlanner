@@ -25,4 +25,5 @@ urlpatterns = patterns('',
     url(r'flight/bigtonear$', 'GoIndi.views.flightbignearapi'),
     url(r'bus$', 'GoIndi.views.busapi'),
     url(r'test$', 'GoIndi.views.test'),
+    url(r'init$', 'GoIndi.views.traininit'),
 )
