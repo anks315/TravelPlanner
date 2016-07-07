@@ -5,7 +5,7 @@
 # import models
 # import trainDBscript
 import datetime
-import glob, os
+import glob, os, trainavailabilityapi
 # trainDBscript.fetchnonexitingfaredata()
 #models.testquery()
 # Create your tests here.
@@ -115,4 +115,5 @@ def convertstringtotime():
     t = datetime.datetime.strptime(string, '%H:%M:%S')
     print t.time().strftime('%H:%M')
 
-convertstringtotime()
+# convertstringtotime()
+trainavailabilityapi.TrainAvailabilityController().getavailablity('12013', 'NDLS', 'ASR', '11-07-2016', 'CC')
