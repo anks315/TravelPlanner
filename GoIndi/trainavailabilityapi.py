@@ -23,17 +23,15 @@ class TrainAvailabilityController:
         :param quota: quota of train seat
         :return: json response containing no. of available seats
         """
-
         try:
             url = "http://api.railwayapi.com/check_seat/train/"+trainnumber+"/source/"+sourcestation+"/dest/"+destinationstation+"/date/"+journeydate+"/class/"+trainclass+"/quota/" +quota +"/apikey/" + trainConstants.ERAILWAYAPI_APIKEY +"/"
-            print url
             jsonresponse = urllib.urlopen(url).read()
         except Exception as e:
             logger.error("Error in fetching availability data for train[%s] from source [%s] to destination [%s] on [%s] for class [%s], reason [%s]", trainnumber, sourcestation, destinationstation, journeydate, trainclass, e.message)
-        print jsonresponse
-        availabledatajson = self.parseavailabilityresponse(jsonresponse, trainnumber, sourcestation, destinationstation, journeydate)
-        print availabledatajson
-        return availabledatajson
+            return {"availability": []}
+
+        return self.parseavailabilityresponse(jsonresponse, trainnumber, sourcestation, destinationstation, journeydate)
+
 
     def parseavailabilityresponse(self, jsonresponse, trainnumber, sourcestation, destinationstation, journeydate):
 
