@@ -63,4 +63,5 @@ class TrainAvailabilityController:
             availabledata = {'date': availability['date'], 'status': availability['status']}
             resultjson['availability'].append(availabledata)
 
+        logger.debug("Availability data [%s] for train[%s] from source [%s] to destination [%s] on [%s]", str(resultjson), trainnumber, sourcestation, destinationstation, journeydate)
         return resultjson
