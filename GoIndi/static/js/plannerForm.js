@@ -226,7 +226,7 @@ function getUrlVars() {
   
  function makeAsyncCalls(fromStation,toStation,depDate,flightClassSelected,trainClassSelected,persons) {
 
-	 $.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/flight/direct?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	 $.getJSON('http://eazzer-flight.ap-southeast-1.elasticbeanstalk.com/direct?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 
 				  flightDirect = 1
 				  if (err != "success") {
@@ -248,7 +248,7 @@ function getUrlVars() {
 					}
 				});
 
-	$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/flight/biggest?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('http://eazzer-flightmixed.ap-southeast-1.elasticbeanstalk.com/biggest?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  flightBiggest = 1
 				  if (err != "success") {
 					  
@@ -269,7 +269,7 @@ function getUrlVars() {
 					}
 				});
 
-	$.getJSON('https://tyk3pibkpd.execute-api.ap-southeast-1.amazonaws.com/dev/flight/bigtonear?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('http://flightn2b.ap-southeast-1.elasticbeanstalk.com/flight/bigtonear?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  flightBigToNear =1
 				  if (err != "success") {
 					  
@@ -291,7 +291,7 @@ function getUrlVars() {
 				  }
 				});
 
-	$.getJSON('https://tyk3pibkpd.execute-api.ap-southeast-1.amazonaws.com/dev/flight/neartobig?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('http://flightn2b.ap-southeast-1.elasticbeanstalk.com/flight/neartobig?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 
 				  flightNearToBig=1
 				  if (err != "success") {
