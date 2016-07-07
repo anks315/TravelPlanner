@@ -12,3 +12,4 @@ requests==2.10.0
 six==1.10.0
 skyscanner==1.1.0
 wsgiref==0.1.2
+django-cors-headers==1.1.0
