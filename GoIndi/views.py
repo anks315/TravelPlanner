@@ -63,6 +63,7 @@ def flightdirectandnearapi(request):
     resultjsondata = flightdirectandnearcontroller.getresults(flightrequest.sourcecity, flightrequest.destinationcity, flightrequest.journeydate, flightrequest.trainclass, flightrequest.flightclass, flightrequest.numberofadults)
     return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
 
+
 def flightnearbigapi(request):
     """
     To fetch flight journey between source & destination via biggest airport near destination and nearest airport of source

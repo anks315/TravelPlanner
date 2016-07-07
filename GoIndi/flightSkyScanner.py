@@ -11,13 +11,13 @@ import loggerUtil
 logger = loggerUtil.getlogger("FlighSkyScanner", logging.DEBUG)
 
 def getApiResults(sourcecity,destinationcity,journeydate,id,flightClass='Economy',numberOfAdults=1):
-    cityandstatetostationsmap = {'Jaisalmer':'JSA','Rajahmundry':'RJA','Pantnagar':'PGH','Pathankot':'IXP','Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
+    cityandstatetostationsmap = {'Jaisalmer':'JSA','Rajahmundry':'RJA','Rajamundry':'RJA','Pantnagar':'PGH','Pathankot':'IXP','Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
                                  'Amritsar': 'ATQ', 'Aurangabad': 'IXU', 'Bagdogra': 'IXB', 'Bangalore': 'BLR',
                                  'Bhavnagar': 'BHU', 'Bhopal': 'BHO', 'Bhubaneswar': 'BBI', 'Bhuj': 'BHJ',
                                  'Calcutta': 'CCU', 'Kolkata': 'CCU', 'Chandigarh': 'IXC', 'Chennai': 'MAA',
                                  'Madras': 'MAA', 'Cochin': 'COK', 'Coimbatore': 'CJB', 'Daman': 'NMB',
                                  'Dehradun': 'DED', 'Dibrugarh': 'DIB', 'Dimapur': 'DMU', 'Diu': 'DIU',
-                                 'Gauhati': 'GAU', 'Goa': 'GOI', 'Gwalior': 'GWL', 'Hubli': 'HBX', 'Hyderabad': 'HYD',
+                                 'Guwahati': 'GAU', 'Goa': 'GOI', 'Gwalior': 'GWL', 'Hubli': 'HBX', 'Hyderabad': 'HYD',
                                  'Imphal': 'IMF', 'Indore': 'IDR', 'Jaipur': 'JAI', 'Jammu': 'IXJ', 'Jamnagar': 'JGA',
                                  'Jamshedpur': 'IXW', 'Jodhpur': 'JDH', 'Jorhat': 'JRH', 'Kanpur': 'KNU',
                                  'Khajuraho': 'HJR', 'Kozhikode': 'CCJ', 'calicut': 'CCJ', 'Leh': 'IXL',
@@ -48,7 +48,7 @@ def getApiResults(sourcecity,destinationcity,journeydate,id,flightClass='Economy
                                  'J & K': 'SXR', 'Gujrat': 'STV', 'Assam': 'TEZ', 'Tamil Nadu': 'TRZ',
                                  'Andhra Pradesh': 'TIR', 'Kerala': 'TRV', 'Rajasthan': 'UDR', 'Gujarat': 'BDQ',
                                  'Uttar Pradesh': 'VNS', 'Andhra Pradesh': 'VGA', 'Andhra Pradesh': 'VTZ','Shimla':'SLV',
-                                 'Keshod' : 'IXK'}
+                                 'Keshod' : 'IXK', 'Jabalpur' : 'JLR'}
 
     resultjson = {"flight": []}
     try:
