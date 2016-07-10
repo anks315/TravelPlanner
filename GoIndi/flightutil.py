@@ -1,12 +1,12 @@
 __author__ = 'Hello'
 
 import urllib2, json, datetime, copy
-import distanceutil, trainapiNeo4j, busapi, dateTimeUtility, minMaxUtil, miscUtility, models
+import distanceutil, trainapiNeo4j, busapi, dateTimeUtility, minMaxUtil, miscUtility, models, TravelPlanner.trainUtil
 from entity import Airports, NearestAirports, FlightRequest
 import threading
 
-# map of airport code and their corresponding cities
-stationtocitymap = {'JSA':'Jaisalmer','RJA':'Rajahmundry','PGH':'Pantnagar','IXP':'Pathankot','KUU':'Kullu','SLV':'Shimla','IXA':'Agartala','AGR':'Agra','AMD':'Ahmedabad','IXD':'Allahabad','ATQ':'Amritsar','IXU':'Aurangabad','IXB':'Bagdogra','BLR':'Bangalore','BHU':'Bhavnagar','BHO':'Bhopal','BBI':'Bhubaneswar','BHJ':'Bhuj','CCU':'Kolkata','IXC':'Chandigarh','MAA':'Chennai','COK':'Cochin','CJB':'Coimbatore','NMB':'Daman','DED':'Dehradun','DIB':'Dibrugarh','DMU':'Dimapur','DIU':'Diu','GAU':'Gauhati','GOI':'Goa','GWL':'Gwalior','HBX':'Hubli','HYD':'Hyderabad','IMF':'Imphal','IDR':'Indore','JAI':'Jaipur','IXJ':'Jammu','JGA':'Jamnagar','IXW':'Jamshedpur','JDH':'Jodhpur','JRH':'Jorhat','KNU':'Kanpur','HJR':'Khajuraho','CCJ':'Kozhikode','IXL':'Leh','LKO':'Lucknow','LUH':'Ludhiana','IXM':'Madurai','IXE':'Mangalore','BOM':'Mumbai','NAG':'Nagpur','NDC':'Nanded','ISK':'Nasik','DEL':'New Delhi','PAT':'Patna','PNY':'Pondicherry','PNQ':'Pune','PBD':'Porbandar','IXZ':'Port Blair','PUT':'PuttasubParthi','BEK':'Rae Bareli','RAJ':'Rajkot','IXR':'Ranchi','SHL':'Shillong','IXS':'Silchar','SXR':'Srinagar','STV':'Surat','TEZ':'Tezpur','TRZ':'Tiruchirapally','TIR':'Tirupati','TRV':'Trivandrum','UDR':'Udaipur','BDQ':'Vadodara','VNS':'Varanasi','VGA':'Vijayawada','VTZ': 'Vishakhapatnam', 'IXK': 'Keshod'}
+# map of airport code and their corresponding cities. City names should either be same as that present in trainDB or their mapping should be TravelPlanner.trainUtil.citytotrainmap
+stationtocitymap = {'JLR':'Jabalpur', 'JSA':'Jaisalmer','RJA':'Rajahmundry','PGH':'Pantnagar','IXP':'Pathankot','KUU':'Kullu','SLV':'Shimla','IXA':'Agartala','AGR':'Agra','AMD':'Ahmedabad','IXD':'Allahabad','ATQ':'Amritsar','IXU':'Aurangabad','IXB':'Bagdogra','BLR':'Bangalore','BHU':'Bhavnagar','BHO':'Bhopal','BBI':'Bhubaneswar','BHJ':'Bhuj','CCU':'Kolkata','IXC':'Chandigarh','MAA':'Chennai','COK':'Cochin','CJB':'Coimbatore','NMB':'Daman','DED':'Dehradun','DIB':'Dibrugarh','DMU':'Dimapur','DIU':'Diu','GAU':'Guwahati','GOI':'Goa','GWL':'Gwalior','HBX':'Hubli','HYD':'Hyderabad','IMF':'Imphal','IDR':'Indore','JAI':'Jaipur','IXJ':'Jammu','JGA':'Jamnagar','IXW':'Jamshedpur','JDH':'Jodhpur','JRH':'Jorhat','KNU':'Kanpur','HJR':'Khajuraho','CCJ':'Kozhikode','IXL':'Leh','LKO':'Lucknow','LUH':'Ludhiana','IXM':'Madurai','IXE':'Mangalore','BOM':'Mumbai','NAG':'Nagpur','NDC':'Nanded','ISK':'Nasik','DEL':'New Delhi','PAT':'Patna','PNY':'Pondicherry','PNQ':'Pune','PBD':'Porbandar','IXZ':'Port Blair','PUT':'PuttasubParthi','BEK':'Rae Bareli','RAJ':'Rajkot','IXR':'Ranchi','SHL':'Shillong','IXS':'Silchar','SXR':'Srinagar','STV':'Surat','TEZ':'Tezpur','TRZ':'Tiruchirapally','TIR':'Tirupati','TRV':'Trivandrum','UDR':'Udaipur','BDQ':'Vadodara','VNS':'Varanasi','VGA':'Vijayawada','VTZ': 'Vishakhapatnam', 'IXK': 'Keshod'}
 nearestairportsmap = {}
 lock = threading.RLock()
 
@@ -31,8 +31,8 @@ def getnearestairports(source, destination):
         response.close()
         sourcelat = sourcelatlong["results"][0]["geometry"]["location"]["lat"]
         sourcelong = sourcelatlong["results"][0]["geometry"]["location"]["lng"]
-        sourceairport = stationtocitymap[distanceutil.findnearestairport(sourcelat,sourcelong)]
-        bigsourceairport = stationtocitymap[distanceutil.findnearestbigairport(sourcelat,sourcelong)]
+        sourceairport = TravelPlanner.trainUtil.gettraincity(stationtocitymap[distanceutil.findnearestairport(sourcelat,sourcelong)]).title()
+        bigsourceairport = TravelPlanner.trainUtil.gettraincity(stationtocitymap[distanceutil.findnearestbigairport(sourcelat,sourcelong)]).title()
         sourceairports = NearestAirports()
         sourceairports.near = sourceairport
         sourceairports.big = bigsourceairport
@@ -48,8 +48,8 @@ def getnearestairports(source, destination):
         destlatlong = json.loads(response2.read())
         destlat = destlatlong["results"][0]["geometry"]["location"]["lat"]
         destlong = destlatlong["results"][0]["geometry"]["location"]["lng"]
-        destairport = stationtocitymap[distanceutil.findnearestairport(destlat, destlong)]
-        bigdestinationairport = stationtocitymap[distanceutil.findnearestbigairport(destlat, destlong)]
+        destairport = TravelPlanner.trainUtil.gettraincity(stationtocitymap[distanceutil.findnearestairport(destlat, destlong)]).title()
+        bigdestinationairport = TravelPlanner.trainUtil.gettraincity(stationtocitymap[distanceutil.findnearestbigairport(destlat, destlong)].title())
         destinationairports = NearestAirports()
         destinationairports.near = destairport
         destinationairports.big = bigdestinationairport

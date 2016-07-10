@@ -7,12 +7,13 @@ import trainapi
 import flightapi, flightdirectandnearairportapi, flightfrombigairportapi, flightnearbigapi, flightbignearapi
 import distanceutil, flightutil
 import busapi
-import trainapiNeo4j
+import trainapiNeo4j, trainavailabilityapi
 import TravelPlanner.trainUtil as startup
 
 # bus, train, flight controller to get results
 traincontroller = trainapi.TrainController()
 traincontrollerneo = trainapiNeo4j.TrainController()
+trainavailabilitycontroller = trainavailabilityapi.TrainAvailabilityController()
 flightcontroller = flightapi.FlightController()
 buscontroller = busapi.BusController()
 flightdirectandnearcontroller = flightdirectandnearairportapi.FlightDirectAndNearAirportController()
@@ -32,6 +33,18 @@ def home(request):
 def main(request):
 
      return render_to_response('main.html',{},context_instance = RequestContext(request))
+
+def mainMobile(request):
+
+     return render_to_response('mainMobile.html',{},context_instance = RequestContext(request))
+
+def planning(request):
+
+     return render_to_response('planning.html',{},context_instance = RequestContext(request))
+
+def planningMobile(request):
+
+     return render_to_response('planningMobile.html',{},context_instance = RequestContext(request))
 
 def traininit(request):
 
@@ -62,6 +75,7 @@ def flightdirectandnearapi(request):
     flightrequest = flightutil.getflightrequestparams(request)
     resultjsondata = flightdirectandnearcontroller.getresults(flightrequest.sourcecity, flightrequest.destinationcity, flightrequest.journeydate, flightrequest.trainclass, flightrequest.flightclass, flightrequest.numberofadults)
     return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
+
 
 def flightnearbigapi(request):
     """
@@ -95,6 +109,7 @@ def flightbigapi(request):
     resultjsondata = flightbigcontroller.getresults(flightrequest.sourcecity, flightrequest.destinationcity, flightrequest.journeydate, flightrequest.trainclass, flightrequest.flightclass, flightrequest.numberofadults)
     return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
 
+
 def trainapi(request):
     source = request.GET['source']
     destination = request.GET['destination']
@@ -105,6 +120,25 @@ def trainapi(request):
     #request.session['destination']=destination
     resultJsonData = traincontrollerneo.getroutes(source,destination,journeydate,0,trainclass,int(numberofadults))
     return HttpResponse(json.dumps(resultJsonData), content_type='application/json')
+
+
+def trainavailabilityapi(request):
+
+    """
+    To get availablity data for trainnumber from source to destination on journeydate for given trainclass
+    :param request: hhtp request
+    :return: availablity data between requested stations
+    """
+
+    source = request.GET['source']
+    destination = request.GET['destination']
+    journeydate = request.GET['journeyDate']
+    trainclass = request.GET["trainClass"]
+    quota = request.GET["quota"]
+    trainnumber = request.GET['trainNumber']
+    resultjsondata = trainavailabilitycontroller.getavailablity(trainnumber, source, destination, journeydate, trainclass)
+    return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
+
 
 def busapi(request):
     source = request.GET['source']

@@ -24,6 +24,7 @@ bigcities = Set(['NEW DELHI', 'MUMBAI', 'BANGALORE', 'KOLKATA', 'HYDERABAD', 'CH
 
 logger = loggerUtil.getlogger("TrainApi", logging.WARNING)
 
+
 def convertspartstofulljson(part_1, part_2):
     """
     This method is used to combine train journey data from part_1 and part_2 into a single entity
