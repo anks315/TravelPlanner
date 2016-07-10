@@ -54,6 +54,7 @@ class FlightFromBigAirportController:
                 othermodesendfuture = executor.submit(flightutil.getothermodes, destinationbig, destinationcity, journeydate, logger, trainclass,numberofadults)
 
             directflightfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationbig, journeydate, "flightbig", flightclass, numberofadults)
+            # might conlict in id generation and should only be when source != sourcebig
             directflightNextDayfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationbig, (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'),"flightbig", flightclass, numberofadults)
             directflight = directflightfuture.result()
             directflightNextDay = directflightNextDayfuture.result()

@@ -60,6 +60,7 @@ class FlightDirectAndNearAirportController:
                 directflight = flightutil.mixandmatch(directflight, othermodessminit, othermodessmend, logger)
             elif source != sourcenear:
                 othermodessminit = othermodesinitfuture.result()
+                # missing nextday flight
                 directflight = flightutil.mixandmatchend(directflight, othermodessminit, logger)
             elif destination != destinationnear:
                 othermodessmend = othermodesendfuture.result()

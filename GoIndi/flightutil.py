@@ -95,23 +95,23 @@ def getothermodes(source, destination, journeydate, logger, trainclass='3A', num
 
     traincontrollerneo = trainapiNeo4j.TrainController()
     nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y')
-    nextToNextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y')
+    nexttonextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=2)).strftime('%d-%m-%Y')
 
     logger.debug("[START] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
-    resultjsondata = traincontrollerneo.getroutes(source, destination, journeydate, priceclass=trainclass, numberofadults=numberofadults, nextday=True)["train"]
-    if not resultjsondata:
-        logger.debug("No Data From Train,Retrieving From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
-        buscontroller = busapi.BusController()
-        resultjsondata = buscontroller.getresults(source, destination, nextToNextdate, numberofadults)
-        resultjsondata["bus"].extend(buscontroller.getresults(source, destination, journeydate, numberofadults)["bus"])
-        resultjsondata["bus"].extend(buscontroller.getresults(source, destination, nextdate, numberofadults)["bus"])
-        resultjsondata = resultjsondata["bus"]
-    if not resultjsondata:
-        logger.warning("No Data From Train and Bus for Source[%s] and Destination[%s],journeyDate[%s]",source, destination, journeydate)
+    resulttrainjsondata = traincontrollerneo.getroutes(source, destination, journeydate, priceclass=trainclass, numberofadults=numberofadults, nextday=True)["train"]
+    if not resulttrainjsondata:
+        logger.warning("No Data From Train,Retrieving From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
+    buscontroller = busapi.BusController()
+    resultbusjsondata = buscontroller.getresults(source, destination, nexttonextdate, numberofadults)
+    resultbusjsondata["bus"].extend(buscontroller.getresults(source, destination, journeydate, numberofadults)["bus"])
+    resultbusjsondata["bus"].extend(buscontroller.getresults(source, destination, nextdate, numberofadults)["bus"])
+    resultbusjsondata = resultbusjsondata["bus"]
+    if not resultbusjsondata:
+        logger.warning("No Data From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source, destination, journeydate)
 
     logger.debug("[END] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source, destination, journeydate)
 
-    return resultjsondata
+    return resulttrainjsondata + resultbusjsondata
 
 
 def mixandmatch(directflight, othermodesinit, othermodesend, logger):
@@ -245,12 +245,12 @@ def mixandmatchinit(mixedflightinit, othermodesend, logger):
     return mixedflightinit
 
 
-def mixandmatchend(mixedflightend, otherModesInit, logger):
+def mixandmatchend(mixedflightend, othermodesinit, logger):
 
     """
     Join flight with other modes, with flight in the end
     :param mixedflightend: flight part of journey
-    :param otherModesInit: other mode of journey
+    :param othermodesinit: other mode of journey
     :param otherModesInit2: other mode of jounrey2
     :return: combined journey with flight after other mode of total journey
     """
@@ -259,8 +259,8 @@ def mixandmatchend(mixedflightend, otherModesInit, logger):
     for j in range(len(mixedflightend["flight"])):
         flightpart = mixedflightend["flight"][j]["parts"][0]
         subparts = []
-        for k in range(len(otherModesInit)):
-            subpart = otherModesInit[k]["parts"][0]
+        for k in range(len(othermodesinit)):
+            subpart = othermodesinit[k]["parts"][0]
             if dateTimeUtility.isjourneypossible(subpart["arrival"], dateTimeUtility.convertflighttime(flightpart["departure"]), subpart["arrivalDate"], flightpart["departureDate"], 3, 24):
                 subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"], flightpart["departure"],subpart["arrivalDate"],flightpart["departureDate"])
                 subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(dateTimeUtility.convertflighttime(flightpart["departure"]), subpart["departure"], flightpart["departureDate"], subpart["departureDate"])

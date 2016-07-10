@@ -38,6 +38,9 @@ class FlightBigNearAirportController:
             elif sourcenear == sourcebig:
                 logger.warning("Big and nearest airports [%s] of source [%s] are same", sourcebig, sourcecity)
                 return {"flight": []}
+            elif sourcebig == destination:
+                logger.warning("Source Big airport [%s] is same as destination [%s]", sourcebig, destination)
+                return {"flight": []}
 
             logger.debug("Fetching direct flights possible between sourcebig [%s] and destinationnear [%s] on [%s]", sourcebig, destinationnear, journeydate)
 
@@ -47,6 +50,7 @@ class FlightBigNearAirportController:
                 othermodesendfuture = executor.submit(flightutil.getothermodes, destinationnear, destinationcity, journeydate, logger, trainclass,numberofadults)
 
             directflightfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationnear, journeydate, "flightnearbig", flightclass, numberofadults)
+            # conflict in id generation and should only be used if source != sourcebig
             directflightNextDayfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationnear,(datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'), "flightnearbig", flightclass, numberofadults)
 
             directflight = directflightfuture.result()
