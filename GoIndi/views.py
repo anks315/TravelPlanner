@@ -34,6 +34,18 @@ def main(request):
 
      return render_to_response('main.html',{},context_instance = RequestContext(request))
 
+def mainMobile(request):
+
+     return render_to_response('mainMobile.html',{},context_instance = RequestContext(request))
+
+def planning(request):
+
+     return render_to_response('planning.html',{},context_instance = RequestContext(request))
+
+def planningMobile(request):
+
+     return render_to_response('planningMobile.html',{},context_instance = RequestContext(request))
+
 def traininit(request):
 
      startup.loadtraindata()

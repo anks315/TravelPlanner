@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Eazzer - Ultimate solution for your travel problems in india - Bus,Train,Flights,Cabs search and compare in one go</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0">
+   <meta property="og:image" content="https://scontent-a-lhr.xx.fbcdn.net/hphotos-frc3/t1.0-9/1554338_777391778945455_8375523107621198135_n.jpg"/>
+    <meta property="og:description" content="Start your Indian journey with one click. Eazzer makes it easy to compare and combine flight, air, rail,train, bus and car for better pricing and easier booking."/>
+    <meta property="og:title" content="Search &amp; Compare Cheap Buses, Trains &amp; Flights"/>
+    <meta property="og:url" content="www.eazzer.com"/>
+	<meta name="keywords" content="eazzer.com, eazzer, Online tickets, online travel india, india tracel online, eazzer india, easer, buy online tickets, buy tickets online, plan journey online, buy flight tickets online, flight, train, buses, bus ticket online,book bus tickets"/>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="/static/css/mobile/city/jquery.typeahead.css">
+  <link rel="stylesheet" href="/static/css/mobile/slider.css">
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+  <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  <!--script src="../dist/jquery.typeahead.min.js"></script-->
+  <script src="/static/js/mobile/city/jquery.typeahead.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <!--Load Script and Stylesheet -->
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+	<link rel="shortcut icon" type="image/png" href="/static/favicon.png"/>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<link type="text/css" href="/static/css/mobile/customButton.css" rel="stylesheet" />
+	<link type="text/css" href="/static/css/mobile/filtersCSS.css" rel="stylesheet" />
+</head>
+<body>
+
+
+<div data-role="page" id="pageone">
+  <div data-role="header" data-theme="f" >
+    <div id="planner"></div>
+	<div id='modeMenuMain'></div>
+				<div id='RouteMenu'><div id='routeMenuList'class='list-group panel'></div></div>
+				<div id ='footer'></div>
+	
+  </div>
+  
+
+   
+  
+</div>
+<div data-role="page" id="pagetwo"  data-theme="f">
+  <div data-role="header" data-position="fixed" >
+    <a href='#pageone' class="ui-btn ui-btn-d ui-shadow ui-corner-all ui-icon-arrow-l ui-btn-icon-notext"></a> <a href='#pagethree' class="ui-btn ui-btn-c ui-shadow ui-corner-all ui-btn-icon-notext"><img src='/static/images/filter.png'></img></a>
+  </div>
+
+   <div data-role="main" class="ui-content" data-theme="f">
+	<div id='resultsWid'></div>
+  </div>
+  
+  <div data-role="footer" data-position="fixed">
+    <table width="100%"><tr><td width="width=50%" style="text-align:center"><a href="#" class="ui-btn ui-btn-c" id="priceSort">Cheapest</a></td><td width="width=50%" style="text-align:center"><a href="#" id="durationSort" class="ui-btn ui-btn-c active">Fastest</a></td></tr></table>
+  </div>
+ 
+</div>
+
+<div data-role="page" id="pagethree" data-theme="f">
+  
+
+   <div data-role="main" class="ui-content" data-theme="f">
+   <div id='selectedFilter'></div>
+    
+  </div>
+
+  <div data-role="footer" data-position="fixed">
+    <table width="100%"><tr><td width="width=100%" style="text-align:center"><a href="#pagetwo" class="ui-btn ui-btn-c">Apply</a></td></tr></table>
+  </div>
+</div>
+
+<div data-role="page" id="pagefour" data-theme="f">
+  <div data-role="header" data-position="fixed" >
+    <a href='#pagetwo' class="ui-btn ui-btn-d ui-shadow ui-corner-all ui-icon-arrow-l ui-btn-icon-notext"></a> 
+  </div>
+
+   <div data-role="main" class="ui-content" data-theme="f">
+   <div id='modal'></div>
+    
+  </div>
+
+  
+</div>
+
+
+<script type="text/javascript" src="/static/js/mobile/footer.js"></script>		
+<script type="text/javascript" src="/static/js/mobile/routeMap.js"></script>
+<script type="text/javascript" src="/static/js/mobile/utils.js"></script>
+<script type="text/javascript" src="/static/js/mobile/modalForFlights.js"></script>
+<script type="text/javascript" src="/static/js/mobile/modalForTrains.js"></script>
+<script type="text/javascript" src="/static/js/mobile/summary.js"></script>
+<script type="text/javascript" src="/static/js/mobile/trainJourneyList.js"></script>
+<script type="text/javascript" src="/static/js/mobile/flightJourneyList.js"></script>
+<script type="text/javascript" src="/static/js/mobile/trainAndFlightJourneyList.js"></script>
+<script type="text/javascript" src="/static/js/mobile/busJourneyList.js"></script>
+<script type="text/javascript" src="/static/js/mobile/sortUtility.js"></script>
+<script type="text/javascript" src="/static/js/mobile/sortMenu.js"></script>
+<script type="text/javascript" src="/static/js/mobile/trainFilters.js"></script>
+<script type="text/javascript" src="/static/js/mobile/flightFilters.js"></script>
+<script type="text/javascript" src="/static/js/mobile/busFilters.js"></script>
+<script type="text/javascript" src="/static/js/mobile/plannerForm.js"></script>
+<script 
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrNn_0wQEMpN0Kykjhffa4972v3Xbw0pw&callback=initMap&libraries=places&language=gb">
+    </script>
+
+
+
+
+
+</body>
+
+</html>

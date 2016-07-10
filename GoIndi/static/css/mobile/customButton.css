@@ -1,3 +1,8 @@
+
+
+body{
+	font-size:12px;
+}
 .ui-icon-filter {
   background: url(/static/images/filter.png) 50% 50% no-repeat;
   background-size: 32px 32px;
@@ -11,7 +16,11 @@
     background-color: white;
 }
 .ui-btn-c {
+	color:white;
     background-color: #c6c6c6;
+}
+.ui-btn-d {
+	color:white;
 }
 
 table {
@@ -56,15 +65,15 @@ table {
 	color : blue;
 }
 .journeySpecifics{
-	font-size : 85%;
+	font-size : 90%;
 	color:grey;
 	font-weight:normal;
 }
 .journeySpecificsArrow{
-	font-size : 250%;
+	font-size : 200%;
 }
 .journeySpecificsDuration{
-	font-size : 130%;
+	font-size : 105%;
 	color:#6499be;
 }
 

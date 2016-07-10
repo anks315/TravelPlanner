@@ -79,7 +79,7 @@ function showPlanner(plannerContainer){
 				var fromLoc = document.getElementById("from").value;
 				var toLoc = document.getElementById("to").value;
 				
-				window.location.href = "main?from="+fromLoc+"&to="+toLoc+"&dep="+depDate+"&ret=&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&persons="+document.getElementById("persons").value;
+				window.location.href = "mainMobile?from="+fromLoc+"&to="+toLoc+"&dep="+depDate+"&ret=&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&persons="+document.getElementById("persons").value;
 				
 		});
    }
