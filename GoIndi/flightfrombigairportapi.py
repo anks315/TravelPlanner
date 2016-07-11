@@ -50,15 +50,14 @@ class FlightFromBigAirportController:
 
             if source != sourcebig:
                 othermodesinitfuture = executor.submit(flightutil.getothermodes, sourcecity, sourcebig, journeydate, logger, trainclass,numberofadults)
+                directflightnextdayfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationbig, (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'),"flightbig", flightclass, numberofadults)
+
             if destination != destinationbig:
                 othermodesendfuture = executor.submit(flightutil.getothermodes, destinationbig, destinationcity, journeydate, logger, trainclass,numberofadults)
 
             directflightfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationbig, journeydate, "flightbig", flightclass, numberofadults)
-            # might conlict in id generation and should only be when source != sourcebig
-            directflightNextDayfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationbig, (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'),"flightbig", flightclass, numberofadults)
             directflight = directflightfuture.result()
-            directflightNextDay = directflightNextDayfuture.result()
-            directflight['flight'].extend(directflightNextDay['flight'])
+
             if len(directflight["flight"]) == 0:
                 logger.warning("No flight available between sourcenear [%s] and destinationnear [%s] on [%s]", sourcenear, destinationnear, journeydate)
                 return directflight
@@ -67,9 +66,13 @@ class FlightFromBigAirportController:
             if source != sourcebig and destination != destinationbig:
                 othermodessminit = othermodesinitfuture.result()
                 othermodessmend = othermodesendfuture.result()
+                directflightnextday = directflightnextdayfuture.result()
+                directflight['flight'].extend(directflightnextday['flight'])
                 directflight = flightutil.mixandmatch(directflight, othermodessminit, othermodessmend, logger)
             elif source != sourcebig:
                 othermodessminit = othermodesinitfuture.result()
+                directflightnextday = directflightnextdayfuture.result()
+                directflight['flight'].extend(directflightnextday['flight'])
                 directflight = flightutil.mixandmatchend(directflight, othermodessminit, logger)
             elif destination != destinationbig:
                 othermodessmend = othermodesendfuture.result()
