@@ -34,7 +34,7 @@ def testquery():
     print results
 
 
-def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeydate, destinationcity, trainrouteid, priceclass='3A', numberofadults=1, nextday=False):
+def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeydate, destinationcity, trainrouteid, priceclass='3A', numberofadults=1, nextday=False, directtrainset=Set()):
 
     """
     To get train between 2 stations
@@ -45,6 +45,7 @@ def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeyda
     :param destinationcity: destination city
     :param priceclass: preferred class for journey
     :param nextday: if train for next days are reuqired
+    :param directtrainset: set of direct train numbers from source to destination, used for filtering out all direct trains in breaking journey
     :return: array of trains and their data
     """
     trains = []
@@ -61,23 +62,24 @@ def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeyda
         logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity,destinationstationset)
         return trains
 
-    gettrains(results,journeydate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains)
+    gettrains(results,journeydate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains, directtrainset)
 
     routes = parseandreturnroute(trains, logger, journeydate, trainrouteid)
 
     if nextday:
         nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
         trains = [] # set train result empty
-        gettrains(results,nextdate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains)
+        gettrains(results,nextdate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains, directtrainset)
         routes.extend(parseandreturnroute(trains, logger, nextdate, trainrouteid))
         nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=2)).strftime('%d-%m-%Y')
         trains = []
-        gettrains(results,nextdate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains)
+        gettrains(results,nextdate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains, directtrainset)
         routes.extend(parseandreturnroute(trains, logger, nextdate, trainrouteid))
 
     return routes
 
-def gettrains(results, journeydate, sourcecity, logger, destinationcity, priceclass, numberofadults, trains):
+
+def gettrains(results, journeydate, sourcecity, logger, destinationcity, priceclass, numberofadults, trains, directtrainset):
 
     """
     To populate array of trains which have price and are running from source on journey date
@@ -89,10 +91,12 @@ def gettrains(results, journeydate, sourcecity, logger, destinationcity, pricecl
     :param priceclass: default price
     :param numberofadults: no. of adults taking journey
     :param trains: array of trains
+    :param directtrainset: set of direct train numbers from source to destination, used for filtering out all direct trains in breaking journey
     :return: trains
     """
 
     trainnumberset = Set()
+    trainnumberset = trainnumberset.union(directtrainset)
     for i in range(len(results.elements)):
         if istrainrunningoncurrentdate(results.elements[i], journeydate, sourcecity, logger) and isnonduplicatetrain(trainnumberset, results.elements[i][1]['data']['NUMBER']):
             trainoption = TrainOption()

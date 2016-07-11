@@ -38,6 +38,9 @@ class FlightNearBigAirportController:
             elif destinationnear == destinationbig:
                 logger.warning("Big and nearest airports [%s] of destination [%s] are same", destinationbig, destination)
                 return {"flight": []}
+            elif destinationbig == source:
+                logger.warning("Destination Big airport [%s] is same as source [%s]", destinationbig, source)
+                return {"flight": []}
 
             logger.debug("Fetching direct flights possible between sourcebig [%s] and destinationbig [%s] on [%s]", sourcenear, destinationnear, journeydate)
 
