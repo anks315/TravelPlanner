@@ -8,7 +8,7 @@ import logging
 import loggerUtil
 
 
-logger = loggerUtil.getlogger("FlighSkyScanner", logging.DEBUG)
+logger = loggerUtil.getlogger("FlighSkyScanner")
 
 def getApiResults(sourcecity,destinationcity,journeydate,id,flightClass='Economy',numberOfAdults=1):
     cityandstatetostationsmap = {'Jaisalmer':'JSA','Rajahmundry':'RJA','Rajamundry':'RJA','Pantnagar':'PGH','Pathankot':'IXP','Kullu':'KUU','Agartala': 'IXA', 'Agra': 'AGR', 'Ahmedabad': 'AMD', 'Allahabad': 'IXD',
@@ -33,7 +33,7 @@ def getApiResults(sourcecity,destinationcity,journeydate,id,flightClass='Economy
                                  'Tripura': 'IXA', 'Uttar Pradesh': 'AGR', 'Gujarat': 'AMD', 'Uttar Pradesh': 'IXD',
                                  'Punjab': 'ATQ', 'Maharashtra': 'IXU', 'Sikkim': 'IXB', 'Karnataka': 'BLR',
                                  'Gujarat': 'BHU', 'Madhya Pradesh': 'BHO', 'Orissa': 'BBI', 'Gujarat': 'BHJ',
-                                 'West Bengal': 'CCU', 'Chandigarh': 'IXC', 'Tamil Nadu': 'MAA', 'Kerala': 'COK',
+                                 'West Bengal': 'CCU', 'Chandigarh': 'IXC', 'Tamil Nadu': 'MAA', 'Kochi': 'COK',
                                  'Coimbatore': 'CJB', 'Daman': 'NMB', 'Uttar Pradesh': 'DED', 'Assam': 'DIB',
                                  'Nagaland': 'DMU', 'Daman and Diu': 'DIU', 'Assam': 'GAU', 'Goa': 'GOI',
                                  'Madhya Pradesh': 'GWL', 'Karnataka': 'HBX', 'Andhra Pradesh': 'HYD', 'Manipur': 'IMF',

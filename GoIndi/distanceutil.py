@@ -1977,7 +1977,7 @@ airportlist = [
     },
     {
         'City': 'Cochin',
-        'Kind': 'Large',
+        'Kind': 'Medium',
         'Name': None,
         'RailwayStation': 'Kochi',
         'IATA': 'COK',
@@ -2001,7 +2001,7 @@ airportlist = [
     },
     {
         'City': 'Dabolim',
-        'Kind': 'Large',
+        'Kind': 'Medium',
         'Name': None,
         'RailwayStation': 'Goa',
         'IATA': 'GOI',
@@ -2253,7 +2253,7 @@ airportlist = [
     },
     {
         'City': 'Jaipur',
-        'Kind': 'Large',
+        'Kind': 'Medium',
         'Name': None,
         'RailwayStation': 'Jaipur',
         'IATA': 'JAI',
@@ -2385,7 +2385,7 @@ airportlist = [
     },
     {
         'City': 'Kozhikode',
-        'Kind': 'Large',
+        'Kind': 'Medium',
         'Name': None,
         'RailwayStation': 'Kozhikode',
         'IATA': 'CCJ',
@@ -2517,7 +2517,7 @@ airportlist = [
     },
     {
         'City': 'Lucknow',
-        'Kind': 'Large',
+        'Kind': 'Medium',
         'Name': None,
         'RailwayStation': 'Lucknow',
         'IATA': 'LKO',
@@ -2781,7 +2781,7 @@ airportlist = [
     },
     {
         'City': 'Pune',
-        'Kind': 'Large',
+        'Kind': 'Medium',
         'Name': None,
         'RailwayStation': 'Pune',
         'IATA': 'PNQ',
@@ -3045,7 +3045,7 @@ airportlist = [
     },
     {
         'City': 'Trivandrum',
-        'Kind': 'Large',
+        'Kind': 'Medium',
         'Name': None,
         'RailwayStation': 'Trivandrum',
         'IATA': 'TRV',

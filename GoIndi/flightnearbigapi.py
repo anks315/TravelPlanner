@@ -3,10 +3,10 @@ __author__ = 'Hello'
 
 import loggerUtil, logging, flightutil, flightSkyScanner
 import miscUtility
-import concurrent
+import concurrent, copy
 import TravelPlanner
 
-logger = loggerUtil.getlogger("FlightNearBigApi", loggerlevel=logging.WARNING)
+logger = loggerUtil.getlogger("FlightNearBigApi")
 
 
 class FlightNearBigAirportController:
@@ -60,12 +60,12 @@ class FlightNearBigAirportController:
             if source != sourcenear and destination != destinationbig:
                 othermodessminit = othermodesinitfuture.result()
                 othermodessmend = othermodesendfuture.result()
-                directflight = flightutil.mixandmatch(directflight, othermodessminit, othermodessmend, logger)
+                directflight = flightutil.getmixandmatchresult(othermodessminit, othermodessmend, copy.deepcopy(directflight), logger)
             elif source != sourcenear:
                 othermodessminit = othermodesinitfuture.result()
-                directflight = flightutil.mixandmatchend(directflight, othermodessminit, logger)
+                directflight = flightutil.getmixandmatchendresult(othermodessminit, copy.deepcopy(directflight),logger)
             elif destination != destinationbig:
                 othermodessmend = othermodesendfuture.result()
-                directflight = flightutil.mixandmatchinit(directflight, othermodessmend, logger)
+                directflight = flightutil.getmixandmatchinitresult(othermodessmend, copy.deepcopy(directflight), logger)
 
             return directflight
