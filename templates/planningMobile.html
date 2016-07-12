@@ -24,6 +24,42 @@
 	<link type="text/css" href="/static/css/mobile/customButton.css" rel="stylesheet" />
 	<link rel="shortcut icon" type="image/png" href="/static/favicon.png"/>
 	<link type="text/css" href="/static/css/mobile/filtersCSS.css" rel="stylesheet" />
+	<style type="text/css">
+
+	html,body {
+   margin:0;
+   padding:0;
+   height:100%;
+}
+#allContent {
+   min-height:100%;
+   position:relative;
+}
+
+#body {
+   padding:10px;
+   padding-bottom:60px;   /* Height of the footer */
+}
+.imgBg { 
+background-image: url(/static/images/test.jpg); 
+background-repeat: no-repeat; 
+background-size:100%;
+}
+#background {
+    width: 100%; 
+    height: 100%; 
+    position: fixed; 
+    left: 0px; 
+    top: 0px; 
+    z-index: -1; /* Ensure div tag stays behind content; -999 might work, too. */
+}
+
+.stretch {
+    width:100%;
+    height:100%;
+}
+
+</style>
 
 </head>
 <body bgcolor="WhiteSmoke">
@@ -44,6 +80,7 @@
 						<div class="col-sm-8 col-height col-middle">
 							
 							<div id="planner"></div>
+							<br/><br/><br/><br/><br/><br/><br/><br/><br/>
 						</div>
 						<div class="col-sm-2 col-height col-middle">
 						</div>
@@ -53,13 +90,13 @@
 		  </div>
 	   </div>
   </div>
- </div> 
- </div>
- <br/>
- <br/>
-<div  id = "mainFooter">
+  <div  id = "mainFooter">
   <br/>
 <div id ='footer'></div></div>
+ </div> 
+ </div>
+ 
+
 <script type="text/javascript" src="/static/js/mobile/footer.js"></script>	
 <script type="text/javascript" src="/static/js/mobile/city.js"></script>
 <script type="text/javascript" src="/static/js/mobile/plannerMain.js"></script>
