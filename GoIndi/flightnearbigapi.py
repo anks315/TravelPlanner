@@ -6,7 +6,7 @@ import miscUtility
 import concurrent, copy
 import TravelPlanner
 
-logger = loggerUtil.getlogger("FlightNearBigApi", loggerlevel=logging.WARNING)
+logger = loggerUtil.getlogger("FlightNearBigApi")
 
 
 class FlightNearBigAirportController:

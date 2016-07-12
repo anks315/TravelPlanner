@@ -9,7 +9,7 @@ except ImportError:
     import xml.etree.ElementTree as etree
 
 
-log = loggerUtil.getlogger("SkyScannerLib", logging.WARNING)
+log = loggerUtil.getlogger("SkyScannerLib")
 
 STRICT, GRACEFUL, IGNORE = 'strict', 'graceful', 'ignore'
 
