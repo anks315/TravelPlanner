@@ -70,7 +70,7 @@ def getApiResults(sourcecity,destinationcity,journeydate,id,flightClass='Economy
                 outbounddate=str(year)+'-'+str(month)+'-'+str(day),
                 adults=int(numberOfAdults),cabinclass=flightClass,groupPricing=True), initial_delay = 1, delay = 1, tries = 100).parsed
             if result:
-                resultjson = parseflightandreturnfare(result, id, sourcecity, destinationcity, journeydate,numberOfAdults)
+                resultjson = parseflightandreturnfare(result, id, sourcecity, destinationcity, journeydate)
                 break
             logger.debug("Retrying... Empty Response From SkyScanner for Source:[%s] and Destination:[%s],journeyDate:[%s]",source,destination,journeydate)
             retries=retries-1
@@ -82,7 +82,8 @@ def getApiResults(sourcecity,destinationcity,journeydate,id,flightClass='Economy
 
     return resultjson
 
-def parseflightandreturnfare(apiresult,id,source,destination,journeydate,numberOfAdults):
+
+def parseflightandreturnfare(apiresult, id, source, destination, journeydate):
     logger.info("Parsing SkyScanner Final Result for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeydate)
     returnedfaredata = apiresult
     resultjsondata = {"flight": []}

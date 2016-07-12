@@ -28,6 +28,7 @@ class BusController:
             response = self.parseresultandreturnfare(req.json(),source,destination,journeydate,newformatjourneydate,numberofadults)
         except Exception as e:
             logger.error("Error Getting Data For Source[%s] and Destination[%s],JourneyDate:[%s], reason [%s]",source,destination,journeydate, e.message)
+            return response
         logger.debug("[END]-Get Results From BusApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeydate)
         return response
 

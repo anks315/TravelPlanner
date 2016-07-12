@@ -39,7 +39,7 @@ class FlightDirectAndNearAirportController:
 
             if source != sourcenear:
                 othermodesinitfuture = executor.submit(flightutil.getothermodes, sourcecity, sourcenear, journeydate, logger, trainclass,numberofadults)
-                directflightNextDayfuture = executor.submit(flightSkyScanner.getApiResults, sourcenear, destinationnear, (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'), "flightnear", flightclass, numberofadults)
+                directflightnextdayfuture = executor.submit(flightSkyScanner.getApiResults, sourcenear, destinationnear, (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'), "flightnear", flightclass, numberofadults)
             if destination != destinationnear:
                 othermodesendfuture = executor.submit(flightutil.getothermodes, destinationnear, destinationcity, journeydate, logger, trainclass,numberofadults)
 
@@ -55,11 +55,13 @@ class FlightDirectAndNearAirportController:
             if source != sourcenear and destination != destinationnear:
                 othermodessminit = othermodesinitfuture.result()
                 othermodessmend = othermodesendfuture.result()
-                directflightNextDay = directflightNextDayfuture.result()
-                directflight['flight'].extend(directflightNextDay['flight'])
+                directflightnextday = directflightnextdayfuture.result()
+                directflight['flight'].extend(directflightnextday['flight'])
                 directflight = flightutil.mixandmatch(directflight, othermodessminit, othermodessmend, logger)
             elif source != sourcenear:
                 othermodessminit = othermodesinitfuture.result()
+                directflightnextday = directflightnextdayfuture.result()
+                directflight['flight'].extend(directflightnextday['flight'])
                 directflight = flightutil.mixandmatchend(directflight, othermodessminit, logger)
             elif destination != destinationnear:
                 othermodessmend = othermodesendfuture.result()

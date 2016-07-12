@@ -95,29 +95,27 @@ def getothermodes(source, destination, journeydate, logger, trainclass='3A', num
 
     traincontrollerneo = trainapiNeo4j.TrainController()
     nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y')
-    nextToNextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y')
+    nexttonextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=2)).strftime('%d-%m-%Y')
 
     logger.debug("[START] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
     resultjsondata = traincontrollerneo.getroutes(source, destination, journeydate, priceclass=trainclass, numberofadults=numberofadults, nextday=True)["train"]
     if not resultjsondata:
-        logger.debug("No Data From Train,Retrieving From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
+        logger.warning("No Data From Train,Retrieving From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
         buscontroller = busapi.BusController()
-        resultjsondata = buscontroller.getresults(source, destination, nextToNextdate, numberofadults)
+        resultjsondata = buscontroller.getresults(source, destination, nexttonextdate, numberofadults)
         resultjsondata["bus"].extend(buscontroller.getresults(source, destination, journeydate, numberofadults)["bus"])
         resultjsondata["bus"].extend(buscontroller.getresults(source, destination, nextdate, numberofadults)["bus"])
         resultjsondata = resultjsondata["bus"]
-    if not resultjsondata:
-        logger.warning("No Data From Train and Bus for Source[%s] and Destination[%s],journeyDate[%s]",source, destination, journeydate)
+        if not resultjsondata:
+            logger.warning("No Data From Train and Bus for Source[%s] and Destination[%s],journeyDate[%s]",source, destination, journeydate)
 
     logger.debug("[END] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source, destination, journeydate)
-
     return resultjsondata
 
 
 def mixandmatch(directflight, othermodesinit, othermodesend, logger):
 
         logger.debug("[START] Flight mix & match")
-
         directflight = miscUtility.limitResults(directflight, "flight")
 
         for j in range(len(directflight["flight"])):
@@ -132,10 +130,10 @@ def mixandmatch(directflight, othermodesinit, othermodesend, logger):
             subparts.sort(miscUtility.sortonsubjourneytime)
             if len(subparts) > 5:
                 subparts = subparts[0:5]
-            continueFurther = 0;
+            continuefurther = 0;
 
             if subparts:
-                continueFurther=1
+                continuefurther = 1
                 minmax1 = minMaxUtil.getMinMaxValues(subparts)
                 price1 = int(minMaxUtil.getprice(subparts[0]))
                 subJourneyTime1 = subparts[0]["subJourneyTime"]
@@ -160,7 +158,7 @@ def mixandmatch(directflight, othermodesinit, othermodesend, logger):
             if len(subparts) > 5:
                 subparts = subparts[0:5]
 
-            if subparts and continueFurther==1:
+            if subparts and continuefurther==1:
                 minmax2 = minMaxUtil.getMinMaxValues(subparts)
                 price2 = int(minMaxUtil.getprice(subparts[0]))
                 destination = subparts[0]["destination"]
@@ -245,12 +243,12 @@ def mixandmatchinit(mixedflightinit, othermodesend, logger):
     return mixedflightinit
 
 
-def mixandmatchend(mixedflightend, otherModesInit, logger):
+def mixandmatchend(mixedflightend, othermodesinit, logger):
 
     """
     Join flight with other modes, with flight in the end
     :param mixedflightend: flight part of journey
-    :param otherModesInit: other mode of journey
+    :param othermodesinit: other mode of journey
     :param otherModesInit2: other mode of jounrey2
     :return: combined journey with flight after other mode of total journey
     """
@@ -259,8 +257,8 @@ def mixandmatchend(mixedflightend, otherModesInit, logger):
     for j in range(len(mixedflightend["flight"])):
         flightpart = mixedflightend["flight"][j]["parts"][0]
         subparts = []
-        for k in range(len(otherModesInit)):
-            subpart = otherModesInit[k]["parts"][0]
+        for k in range(len(othermodesinit)):
+            subpart = othermodesinit[k]["parts"][0]
             if dateTimeUtility.isjourneypossible(subpart["arrival"], dateTimeUtility.convertflighttime(flightpart["departure"]), subpart["arrivalDate"], flightpart["departureDate"], 3, 24):
                 subpart["waitingTime"] = dateTimeUtility.getWaitingTime(subpart["arrival"], flightpart["departure"],subpart["arrivalDate"],flightpart["departureDate"])
                 subpart["subJourneyTime"] = dateTimeUtility.gettotalduration(dateTimeUtility.convertflighttime(flightpart["departure"]), subpart["departure"], flightpart["departureDate"], subpart["departureDate"])
