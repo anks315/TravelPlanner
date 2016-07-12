@@ -22,8 +22,8 @@ def demo():
 citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai",}
 
 
-#DATABASE_CONNECTION= GraphDatabase("http://ec2-54-254-171-20.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
-DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="rkdaimpwd")
+DATABASE_CONNECTION= GraphDatabase("http://ec2-54-254-171-20.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
+#DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="shekhar")
 
 #DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
 
@@ -341,7 +341,7 @@ def istrainrunningoncurrentdate(train, journeydate, sourcecity, logger):
     day = getdayfromdate(journeydate, sourcedaynumber - 1)
     if day == 'THURSDAY':
         day = 'THRUSDAY'
-    if train[1]['data'][day] == 'N':
+    if (day in train[1]['data'].keys() and  train[1]['data'][day] == 'N') or (day=='THRUSDAY' and 'THURSDAY' in train[1]['data'].keys() and  train[1]['data']['THURSDAY'] == 'N'):
         logger.warning("Skipping train [%s], since it doesn't run from [%s] on [%s]", trainnumber, sourcecity, journeydate)
         return False
     return True
