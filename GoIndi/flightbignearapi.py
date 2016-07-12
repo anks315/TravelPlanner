@@ -53,13 +53,14 @@ class FlightBigNearAirportController:
             directflightnextdayfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationnear,(datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'), "flightnearbig", flightclass, numberofadults)
 
             directflight = directflightfuture.result()
+            directflight = miscUtility.limitResults(directflight, "flight", limit=10)
             directflightnextday = directflightnextdayfuture.result()
+            directflightnextday = miscUtility.limitResults(directflightnextday, "flight", limit=10)
             directflight['flight'].extend(directflightnextday['flight'])
 
             if len(directflight["flight"]) == 0:
                 logger.warning("No flight available between sourcenear [%s] and destinationnear [%s] on [%s]", sourcenear, destinationnear, journeydate)
                 return directflight
-            directflight = miscUtility.limitResults(directflight, "flight")
 
             if source != sourcebig and destination != destinationnear:
                 othermodessminit = othermodesinitfuture.result()

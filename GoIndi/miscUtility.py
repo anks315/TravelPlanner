@@ -1,7 +1,16 @@
 
-def limitResults(results,type):
-    if len(results[type])>15:
-        results[type] = results[type][0:15]
+def limitResults(results, type, limit=20):
+
+    """
+    To limit no. of result in a list
+    :param results:
+    :param type: type of records
+    :param limit: no. of records to be retained
+    :return: list after removing records
+    """
+
+    if len(results[type]) > limit:
+        results[type] = results[type][0:limit]
 
     return results
 
