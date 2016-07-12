@@ -408,7 +408,7 @@ def loadtraindata():
     try:
         trainstations = DATABASE_CONNECTION.query(q)
     except Exception as e:
-        logger = loggerUtil.getlogger("loaddata", logging.WARNING)
+        logger = loggerUtil.getlogger("loaddata")
         print "Error"
         logger.error("Error in loading train data on startup, reason [%s]", e.message)
         return trainstationsmap

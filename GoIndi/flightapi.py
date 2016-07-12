@@ -14,7 +14,7 @@ import loggerUtil, models
 import TravelPlanner.trainUtil
 
 
-logger = loggerUtil.getlogger("FlightApi", logging.WARNING)
+logger = loggerUtil.getlogger("FlightApi")
 
 
 class FlightController:

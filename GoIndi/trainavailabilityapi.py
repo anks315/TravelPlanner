@@ -5,6 +5,7 @@ import urllib, json
 
 logger = loggerUtil.getlogger("TrainAvailabilityApi")
 
+
 class TrainAvailabilityController:
 
     """
