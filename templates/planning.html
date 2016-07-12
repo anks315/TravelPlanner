@@ -26,6 +26,20 @@
 	<link type="text/css" href="/static/css/filtersCSS.css" rel="stylesheet" />
 <style type="text/css">
 
+	html,body {
+   margin:0;
+   padding:0;
+   height:100%;
+}
+#allContent {
+   min-height:100%;
+   position:relative;
+}
+
+#body {
+   padding:10px;
+   padding-bottom:60px;   /* Height of the footer */
+}
 .imgBg { 
 background-image: url(/static/images/test.jpg); 
 background-repeat: no-repeat; 
@@ -82,17 +96,18 @@ background-size:100%;
 		  <div class="row-eq-height">
 		  <div class="col-sm-12 col-height col-middle">
 						
-		  <br/><br/><br/><br/><br/><br/>&nbsp;
+		  <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>&nbsp;
 		  </div>
 		  </div>
 	   </div>
   </div>
+  <div  id = "mainFooter">
+  <br/>
+<div id ='footer'></div></div>
  </div> 
 
 
-<div style="height:150px;background-color:#262626;width:100%">
-  <br/>
-<div id ='footer'></div>
+
 <script type="text/javascript" src="/static/js/footer.js"></script>	
 <script type="text/javascript" src="/static/js/city.js"></script>
 <script type="text/javascript" src="/static/js/plannerMain.js"></script>

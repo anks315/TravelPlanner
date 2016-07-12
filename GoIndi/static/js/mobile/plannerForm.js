@@ -15,13 +15,17 @@ var flightDirect = 0
 var flightBiggest = 0
 var flightBigToNear = 0
 var flightNearToBig = 0
+var flightRetrieved=0
+var trainRetrieved=0
+var busRetrieved=0
+
 
 function showPlanner(plannerContainer){
 		var flightClass = "<div class='btn-group'><a class='btn btn-default dropdown-toggle'  data-toggle='dropdown' href='#'>"+flightClassSelected+"&nbsp<span class='caret'></span></a><ul class='dropdown-menu'><li><a href='#' value='economy' type='flightClass'>Economy&nbsp</a></li><li><a href='#' value='Business' type='flightClass'>Business&nbsp</a></li></ul></div>"
 		var trainClass = "<div class='btn-group'><a class='btn btn-default dropdown-toggle'  data-toggle='dropdown' href='#'>"+trainClassSelected+"&nbsp<span class='caret'></span></a><ul class='dropdown-menu'><li><a href='#' value='SL' type='trainClass'>SL&nbsp</a></li><li><a href='#' value='3A' type='trainClass'>3A&nbsp</a></li><li><a href='#' value='3E' type='trainClass'>3E&nbsp</a></li><li><a href='#' value='2A' type='trainClass'>2A&nbsp</a></li><li><a href='#' value='1A' type='trainClass'>1A&nbsp</a></li><li><a href='#' value='FA' type='trainClass'>FA&nbsp</a></li><li><a href='#' value='CC' type='trainClass'>CC&nbsp</a></li></ul></div>"
 		
 		var out ="";
-			 out = out + "<nav role='navigation' class='navbar navbar-default'><div class='navbar-header' style='padding-bottom: 15px;'><a class='navbar-brand' href='/'><img src='/static/images/logo-main.png' class='sameLine'></a><button type='button' data-target='#navbarCollapse' data-toggle='collapse' class='navbar-toggle'><span class='sr-only'>Toggle navigation</span><span class='icon-bar'></span><span class='icon-bar'></span><span class='icon-bar'></span></button></div></img><div id='navbarCollapse' class='collapse navbar-collapse'><ul class='nav navbar-nav navbar-center'><li><div style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' id='from' placeholder='From:' type='text' autofocus autocomplete='off' ng-focus='disableTap()'></div></li><li><div style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' id='to' placeholder='To:' type='text' autofocus autocomplete='off'></div></li><li><div id='departure' style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' type='text' id='departureBox' class='form-control' placeholder= 'Departure'/><div></li><li><table><tr><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><label class='mainLabel' >Persons</label></td><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><div class='input-group'><input type='number' id ='persons' value='"+persons+"' min='1' max='6' class='form-control' style='width:60px;'/></div></td></tr></table></li><li><table><tr><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><label class='mainLabel'>Flight Class</label></td><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'>"+flightClass+"</td></tr></table></li><li><table><tr><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><label class='mainLabel'>Train Class</label></td><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'>"+trainClass+"</td></tr></table></li><li><div style='padding-bottom: 15px;padding-left: 5px;padding-right: 1px;padding-top: 15px;text-align:right'><input type='submit' id='search' class='btn btn-info' value='Search'></div></li></ul></div></nav>";
+			 out = out + "<nav role='navigation' class='navbar navbar-default'><div class='navbar-header' style='padding-bottom: 15px;'><a class='navbar-brand' href='/'><img src='/static/images/logo-main.png' class='sameLine'></a><button type='button' data-target='#navbarCollapse' data-toggle='collapse' class='navbar-toggle'><span class='sr-only'>Toggle navigation</span><span class='icon-bar'></span><span class='icon-bar'></span><span class='icon-bar'></span></button></div></img><div id='navbarCollapse' class='collapse navbar-collapse'><ul class='nav navbar-nav navbar-center'><li><div style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' id='from' placeholder='From:' type='text' autofocus autocomplete='off' ng-focus='disableTap()'></div></li><li><div style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' id='to' placeholder='To:' type='text' autofocus autocomplete='off'></div></li><li><div id='departure' readonly='true' style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><input class='form-control' type='text' id='departureBox' readonly style='background:white;' class='form-control' placeholder= 'Departure'/><div></li><li><table><tr><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><label class='mainLabel' >Persons</label></td><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><div class='input-group'><input type='number' id ='persons' value='"+persons+"' min='1' max='6' class='form-control' style='width:60px;'/></div></td></tr></table></li><li><table><tr><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><label class='mainLabel'>Flight Class</label></td><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'>"+flightClass+"</td></tr></table></li><li><table><tr><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'><label class='mainLabel'>Train Class</label></td><td style='padding-bottom: 15px;padding-left: 2.5px;padding-right: 2.5px;padding-top: 15px;'>"+trainClass+"</td></tr></table></li><li><div style='padding-bottom: 15px;padding-left: 5px;padding-right: 1px;padding-top: 15px;text-align:right'><input type='submit' id='search' class='btn btn-info' value='Search'></div></li></ul></div></nav>";
 
 		document.getElementById("planner").innerHTML = out;
 		//setting min date as today
@@ -94,6 +98,10 @@ function showPlanner(plannerContainer){
 					 flightBiggest = 0
 					 flightBigToNear = 0
 					 flightNearToBig = 0
+					 flightRetrieved=0
+					 trainRetrieved=0
+					 busRetrieved=0
+					 $("#loading").show();
 					 flightRouteAdded=new Object()
 					 trainRouteAdded=new Object()
 					document.getElementById("resultsWid").innerHTML = "";
@@ -237,7 +245,10 @@ function getUrlVars() {
 					  }
 					  flightFilters();
 					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
-												
+										flightRetrieved		=1
+									if(	$( "#flightDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
+										$("#loading").hide();
+									}
 					  }
 					}
 				});
@@ -255,7 +266,10 @@ function getUrlVars() {
 					  }
 					  flightFilters();
 					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
-												
+								flightRetrieved = 1
+								if(	$( "#flightDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
+																		$("#loading").hide();
+																	}								
 					  }
 					}
 				});
@@ -274,7 +288,10 @@ function getUrlVars() {
 					  }
 					  flightFilters();
 					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
-												
+										flightRetrieved =1	
+									if(	$( "#flightDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
+																			$("#loading").hide();
+																		}										
 					  }
 				  }
 				});
@@ -294,7 +311,10 @@ function getUrlVars() {
 					  }
 					  flightFilters();
 					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
-												
+												flightRetrieved=1
+												if(	$( "#flightDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
+										$("#loading").hide();
+									}
 					  }
 				  }
 				});			
@@ -310,7 +330,11 @@ function getUrlVars() {
 					  routeFilter(trainList,"train")
 						trainFilters();
 					}
-				  
+												trainRetrieved=1
+												if(	$( "#trainDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
+										$("#loading").hide();
+									}
+					  
 				});
 	
 	 $.getJSON('bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&adults="+persons, function(data, err) {
@@ -328,6 +352,9 @@ function getUrlVars() {
 					
 						busFilters();
 					}
-				  
+				  busRetrieved=1
+				  if(	$( "#busDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
+										$("#loading").hide();
+									}
 				});
  }

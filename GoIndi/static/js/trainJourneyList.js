@@ -2,7 +2,7 @@ var radionames = []
 var isSelected =0
 function showTrainJourneyList(transportList){
 	if(transportList.length==0){
-		
+		document.getElementById("resultsWid").innerHTML = ""
 		return;
 	}
 	if($( "#priceSort" ).hasClass("active")){
@@ -90,7 +90,7 @@ function showTrainJourneyList(transportList){
 				
 				
 				
-				output = output + "<div class='trainMain' id = 'main"+transportTotalDetails.id+"'><tr><td>&nbsp;</td></tr><tr><td bgcolor='WhiteSmoke'><div class='row-eq-height'><div class='col-sm-12 col-height col-middle nopaddingatall'><div>"+travelSplitter+"</div></div><div class='row-eq-height'><div class='col-sm-10 col-height col-middle'><br/><div>"+individualJourneyDetails+"</div></div><div class='col-sm-2 col-height col-middle'><table width='100%'><tr><td><button type='button' class='btn btn-warning sameLine'  data-toggle='modal' data-target='#details"+transportTotalDetails.id+"'>Detail & Book</button><br/><div class='sameLine'><h4 style='white-space: nowrap;'><font color='green'>&#8377 "+transportTotalDetails.price+"/-</font></h4></div></td></tr></table></div></div></td></tr><tr><td>";
+				output = output + "<div class='trainMain' id = 'main"+transportTotalDetails.id+"'><tr><td>&nbsp;</td></tr><tr><td bgcolor='WhiteSmoke'><table width='100%' class='shadowTable'><tr><td><div class='row-eq-height'><div class='col-sm-12 col-height col-middle nopaddingatall'><div>"+travelSplitter+"</div></div><div class='row-eq-height'><div class='col-sm-10 col-height col-middle'><br/><div>"+individualJourneyDetails+"</div></div><div class='col-sm-2 col-height col-middle'><table width='100%'><tr><td><button type='button' class='btn btn-warning sameLine'  data-toggle='modal' data-target='#details"+transportTotalDetails.id+"'>Detail & Book</button><br/><div class='sameLine'><h4 style='white-space: nowrap;'><font color='green'>&#8377 "+transportTotalDetails.price+"/-</font></h4></div></td></tr></table></div></div></td></tr></table></td></tr><tr><td>";
 				
 				output = output + "<div class='modal fade modal-wide' id='details"+transportTotalDetails.id+"' role='dialog'><div class='modal-dialog'><div class='modal-content'><div class='modal-body'><div class='modal-body'><button type='button' class='close' data-dismiss='modal'>&times;</button>"+getModalForTrains(transportList[i].parts,transportTotalDetails.id)+"</div></div></div></div></td></tr></div>";
 				

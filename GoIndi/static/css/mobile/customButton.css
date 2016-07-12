@@ -137,6 +137,9 @@ table {
 .btn-group > .btn.active {
 z-index: 1; 
 }
+#persons{
+	z-index: 1; 
+}
 .barView {
 	line-height : 40% ;
 }
