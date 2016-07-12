@@ -98,26 +98,24 @@ def getothermodes(source, destination, journeydate, logger, trainclass='3A', num
     nexttonextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=2)).strftime('%d-%m-%Y')
 
     logger.debug("[START] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
-    resulttrainjsondata = traincontrollerneo.getroutes(source, destination, journeydate, priceclass=trainclass, numberofadults=numberofadults, nextday=True)["train"]
-    if not resulttrainjsondata:
+    resultjsondata = traincontrollerneo.getroutes(source, destination, journeydate, priceclass=trainclass, numberofadults=numberofadults, nextday=True)["train"]
+    if not resultjsondata:
         logger.warning("No Data From Train,Retrieving From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
-    buscontroller = busapi.BusController()
-    resultbusjsondata = buscontroller.getresults(source, destination, nexttonextdate, numberofadults)
-    resultbusjsondata["bus"].extend(buscontroller.getresults(source, destination, journeydate, numberofadults)["bus"])
-    resultbusjsondata["bus"].extend(buscontroller.getresults(source, destination, nextdate, numberofadults)["bus"])
-    resultbusjsondata = resultbusjsondata["bus"]
-    if not resultbusjsondata:
-        logger.warning("No Data From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source, destination, journeydate)
+        buscontroller = busapi.BusController()
+        resultjsondata = buscontroller.getresults(source, destination, nexttonextdate, numberofadults)
+        resultjsondata["bus"].extend(buscontroller.getresults(source, destination, journeydate, numberofadults)["bus"])
+        resultjsondata["bus"].extend(buscontroller.getresults(source, destination, nextdate, numberofadults)["bus"])
+        resultjsondata = resultjsondata["bus"]
+        if not resultjsondata:
+            logger.warning("No Data From Train and Bus for Source[%s] and Destination[%s],journeyDate[%s]",source, destination, journeydate)
 
     logger.debug("[END] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source, destination, journeydate)
-
-    return resulttrainjsondata + resultbusjsondata
+    return resultjsondata
 
 
 def mixandmatch(directflight, othermodesinit, othermodesend, logger):
 
         logger.debug("[START] Flight mix & match")
-
         directflight = miscUtility.limitResults(directflight, "flight")
 
         for j in range(len(directflight["flight"])):
@@ -132,10 +130,10 @@ def mixandmatch(directflight, othermodesinit, othermodesend, logger):
             subparts.sort(miscUtility.sortonsubjourneytime)
             if len(subparts) > 5:
                 subparts = subparts[0:5]
-            continueFurther = 0;
+            continuefurther = 0;
 
             if subparts:
-                continueFurther=1
+                continuefurther = 1
                 minmax1 = minMaxUtil.getMinMaxValues(subparts)
                 price1 = int(minMaxUtil.getprice(subparts[0]))
                 subJourneyTime1 = subparts[0]["subJourneyTime"]
@@ -160,7 +158,7 @@ def mixandmatch(directflight, othermodesinit, othermodesend, logger):
             if len(subparts) > 5:
                 subparts = subparts[0:5]
 
-            if subparts and continueFurther==1:
+            if subparts and continuefurther==1:
                 minmax2 = minMaxUtil.getMinMaxValues(subparts)
                 price2 = int(minMaxUtil.getprice(subparts[0]))
                 destination = subparts[0]["destination"]
