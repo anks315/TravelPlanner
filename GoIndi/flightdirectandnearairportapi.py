@@ -3,7 +3,7 @@ __author__ = 'Hello'
 
 import loggerUtil, logging, flightutil, flightSkyScanner, datetime
 import miscUtility
-import concurrent
+import concurrent, copy
 import TravelPlanner
 
 logger = loggerUtil.getlogger("FlightDirectAndNearAirportApi", loggerlevel=logging.WARNING)
@@ -39,12 +39,14 @@ class FlightDirectAndNearAirportController:
 
             if source != sourcenear:
                 othermodesinitfuture = executor.submit(flightutil.getothermodes, sourcecity, sourcenear, journeydate, logger, trainclass,numberofadults)
-                directflightnextdayfuture = executor.submit(flightSkyScanner.getApiResults, sourcenear, destinationnear, (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'), "flightnear", flightclass, numberofadults)
             if destination != destinationnear:
                 othermodesendfuture = executor.submit(flightutil.getothermodes, destinationnear, destinationcity, journeydate, logger, trainclass,numberofadults)
 
             directflightfuture = executor.submit(flightSkyScanner.getApiResults, sourcenear, destinationnear, journeydate, "flightnear", flightclass, numberofadults)
+            directflightnextdayfuture = executor.submit(flightSkyScanner.getApiResults, sourcenear, destinationnear, (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'), "flightnear", flightclass, numberofadults)
             directflight = directflightfuture.result()
+            directflightnextday = directflightnextdayfuture.result()
+            directflight['flight'].extend(directflightnextday['flight'])
 
             if len(directflight["flight"]) == 0:
                 logger.warning("No flight available between sourcenear [%s] and destinationnear [%s] on [%s]", sourcenear, destinationnear, journeydate)
@@ -55,16 +57,12 @@ class FlightDirectAndNearAirportController:
             if source != sourcenear and destination != destinationnear:
                 othermodessminit = othermodesinitfuture.result()
                 othermodessmend = othermodesendfuture.result()
-                directflightnextday = directflightnextdayfuture.result()
-                directflight['flight'].extend(directflightnextday['flight'])
-                directflight = flightutil.mixandmatch(directflight, othermodessminit, othermodessmend, logger)
+                directflight = flightutil.getmixandmatchresult(othermodessminit, othermodessmend, copy.deepcopy(directflight), logger)
             elif source != sourcenear:
                 othermodessminit = othermodesinitfuture.result()
-                directflightnextday = directflightnextdayfuture.result()
-                directflight['flight'].extend(directflightnextday['flight'])
-                directflight = flightutil.mixandmatchend(directflight, othermodessminit, logger)
+                directflight = flightutil.getmixandmatchendresult(othermodessminit, copy.deepcopy(directflight), logger)
             elif destination != destinationnear:
                 othermodessmend = othermodesendfuture.result()
-                directflight = flightutil.mixandmatchinit(directflight, othermodessmend, logger)
+                directflight = flightutil.getmixandmatchinitresult(othermodessmend, copy.deepcopy(directflight), logger)
 
             return directflight

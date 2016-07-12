@@ -49,7 +49,7 @@ def getnearestairports(source, destination):
         destlat = destlatlong["results"][0]["geometry"]["location"]["lat"]
         destlong = destlatlong["results"][0]["geometry"]["location"]["lng"]
         destairport = TravelPlanner.trainUtil.gettraincity(stationtocitymap[distanceutil.findnearestairport(destlat, destlong)]).title()
-        bigdestinationairport = TravelPlanner.trainUtil.gettraincity(stationtocitymap[distanceutil.findnearestbigairport(destlat, destlong)].title())
+        bigdestinationairport = TravelPlanner.trainUtil.gettraincity(stationtocitymap[distanceutil.findnearestbigairport(destlat, destlong)]).title()
         destinationairports = NearestAirports()
         destinationairports.near = destairport
         destinationairports.big = bigdestinationairport
@@ -93,23 +93,26 @@ def getothermodes(source, destination, journeydate, logger, trainclass='3A', num
     :return: other journey modes, train if exists else bus
     """
 
+    resultjsondata = { "train" : [], "bus" : []}
     traincontrollerneo = trainapiNeo4j.TrainController()
     nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y')
     nexttonextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=2)).strftime('%d-%m-%Y')
 
     logger.debug("[START] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
-    resultjsondata = traincontrollerneo.getroutes(source, destination, journeydate, priceclass=trainclass, numberofadults=numberofadults, nextday=True)["train"]
-    if not resultjsondata:
+    trainjsondata = traincontrollerneo.getroutes(source, destination, journeydate, priceclass=trainclass, numberofadults=numberofadults, nextday=True)["train"]
+    if not trainjsondata:
         logger.warning("No Data From Train,Retrieving From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
-        buscontroller = busapi.BusController()
-        resultjsondata = buscontroller.getresults(source, destination, nexttonextdate, numberofadults)
-        resultjsondata["bus"].extend(buscontroller.getresults(source, destination, journeydate, numberofadults)["bus"])
-        resultjsondata["bus"].extend(buscontroller.getresults(source, destination, nextdate, numberofadults)["bus"])
-        resultjsondata = resultjsondata["bus"]
-        if not resultjsondata:
-            logger.warning("No Data From Train and Bus for Source[%s] and Destination[%s],journeyDate[%s]",source, destination, journeydate)
+    buscontroller = busapi.BusController()
+    busjsondata = buscontroller.getresults(source, destination, nexttonextdate, numberofadults)
+    busjsondata["bus"].extend(buscontroller.getresults(source, destination, journeydate, numberofadults)["bus"])
+    busjsondata["bus"].extend(buscontroller.getresults(source, destination, nextdate, numberofadults)["bus"])
+    busjsondata = busjsondata["bus"]
+    if not busjsondata:
+        logger.warning("No Data From Bus for Source[%s] and Destination[%s],journeyDate[%s]",source, destination, journeydate)
 
     logger.debug("[END] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source, destination, journeydate)
+    resultjsondata["train"] = trainjsondata
+    resultjsondata["bus"] = busjsondata
     return resultjsondata
 
 
@@ -311,3 +314,62 @@ def getflightrequestparams(request):
     flightrequest.numberofadults = request.GET["adults"]
 
     return flightrequest
+
+
+def getmixandmatchresult(othermodessminit, othermodessmend, directflight, logger):
+
+    """
+    To get result flights from matching flight journey with other modes at both end and start of journey
+    :param othermodessminit: other modes in the beginning of journey
+    :param othermodessmend: other modes in the end of journey
+    :param directflight: deep copy of direct flight
+    :param logger: to log events
+    :return: final combined result of flights and other modes
+    """
+
+    resultflight = { "flight" : [] }
+    if len(othermodessminit["train"]) > 0 and len(othermodessmend["train"]) > 0:
+        resultflight["flight"].extend(mixandmatch(copy.deepcopy(directflight), othermodessminit["train"], othermodessmend["train"], logger)["flight"])
+    if len(othermodessminit["train"]) > 0 and len(othermodessmend["bus"]) > 0:
+        resultflight["flight"].extend(mixandmatch(copy.deepcopy(directflight), othermodessminit["train"], othermodessmend["bus"], logger)["flight"])
+    if len(othermodessminit["bus"]) > 0 and len(othermodessmend["bus"]) > 0:
+        resultflight["flight"].extend(mixandmatch(copy.deepcopy(directflight), othermodessminit["bus"], othermodessmend["bus"], logger)["flight"])
+    if len(othermodessminit["bus"]) > 0 and len(othermodessmend["train"]) > 0:
+        resultflight["flight"].extend(mixandmatch(copy.deepcopy(directflight), othermodessminit["bus"], othermodessmend["train"], logger)["flight"])
+    return resultflight
+
+
+def getmixandmatchendresult(othermodessminit, directflight, logger):
+
+    """
+    To get result flights from matching flight journey with other modes at start of journey
+    :param othermodessminit: other modes in the beginning of journey
+    :param directflight: deep copy of direct flight
+    :param logger: to log events
+    :return: final combined result of flights and other modes
+    """
+
+    resultflight = { "flight" : [] }
+    if len(othermodessminit["train"]) > 0:
+        resultflight["flight"].extend(mixandmatchend(copy.deepcopy(directflight), othermodessminit["train"], logger)["flight"])
+    if len(othermodessminit["bus"]) > 0:
+        resultflight["flight"].extend(mixandmatchend(copy.deepcopy(directflight), othermodessminit["bus"], logger)["flight"])
+    return resultflight
+
+
+def getmixandmatchinitresult(othermodessmend, directflight, logger):
+
+    """
+    To get result flights from matching flight journey with other modes at end of journey
+    :param othermodessmend: other modes in the end of journey
+    :param directflight: deep copy of direct flight
+    :param logger: to log events
+    :return: final combined result of flights and other modes
+    """
+
+    resultflight = { "flight" : [] }
+    if len(othermodessmend["train"]) > 0:
+        resultflight["flight"].extend(mixandmatchinit(copy.deepcopy(directflight), othermodessmend["train"], logger)["flight"])
+    if len(othermodessmend["bus"]) > 0:
+        resultflight["flight"].extend(mixandmatchinit(copy.deepcopy(directflight), othermodessmend["bus"], logger)["flight"])
+    return resultflight

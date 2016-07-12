@@ -3,7 +3,7 @@ __author__ = 'Hello'
 
 import loggerUtil, logging, flightutil, flightSkyScanner,datetime
 import miscUtility
-import concurrent
+import concurrent, copy
 import TravelPlanner
 
 logger = loggerUtil.getlogger("FlightFromBigAirportApi", loggerlevel=logging.WARNING)
@@ -51,7 +51,6 @@ class FlightFromBigAirportController:
             if source != sourcebig:
                 othermodesinitfuture = executor.submit(flightutil.getothermodes, sourcecity, sourcebig, journeydate, logger, trainclass,numberofadults)
                 directflightnextdayfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationbig, (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'),"flightbig", flightclass, numberofadults)
-
             if destination != destinationbig:
                 othermodesendfuture = executor.submit(flightutil.getothermodes, destinationbig, destinationcity, journeydate, logger, trainclass,numberofadults)
 
@@ -68,14 +67,13 @@ class FlightFromBigAirportController:
                 othermodessmend = othermodesendfuture.result()
                 directflightnextday = directflightnextdayfuture.result()
                 directflight['flight'].extend(directflightnextday['flight'])
-                directflight = flightutil.mixandmatch(directflight, othermodessminit, othermodessmend, logger)
+                directflight = flightutil.getmixandmatchresult(othermodessminit, othermodessmend, copy.deepcopy(directflight), logger)
             elif source != sourcebig:
                 othermodessminit = othermodesinitfuture.result()
                 directflightnextday = directflightnextdayfuture.result()
                 directflight['flight'].extend(directflightnextday['flight'])
-                directflight = flightutil.mixandmatchend(directflight, othermodessminit, logger)
+                directflight = flightutil.getmixandmatchendresult(othermodessminit, copy.deepcopy(directflight), logger)
             elif destination != destinationbig:
                 othermodessmend = othermodesendfuture.result()
-                directflight = flightutil.mixandmatchinit(directflight, othermodessmend, logger)
-
+                directflight = flightutil.getmixandmatchinitresult(othermodessmend, copy.deepcopy(directflight), logger)
             return directflight
