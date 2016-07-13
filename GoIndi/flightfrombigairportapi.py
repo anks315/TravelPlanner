@@ -50,7 +50,7 @@ class FlightFromBigAirportController:
 
             if source != sourcebig:
                 othermodesinitfuture = executor.submit(flightutil.getothermodes, sourcecity, sourcebig, journeydate, logger, trainclass,numberofadults)
-                directflightnextdayfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationbig, (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'),"flightbig", flightclass, numberofadults)
+                directflightnextdayfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationbig, (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'),"flightbignextday", flightclass, numberofadults)
             if destination != destinationbig:
                 othermodesendfuture = executor.submit(flightutil.getothermodes, destinationbig, destinationcity, journeydate, logger, trainclass,numberofadults)
 

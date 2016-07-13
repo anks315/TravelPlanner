@@ -22,15 +22,15 @@ def demo():
 citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai",}
 
 
-DATABASE_CONNECTION= GraphDatabase("http://ec2-54-254-171-20.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
-#DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="shekhar")
+#DATABASE_CONNECTION= GraphDatabase("http://ec2-54-254-171-20.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
+DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="rkdaimpwd")
 
 #DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
 
 def testquery():
     source = 'JAIPUR'
     other = 'AMBALA'
-    results = DATABASE_CONNECTION.query("""MATCH (a:TRAINSTATION {CITY : '"""+source+"""'})-[r:BPL]->(b:TRAIN) RETURN a as station ,b as train ,r as route union MATCH (c:TRAINSTATION {CITY : '"""+other+"""'})-[e:NDLS]->(d:TRAIN) RETURN c as station,d as train ,e as route""")
+    results = DATABASE_CONNECTION.query("""MATCH (a:TRAINSTATION {CITY : '"""+source+"""'})-[r:BPL]->(b:TRAIN) RETURN a as a ,b as b ,r as r union MATCH (c:TRAINSTATION {CITY : '"""+other+"""'})-[e:NDLS]->(d:TRAIN) RETURN c as a,d as b ,e as r""")
     print results
 
 
@@ -49,7 +49,7 @@ def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeyda
     :return: array of trains and their data
     """
     trains = []
-    logger.debug("Fetching train routes between source[%s] and destination stations[%s] on [%s]", sourcecity,destinationstationset, journeydate)
+    logger.debug("Fetching train routes between source[%s] and destination stations[%s] on [%s]", sourcecity, destinationstationset, journeydate)
     q = """MATCH (a:TRAINSTATION {CITY : '""" + sourcecity + """'})-[r:""" + '|'.join(destinationstationset) + """]->(b:TRAIN) RETURN a,b,r"""
 
     try:
@@ -59,7 +59,7 @@ def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeyda
         return trains
 
     if len(results.elements) == 0:
-        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity,destinationstationset)
+        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity, destinationstationset)
         return trains
 
     gettrains(results,journeydate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains, directtrainset)

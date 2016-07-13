@@ -50,7 +50,7 @@ class FlightBigNearAirportController:
                 othermodesendfuture = executor.submit(flightutil.getothermodes, destinationnear, destinationcity, journeydate, logger, trainclass,numberofadults)
 
             directflightfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationnear, journeydate, "flightnearbig", flightclass, numberofadults)
-            directflightnextdayfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationnear,(datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'), "flightnearbig", flightclass, numberofadults)
+            directflightnextdayfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationnear,(datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'), "flightnearbignextday", flightclass, numberofadults)
 
             directflight = directflightfuture.result()
             directflight = miscUtility.limitResults(directflight, "flight", limit=10)
