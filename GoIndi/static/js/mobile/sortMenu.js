@@ -21,6 +21,11 @@ function showSortMenuMain(){
 				$(".flightRouteMenu").hide();
 				$(".trainRouteMenu").hide();
 				$(".busRouteMenu").show();
+				if(busRetrieved==1){
+					$("#loading").hide();
+				}else{
+					$("#loading").show();
+				}
 		});
 	$( "#trainDataHead" ).click(function() {
 				
@@ -28,18 +33,33 @@ function showSortMenuMain(){
 				$(".flightRouteMenu").hide();
 				$(".busRouteMenu").hide();
 				$(".trainRouteMenu").show();
+				if(trainRetrieved==1){
+					$("#loading").hide();
+				}else{
+					$("#loading").show();
+				}
 		});
 	$( "#flightDataHead" ).click(function() {
 				
 				$(".busRouteMenu").hide();
 				$(".trainRouteMenu").hide();
 				$(".flightRouteMenu").show();
+				if(flightRetrieved==1){
+					$("#loading").hide();
+				}else{
+					$("#loading").show();
+				}
 		});
 	$( "#allDataHead" ).click(function() {
 				
 				$(".busRouteMenu").show();
 				$(".trainRouteMenu").show();
 				$(".flightRouteMenu").show();
+				if(flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1){
+					$("#loading").hide();
+				}else{
+					$("#loading").show();
+				}
 		});
 		
 	$( "#priceSort" ).click(function() {

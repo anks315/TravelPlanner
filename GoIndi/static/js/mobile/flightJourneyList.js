@@ -2,7 +2,7 @@ var radionames = []
 var isSelected =0
 function showFlightJourneyList(transportList){
 	if(transportList.length==0){
-		
+		document.getElementById("resultsWid").innerHTML = ""
 				return;
 	}
 	if($( "#priceSort" ).hasClass("active")){
@@ -10,10 +10,7 @@ function showFlightJourneyList(transportList){
 	} else {
 		SortListByDuration(transportList);
 	}
-	if(transportList.length==0){
-		
-		return;
-	}
+	
 	if($( "#priceSort" ).hasClass("active")){
 		SortListByPrice(transportList);
 	} else {
@@ -109,7 +106,7 @@ function showFlightJourneyList(transportList){
 				
 				
 				
-				output = output + "<div>&nbsp;</div><a href='#pagefour' data-transition='slide' id='link"+transportTotalDetails.id+"' targetId='details"+transportTotalDetails.id+"'><div class='trainMain' id = 'main"+transportTotalDetails.id+"'><table width='100%' class='rcorners'><tr><td bgcolor='WhiteSmoke'><div class='row-eq-height'><div class='col-sm-12 col-height col-middle nopaddingatall'><div>"+travelSplitter+"</div></div></div><div class='row-eq-height'><div class='col-sm-12 col-height col-middle'><br/><table width='100%'><tr><td width='75%'>"+individualJourneyDetails+"</td><td width='25%' style='text-align:right'><div class='sameLine'><h5 style='white-space: nowrap;'><font color='green'>&#8377 "+transportTotalDetails.price+"/- </font></h6></div><div class='sameLine'><font color='grey'><span class='glyphicon glyphicon glyphicon-chevron-right'></span></font></div></td></tr></table></div></div></td></tr></table></div></a>";
+				output = output + "<div>&nbsp;</div><a href='#pagefour' data-transition='slide' id='link"+transportTotalDetails.id+"' targetId='details"+transportTotalDetails.id+"' class='removedDeco'><div class='trainMain' id = 'main"+transportTotalDetails.id+"'><table width='100%' class='shadowTable'><tr><td bgcolor='WhiteSmoke'><div class='row-eq-height'><div class='col-sm-12 col-height col-middle nopaddingatall'><div>"+travelSplitter+"</div></div></div><div class='row-eq-height'><div class='col-sm-12 col-height col-middle'><br/><table width='100%'><tr><td width='75%'>"+individualJourneyDetails+"</td><td width='25%' style='text-align:right'><div class='sameLine'><h5 style='white-space: nowrap;'><font color='green'>&#8377 "+transportTotalDetails.price+"/- </font></h6></div><div class='sameLine'><font color='grey'><span class='glyphicon glyphicon glyphicon-chevron-right'></span></font></div></td></tr></table></div></div></td></tr></table></div></a>";
 				
 				
 				outputModal = outputModal + "<div hidden class='modalView' id='details"+transportTotalDetails.id+"'>"+getModalForFlights(transportList[i].parts,transportTotalDetails.id)+"</div>";

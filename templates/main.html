@@ -24,6 +24,21 @@
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 	<link type="text/css" href="/static/css/customButton.css" rel="stylesheet" />
 	<link type="text/css" href="/static/css/filtersCSS.css" rel="stylesheet" />
+	<style>
+	html,body {
+   margin:0;
+   padding:0;
+   height:100%;
+}
+#allContent {
+   min-height:100%;
+   position:relative;
+}
+
+#body {
+   padding:10px;
+   padding-bottom:60px;   /* Height of the footer */
+}</style>
 </head>
 <body>
 
@@ -39,24 +54,27 @@
 	   <div class="row-eq-height nopaddingatall">
 						<div class="col-sm-4 col-height col-middle ">
 							<div id='modeMenuMain'></div>
-							<div id='RouteMenu'><div id='routeMenuList'class='list-group panel'></div></div>
+							<div id='RouteMenu'><div id='routeMenuList'class='list-group panel'></div></div><br/><br/><br/><br/><br/><br/><br/><br/>&nbsp;
 						</div>
 						<div class="col-sm-8 col-height col-middle ">
 						 <div id='sortMenuMain' ></div>
 						 <div id='summaryBox' class='summaryBox'><br/><br/><br/><br/><br/><table width='100%'><tr><td width='10%'></td><td><div id = 'summary'></div></td><td width='10%'></td></tr></table><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/></div>
 						 <div id="resultsWid" route="" routeType=""></div>
+						 <br/><br/><br/><br/><br/><br/><br/><br/>&nbsp;
 						</div>
+					
 						
+		</div>
+		
  
-	   </div>
-	   
   </div>
-  <div class="row">
-	<div class="row-eq-height">
+  <div  id = "mainFooter">
+		  <br/>
 			<div id ='footer'></div>
-	  </div>
-  </div>
+		  </div> 
+	   
  </div>
+  
 
 
 <script type="text/javascript" src="/static/js/footer.js"></script>		
