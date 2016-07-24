@@ -2,7 +2,7 @@ __author__ = 'Ankit Kumar'
 
 import GoIndi.models
 from sets import Set
-import concurrent.futures
+import concurrent.futures, re
 
 trainmapping = {}
 trainstationsmap = {}
@@ -42,11 +42,13 @@ def getcityfromstation(possiblecityname, logger):
     :param logger: logger
     :return: city name in DB corresponding to possiblecity
     """
+    pattern = re.compile("[A-Z]*[ ]?[A-Z]*[ ]?" + re.sub("[AIE]", "[AIE]", possiblecityname) + "[ ]?")
+    logger.debug("Pattern converted from cityname [%s] is pattern [%s]", possiblecityname, str(pattern))
+
     for trainstation in trainstationsmap.values():
         stationname = str(trainstation.name)
         cityname = str(trainstation.city)
-        if stationname == possiblecityname or stationname.startswith(possiblecityname+ " ") or stationname.endswith(" "+possiblecityname) or \
-                        cityname == possiblecityname or cityname.startswith(possiblecityname+ " ") or cityname.endswith(" "+possiblecityname):
+        if bool(pattern.match(stationname)) or bool(pattern.match(cityname)):
             return trainstation.city
 
     logger.warning("No Breaking city present for [%s]", possiblecityname)

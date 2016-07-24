@@ -32,23 +32,23 @@ def parsetransitroutes(jsontransitroute, destination, logger):
                         routedestinationstation = str(step["transit_details"]["arrival_stop"]["name"]).upper()
                         destinationcity = getcityfromstation(routedestinationstation, logger)
                         if counter == 1 and destination in destinationcity:
-                            addtopossiblebreaklist(possiblebreak, getcityfromstation(str(step["transit_details"]["departure_stop"]["name"]).upper(), logger), logger)
+                            addtopossiblebreaklist(possiblebreak, getcityfromstation(str(step["transit_details"]["departure_stop"]["name"]).upper(), logger), logger, destination)
 
                         if counter != 0 and destination not in destinationcity:
-                            addtopossiblebreaklist(possiblebreak, getcityfromstation(str(step["transit_details"]["departure_stop"]["name"]).upper(), logger), logger)
-                            addtopossiblebreaklist(possiblebreak, destinationcity, logger)
+                            addtopossiblebreaklist(possiblebreak, getcityfromstation(str(step["transit_details"]["departure_stop"]["name"]).upper(), logger), logger, destination)
+                            addtopossiblebreaklist(possiblebreak, destinationcity, logger, destination)
                         counter += 1
                 possiblebreaklist.append(possiblebreak)
     return possiblebreaklist
 
 
-def addtopossiblebreaklist(possiblebreak, breakingcityname, logger):
+def addtopossiblebreaklist(possiblebreak, breakingcityname, logger, destination):
     """
     To add breaking city name in possiblebreak city list
     :param possiblebreak: list of possible breaking city
     :param breakingcityname: breaking city name
     """
-    if breakingcityname not in possiblebreak:
+    if breakingcityname not in possiblebreak and breakingcityname != destination:
         logger.info("Adding breaking city [%s] to possible breaking city list", breakingcityname)
         possiblebreak.append(breakingcityname)
 

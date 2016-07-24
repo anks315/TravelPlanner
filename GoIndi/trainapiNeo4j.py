@@ -4,6 +4,7 @@ import sets
 from datetime import timedelta
 import json, copy, time, datetime, urllib2
 import distanceutil, busapi, loggerUtil, dateTimeUtility, googleapiparser, models, minMaxUtil, miscUtility, TravelPlanner.trainUtil
+from entity import BreakingStations
 
 today = datetime.date.today().strftime("%Y-%m-%d")
 skipvalues = sets.Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN'])
@@ -401,14 +402,13 @@ class TrainController:
                 if len(breakingcitylist) > 0:
                     traincounter = [1]
                     for breakingcities in breakingcitylist:
-                        if len(breakingcities) == 2:
-                            traincounter[0] += 1
-                            firstbreakingcity = breakingcities.pop(0)
-                            secondbreakingcity = breakingcities.pop(0)
-                            if firstbreakingcity != TravelPlanner.trainUtil.gettraincity(source) and firstbreakingcity != TravelPlanner.trainUtil.gettraincity(destination)\
-                                    and secondbreakingcity != TravelPlanner.trainUtil.gettraincity(source) and secondbreakingcity != TravelPlanner.trainUtil.gettraincity(destination):
-                                logger.info("Getting train journey from source [%s] to destination [%s] via two breaking city [%s] & [%s]", source, destination, firstbreakingcity, secondbreakingcity)
-                                futures.append(TravelPlanner.trainUtil.trainexecutor.submit(self.fetchtraindatafrommultiplebreakingcities, firstbreakingcity, secondbreakingcity, TravelPlanner.trainUtil.gettraincity(destination), destinationstationset, journeydate, TravelPlanner.trainUtil.gettraincity(source), directtrainset, priceclass, numberofadults, traincounter))
+                        traincounter[0] += 1
+                        firstbreakingcity = breakingcities.first
+                        secondbreakingcity = breakingcities.second
+                        if firstbreakingcity != TravelPlanner.trainUtil.gettraincity(source) and firstbreakingcity != TravelPlanner.trainUtil.gettraincity(destination)\
+                                and secondbreakingcity != TravelPlanner.trainUtil.gettraincity(source) and secondbreakingcity != TravelPlanner.trainUtil.gettraincity(destination):
+                            logger.info("Getting train journey from source [%s] to destination [%s] via two breaking city [%s] & [%s]", source, destination, firstbreakingcity, secondbreakingcity)
+                            futures.append(TravelPlanner.trainUtil.trainexecutor.submit(self.fetchtraindatafrommultiplebreakingcities, firstbreakingcity, secondbreakingcity, TravelPlanner.trainUtil.gettraincity(destination), destinationstationset, journeydate, TravelPlanner.trainUtil.gettraincity(source), directtrainset, priceclass, numberofadults, traincounter))
 
                 for future in futures:
                     logger.info("Adding breaking journey into final train journey result")
@@ -580,8 +580,26 @@ class TrainController:
         breakingcitylist = []
         for breakingcities in breakingcitieslist:
             if len(breakingcities) == 2:
-                breakingcitylist.append(breakingcities)
+                brkstations = BreakingStations()
+                brkstations.first = breakingcities[0]
+                brkstations.second = breakingcities[1]
+                self.addtobreakingcitylist(brkstations, breakingcitylist)
         return breakingcitylist
+
+    def addtobreakingcitylist(self, breakingstations, breakingcitylist):
+        """
+        Add breaking stations to breakingcitylist only if already not exists
+        :param breakingstations: list of breaking stations with 2 breaking cities
+        """
+
+        if len(breakingcitylist) == 0:
+            breakingcitylist.append(breakingstations)
+
+        else:
+            for brkstations in breakingcitylist:
+                if brkstations.first == breakingstations.first and brkstations.second == breakingstations.second:
+                    return
+            breakingcitylist.append(breakingstations)
 
     def getbreakingcityset(self, breakingcitieslist):
 
