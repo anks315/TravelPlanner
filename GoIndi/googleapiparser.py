@@ -10,39 +10,50 @@ import concurrent.futures
 
 skipValues = Set(['RAILWAY', 'STATION', 'JUNCTION', 'CITY', 'CANTT', 'JN', 'ROAD'])
 
-def parseTransitRoutes(jsontransitroute,destination, logger):
+
+def parsetransitroutes(jsontransitroute, destination, logger):
 
     """
     To parse breaking journey json object
     :param jsontransitroute: breaking journey data
     :param destination: destination of journey
-    :return: list of all possible breaking stations
+    :return: list of all possible breaking stations list
     """
-    returnedData = json.loads(jsontransitroute)
+    returneddata = json.loads(jsontransitroute)
     # list containing list of all breaking points
-    possiblebreaklist=[]
-    for route in returnedData["routes"]:
+    possiblebreaklist = []
+    for route in returneddata["routes"]:
         if route:
             for leg in route["legs"]:
                 counter=0
-                possiblebreak = Set()
+                possiblebreak = []
                 for step in leg["steps"]:
                     if "transit_details" in step and ("RAIL" in step["transit_details"]["line"]["vehicle"]["type"] or "Train" in step["transit_details"]["line"]["vehicle"]["name"]):
                         routedestinationstation = str(step["transit_details"]["arrival_stop"]["name"]).upper()
                         destinationcity = getcityfromstation(routedestinationstation, logger)
                         if counter == 1 and destination in destinationcity:
-                            possiblebreak.add(getcityfromstation(str(step["transit_details"]["departure_stop"]["name"]).upper(), logger))
+                            addtopossiblebreaklist(possiblebreak, getcityfromstation(str(step["transit_details"]["departure_stop"]["name"]).upper(), logger), logger)
 
                         if counter != 0 and destination not in destinationcity:
-                            possiblebreak.add(getcityfromstation(str(step["transit_details"]["departure_stop"]["name"]).upper(), logger))
-                            possiblebreak.add(destinationcity)
+                            addtopossiblebreaklist(possiblebreak, getcityfromstation(str(step["transit_details"]["departure_stop"]["name"]).upper(), logger), logger)
+                            addtopossiblebreaklist(possiblebreak, destinationcity, logger)
                         counter += 1
                 possiblebreaklist.append(possiblebreak)
     return possiblebreaklist
 
 
-def getcityfromstation(routedestinationstation, logger):
+def addtopossiblebreaklist(possiblebreak, breakingcityname, logger):
+    """
+    To add breaking city name in possiblebreak city list
+    :param possiblebreak: list of possible breaking city
+    :param breakingcityname: breaking city name
+    """
+    if breakingcityname not in possiblebreak:
+        logger.info("Adding breaking city [%s] to possible breaking city list", breakingcityname)
+        possiblebreak.append(breakingcityname)
 
+
+def getcityfromstation(routedestinationstation, logger):
     """
     This method is used to fetch destination from station name
     :param routedestinationstation: destination station/city
@@ -88,12 +99,12 @@ def getpossiblebreakingplacesfortrain(source,destination, logger, journeydate, e
     futures = []
     possiblebreakage = []
     for epoch in epochs:
-        logger.info("Getting breaking station in journey from source[%s] to destination[%s]", source, destination)
+        logger.debug("Getting breaking station in journey from source[%s] to destination[%s]", source, destination)
         futures.append(executor.submit(getbreakingcities, source, destination, epoch, logger))
     for future in futures:
         if future:
             possiblebreakage.extend(future.result())
-            logger.debug("Breaking journey stations between source[%s] and destination[%s] are [%s]", source, destination, possiblebreakage)
+            logger.info("Breaking journey stations between source[%s] and destination[%s] are [%s]", source, destination, possiblebreakage)
         else:
             logger.warning("No breaking station between source[%s] and destination[%s]", source, destination)
     return possiblebreakage
@@ -108,4 +119,4 @@ def getbreakingcities(source, destination, epoch, logger):
         logger.error("Error in getting breaking station between source[%s] and destination[%s], reason [%s]", source, destination, e.message)
         return jsontransitroute
 
-    return parseTransitRoutes(jsontransitroute,destination, logger)
+    return parsetransitroutes(jsontransitroute,destination, logger)

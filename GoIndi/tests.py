@@ -116,4 +116,4 @@ def convertstringtotime():
     print t.time().strftime('%H:%M')
 
 # convertstringtotime()
-trainavailabilityapi.TrainAvailabilityController().getavailablity('12013', 'NDLS', 'ASR', '11-07-2016', 'CC')
+trainavailabilityapi.TrainAvailabilityController().getavailablity('12013', 'NDLS', 'ASR', '24-07-2016', 'CC')

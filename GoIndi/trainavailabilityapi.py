@@ -33,7 +33,6 @@ class TrainAvailabilityController:
 
         return self.parseavailabilityresponse(jsonresponse, trainnumber, sourcestation, destinationstation, journeydate)
 
-
     def parseavailabilityresponse(self, jsonresponse, trainnumber, sourcestation, destinationstation, journeydate):
 
         """
