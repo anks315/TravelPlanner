@@ -340,11 +340,8 @@ def istrainrunningoncurrentdate(train, journeydate, sourcecity, logger):
     day = getdayfromdate(journeydate, sourcedaynumber - 1)
     if day == 'THURSDAY':
         day = 'THRUSDAY'
-<<<<<<< Updated upstream
+
     if (day in train[1]['data'].keys() and  train[1]['data'][day] == 'N') or (day=='THRUSDAY' and 'THURSDAY' in train[1]['data'].keys() and  train[1]['data']['THURSDAY'] == 'N'):
-=======
-    if train[1]['data'][day] and train[1]['data'][day] == 'N':
->>>>>>> Stashed changes
         logger.warning("Skipping train [%s], since it doesn't run from [%s] on [%s]", trainnumber, sourcecity, journeydate)
         return False
     return True
