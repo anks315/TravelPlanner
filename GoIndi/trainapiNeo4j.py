@@ -480,9 +480,25 @@ class TrainController:
         """
 
         combinedjson = {"train": []}
+        buscontroller = busapi.BusController()
         breakingcitystationset = self.placetostationcodescache.getstationsbycityname(breakingcity)
-        if len(breakingcitystationset) > 0 :
-            # only call for train if breaking city has train stations
+        sourcestationset = self.placetostationcodescache.getstationsbycityname(TravelPlanner.trainUtil.gettraincity(source))
+
+        if (len(breakingcitystationset) == 0) or (len(sourcestationset) == 0 and len(destinationstationset) == 0):
+            logger.info("No train journey possible from source [%s] to destination [%s] via [%s], since breaking city has no train stations", source, destination, breakingcity)
+            return combinedjson["train"]
+
+        if len(destinationstationset) == 0:
+            # destination station has no railway station, only bus journey possible from breaking city to destination
+            sourcetobreakingstationtrainjson = self.findtrainsbetweenstations(TravelPlanner.trainUtil.gettraincity(source), breakingcitystationset, journeydate, "train" + str(traincounter[0]), breakingcity, priceclass, numberofadults, nextday=False, directtrainset=directtrainset)
+            if len(sourcetobreakingstationtrainjson["train"]) > 0:
+                breakingstationtodestinationbusjson = self.getnextdaybusresults(buscontroller, breakingcity, destination, journeydate, numberofadults)
+                if len(breakingstationtodestinationbusjson["bus"]) > 0:
+                    # merge bus data (end) and train data from source -(train) - breakingcity -(bus) - destination
+                    combinedjson["train"].extend(self.combinebusandtrainend(sourcetobreakingstationtrainjson, breakingstationtodestinationbusjson)["train"])
+
+        elif len(breakingcitystationset) > 0 and len(destinationstationset) > 0:
+            # only call multiple trains query if both breaking city and destination has train stations
             trainjson = self.findtrainsviabreakingstation(TravelPlanner.trainUtil.gettraincity(source), breakingcitystationset, TravelPlanner.trainUtil.gettraincity(breakingcity), destinationstationset, journeydate, "train" + str(traincounter[0]), TravelPlanner.trainUtil.gettraincity(destination), priceclass, numberofadults, directtrainset=directtrainset)
             sourcetobreakingstationtrainjson = {"train": []}
             sourcetobreakingstationtrainjsonroute = []
@@ -497,7 +513,7 @@ class TrainController:
             breakingstationtodestinationtrainjson["train"].extend(breakingstationtodestinationtrainjsonroute)
 
             if len(sourcetobreakingstationtrainjson["train"]) == 0 and len(breakingstationtodestinationtrainjson["train"]) == 0:
-                logger.warning("No train between source [%s] and breaking city [%s] and breaking city [] and destination [%s]", source, breakingcity, breakingcity, destination)
+                logger.warning("No train between source [%s] and breaking city [%s] and breaking city [%s] and destination [%s]", source, breakingcity, breakingcity, destination)
                 return combinedjson["train"]
 
             if len(sourcetobreakingstationtrainjson["train"]) > 0 and len(breakingstationtodestinationtrainjson) > 0:
@@ -507,31 +523,29 @@ class TrainController:
                     # return if any breaking train journey is present, no need for bus journey
                     logger.info("Return success for Call to Fetch breaking journey route from [%s] to [%s] via [%s]", source, destination, breakingcity)
                     return combinedjson["train"]
-        else:
-            logger.warning("Breaking city [%s] has no train stations", breakingcity)
-            return combinedjson["train"]
 
-        buscontroller = busapi.BusController()
+            if len(sourcetobreakingstationtrainjson["train"]) > 0:
+                breakingstationtodestinationbusjson = self.getnextdaybusresults(buscontroller, breakingcity, destination, journeydate, numberofadults)
+                if len(breakingstationtodestinationbusjson["bus"]) > 0:
+                    # merge bus data (end) and train data from source -(train) - breakingcity -(bus) - destination
+                    combinedjson["train"].extend(self.combinebusandtrainend(sourcetobreakingstationtrainjson, breakingstationtodestinationbusjson)["train"])
 
-        if len(sourcetobreakingstationtrainjson["train"]) > 0:
-            breakingstationtodestinationbusjson = buscontroller.getresults(breakingcity, destination, journeydate, numberofadults)
-            nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
-            breakingstationtodestinationbusjson["bus"].extend(buscontroller.getresults(breakingcity, destination, nextday, numberofadults)["bus"])
-            nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=2)).strftime('%d-%m-%Y')
-            breakingstationtodestinationbusjson["bus"].extend(buscontroller.getresults(breakingcity, destination, nextday, numberofadults)["bus"])
-
-            if len(breakingstationtodestinationbusjson["bus"]) > 0:
-                # merge bus data (end) and train data from source -(train) - breakingcity -(bus) - destination
-                combinedjson["train"].extend(self.combinebusandtrainend(sourcetobreakingstationtrainjson, breakingstationtodestinationbusjson)["train"])
-
-        if len(breakingstationtodestinationtrainjson["train"]) > 0:
-            sourcetobreakingstationbusjson = buscontroller.getresults(source, breakingcity, journeydate, numberofadults)
-            if len(sourcetobreakingstationbusjson["bus"]) > 0:
-                # merge bus data (initial) and train data from source -(bus) - breakingcity -(train) - destination
-                combinedjson["train"].extend(self.combinebusandtraininit(sourcetobreakingstationbusjson, breakingstationtodestinationtrainjson)["train"])
+            if len(breakingstationtodestinationtrainjson["train"]) > 0:
+                sourcetobreakingstationbusjson = buscontroller.getresults(source, breakingcity, journeydate, numberofadults)
+                if len(sourcetobreakingstationbusjson["bus"]) > 0:
+                    # merge bus data (initial) and train data from source -(bus) - breakingcity -(train) - destination
+                    combinedjson["train"].extend(self.combinebusandtraininit(sourcetobreakingstationbusjson, breakingstationtodestinationtrainjson)["train"])
 
         logger.info("Return success for Call to Fetch breaking journey route from [%s] to [%s] via [%s]", source, destination, breakingcity)
         return combinedjson["train"]
+
+    def getnextdaybusresults(self, buscontroller, sourcecity, destination, journeydate, numberofadults):
+        breakingstationtodestinationbusjson = buscontroller.getresults(sourcecity, destination, journeydate, numberofadults)
+        nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
+        breakingstationtodestinationbusjson["bus"].extend(buscontroller.getresults(sourcecity, destination, nextday, numberofadults)["bus"])
+        nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=2)).strftime('%d-%m-%Y')
+        breakingstationtodestinationbusjson["bus"].extend(buscontroller.getresults(sourcecity, destination, nextday, numberofadults)["bus"])
+        return breakingstationtodestinationbusjson
 
     def fetchtraindatafrommultiplebreakingcities(self, firstbreakingcity, secondbreakingcity, destination, destinationstationset, journeydate, source, directtrainset, priceclass, numberofadults, traincounter):
 
@@ -545,18 +559,57 @@ class TrainController:
         :param traincounter: global train counter used for route ID generation
         :param directtrainset: set of direct train numbers from source to destination, used for filtering out all direct trains in breaking journey
         """
+        combinedjson = {"train": []}
         firstbreakingcitystationset = self.placetostationcodescache.getstationsbycityname(firstbreakingcity)
         secondbreakingcitystationset = self.placetostationcodescache.getstationsbycityname(secondbreakingcity)
-        combinedjson = {"train": []}
-        if len(firstbreakingcitystationset) > 0 and len(secondbreakingcitystationset) > 0 :
+        sourcestationset = self.placetostationcodescache.getstationsbycityname(TravelPlanner.trainUtil.gettraincity(source))
+
+        if len(firstbreakingcitystationset) == 0 or len(secondbreakingcitystationset) == 0 or (len(sourcestationset) == 0 and len(destinationstationset) == 0):
+            logger.info("Train journey not possible between source [%s] and dstination [%s] via Breaking cities [%s] & [%s], cause either brekaing city has no train stations", source, destination, firstbreakingcity, secondbreakingcity)
+            return combinedjson["train"]
+
+        buscontroller = busapi.BusController()
+        srctofirstbrkstationtrainjson = {"train": []}
+        srctofirstbrkstationtrainjsonroute = []
+        firsttosecondbrkstationtrainjson = {"train": []}
+        firsttosecondbrkstationtrainjsonroute = []
+        secondbrkstationtodesttrainjson = {"train": []}
+        secondbrkstationtodesttrainjsonroute = []
+
+        # now train journey is possible cause we are sure that any two of first breaking/second breaking/destination has railway stations
+        if len(destinationstationset) == 0:
+            # since destination has no railway stations, only bus journey possible from second breaking city to destination
+            trainjson = self.findtrainsviabreakingstation(TravelPlanner.trainUtil.gettraincity(source), firstbreakingcitystationset, TravelPlanner.trainUtil.gettraincity(firstbreakingcity), secondbreakingcitystationset, journeydate, "train" + str(traincounter[0]), TravelPlanner.trainUtil.gettraincity(secondbreakingcity), priceclass, numberofadults, directtrainset=directtrainset)
+            for trainroute in trainjson["train"]:
+                if trainroute["full"][0]["source"].upper() == source:
+                    srctofirstbrkstationtrainjsonroute.append(trainroute)
+                if trainroute["full"][0]["source"].upper() == firstbreakingcity:
+                    firsttosecondbrkstationtrainjsonroute.append(trainroute)
+            srctofirstbrkstationtrainjson["train"].extend(srctofirstbrkstationtrainjsonroute)
+            firsttosecondbrkstationtrainjson["train"].extend(firsttosecondbrkstationtrainjsonroute)
+
+            if len(srctofirstbrkstationtrainjson["train"]) == 0 or len(firsttosecondbrkstationtrainjson["train"]) == 0:
+                logger.info("Train journey not possible between source [%s] and dstination [%s] via Breaking cities [%s] & [%s]", source, destination, firstbreakingcity, secondbreakingcity)
+                return combinedjson["train"]
+
+            # merge train data from source - breakingcity - destination
+            combinedjson = self.combinedata(srctofirstbrkstationtrainjson, firsttosecondbrkstationtrainjson)
+            if len(combinedjson["train"]) == 0:
+                logger.info("Train journey not possible between source [%s] and dstination [%s] via Breaking cities [%s] & [%s]", source, destination, firstbreakingcity, secondbreakingcity)
+                return combinedjson["train"]
+
+            secondbrkstationtodestbusjson = self.getnextdaybusresults(buscontroller, secondbreakingcity, destination, journeydate, numberofadults)
+            if len(secondbrkstationtodestbusjson["bus"]) > 0:
+                # merge bus data (end) and train data from source -(train) - first breakingcity - (train) second breaking city -(train) - destination
+                withbustrainend = self.combinebusandtrainend(combinedjson, secondbrkstationtodestbusjson)
+                fullroute = source.title() + ",train," + firstbreakingcity.title() + ",train," + secondbreakingcity.title() + ",bus," + destination.title()
+                for trainroute in withbustrainend["train"]:
+                    trainroute["full"][0]["route"] = fullroute
+                combinedjson["train"].extend(withbustrainend["train"])
+
+        elif len(firstbreakingcitystationset) > 0 and len(secondbreakingcitystationset) > 0 and len(destinationstationset) > 0:
             # only call for train if breaking city has train stations
             trainjson = self.findtrainsbetweenmultiplestations(source, firstbreakingcitystationset, journeydate, "train"+str(traincounter[0]), firstbreakingcity, secondbreakingcitystationset, secondbreakingcity, destinationstationset, destination, priceclass, numberofadults, directtrainset=directtrainset)
-            srctofirstbrkstationtrainjson = {"train": []}
-            srctofirstbrkstationtrainjsonroute = []
-            firsttosecondbrkstationtrainjson = {"train": []}
-            firsttosecondbrkstationtrainjsonroute = []
-            secondbrkstationtodesttrainjson = {"train": []}
-            secondbrkstationtodesttrainjsonroute = []
             if len(trainjson["train"]) >= 2:
                 for trainroute in trainjson["train"]:
                     if trainroute["full"][0]["source"].upper() == source:
@@ -571,57 +624,54 @@ class TrainController:
             else:
                 logger.warning("No journey possible between source [%s] and destination [%s], via Breaking cities [%s] & [%s]", source, destination, firstbreakingcity, secondbreakingcity)
                 return combinedjson["train"]
-        else:
-            logger.warning("Neither Breaking city [%s] & [%s] has train stations", firstbreakingcity, secondbreakingcity)
-            return combinedjson["train"]
 
-        if len(firsttosecondbrkstationtrainjson["train"]) == 0:
-            logger.warning("No train between Breaking cities [%s] & [%s]", firstbreakingcity, secondbreakingcity)
-            return combinedjson["train"]
-
-        if len(srctofirstbrkstationtrainjson["train"]) > 0 and len(secondbrkstationtodesttrainjson["train"]) > 0 and len(secondbrkstationtodesttrainjson["train"]) > 0:
-            # merge onl train journey from source - first breakingstation - second breakingstation - destination
-            combinedjson = self.combinemultipletraindata(srctofirstbrkstationtrainjson, firsttosecondbrkstationtrainjson, secondbrkstationtodesttrainjson)
-            if len(combinedjson["train"]) > 0:
-                logger.info("Return success for Call to Fetch breaking journey route from [%s] to [%s] via [%s] & [%s]", source, destination, firstbreakingcity, secondbreakingcity)
+            if len(firsttosecondbrkstationtrainjson["train"]) == 0:
+                logger.warning("No train between Breaking cities [%s] & [%s]", firstbreakingcity, secondbreakingcity)
                 return combinedjson["train"]
 
-        if len(srctofirstbrkstationtrainjson["train"]) > 0 or len(secondbrkstationtodesttrainjson["train"]) > 0:
-            # merge train data from source - firstbreakingcity - secondbreakingcity
-            sourcetobreakingstationtrainjson = self.combinedata(srctofirstbrkstationtrainjson, firsttosecondbrkstationtrainjson)
-            if len(sourcetobreakingstationtrainjson["train"]) > 0:
-                # return and merge secondbreakingcity - destination data
-                combinedjson = self.combinedata(sourcetobreakingstationtrainjson, secondbrkstationtodesttrainjson)
+            if len(srctofirstbrkstationtrainjson["train"]) > 0 and len(secondbrkstationtodesttrainjson["train"]) > 0 and len(secondbrkstationtodesttrainjson["train"]) > 0:
+                # merge onl train journey from source - first breakingstation - second breakingstation - destination
+                combinedjson = self.combinemultipletraindata(srctofirstbrkstationtrainjson, firsttosecondbrkstationtrainjson, secondbrkstationtodesttrainjson)
                 if len(combinedjson["train"]) > 0:
                     logger.info("Return success for Call to Fetch breaking journey route from [%s] to [%s] via [%s] & [%s]", source, destination, firstbreakingcity, secondbreakingcity)
                     return combinedjson["train"]
-                else:
+
+            if len(srctofirstbrkstationtrainjson["train"]) > 0 or len(secondbrkstationtodesttrainjson["train"]) > 0:
+                # merge train data from source - firstbreakingcity - secondbreakingcity
+                sourcetobreakingstationtrainjson = self.combinedata(srctofirstbrkstationtrainjson, firsttosecondbrkstationtrainjson)
+                if len(sourcetobreakingstationtrainjson["train"]) > 0:
+                    # return and merge secondbreakingcity - destination data
+                    combinedjson = self.combinedata(sourcetobreakingstationtrainjson, secondbrkstationtodesttrainjson)
+                    if len(combinedjson["train"]) > 0:
+                        logger.info("Return success for Call to Fetch breaking journey route from [%s] to [%s] via [%s] & [%s]", source, destination, firstbreakingcity, secondbreakingcity)
+                        return combinedjson["train"]
+                    else:
+                        # only train journey not possible, fetch bus data and try to create journey
+                        breakingstationtodestinationbusjson = self.getnextdaybusresults(buscontroller, secondbreakingcity, destination, journeydate, numberofadults)
+                        if len(breakingstationtodestinationbusjson["bus"]) > 0:
+                            # merge bus data (end) and train data from source -(train) - first breakingcity -(train)- second breaking city -(train)- destination
+                            withbustrainend = self.combinebusandtrainend(sourcetobreakingstationtrainjson, breakingstationtodestinationbusjson)
+                            fullroute = source.title() + ",train," + firstbreakingcity.title() + ",train," + secondbreakingcity.title() + ",bus," + destination.title()
+                            for trainroute in withbustrainend["train"]:
+                                trainroute["full"][0]["route"] = fullroute
+                            combinedjson["train"].extend(withbustrainend["train"])
+
+                # merge train data from firstbreakingcity - secondbreakingcity - destination
+                breakingstationtodestinationtrainjson = self.combinedata(firsttosecondbrkstationtrainjson, secondbrkstationtodesttrainjson)
+                if len(breakingstationtodestinationtrainjson["train"]) > 0:
                     # only train journey not possible, fetch bus data and try to create journey
                     buscontroller = busapi.BusController()
-                    breakingstationtodestinationbusjson = buscontroller.getresults(secondbreakingcity, destination, journeydate, numberofadults)
-                    nextday = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
-                    dayaftertomorrow = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=2)).strftime('%d-%m-%Y')
-                    breakingstationtodestinationbusjson["bus"].extend(buscontroller.getresults(secondbreakingcity, destination, nextday, numberofadults)["bus"])
-                    breakingstationtodestinationbusjson["bus"].extend(buscontroller.getresults(secondbreakingcity, destination, dayaftertomorrow, numberofadults)["bus"])
-                    if len(breakingstationtodestinationbusjson["bus"]) > 0:
-                        # merge bus data (end) and train data from source -(train) - breakingcity -(bus) - destination
-                        combinedjson["train"].extend(self.combinebusandtrainend(sourcetobreakingstationtrainjson, breakingstationtodestinationbusjson)["train"])
+                    sourcetobreakingstationbusjson = buscontroller.getresults(source, firstbreakingcity, journeydate, numberofadults)
+                    if len(sourcetobreakingstationbusjson["bus"]) > 0:
+                        # merge bus data (init) and train data from source -(bus) - first breaking city -(train)- second breaking city -(train)- destination
+                        withbustraininit = self.combinebusandtraininit(sourcetobreakingstationbusjson, breakingstationtodestinationtrainjson)
+                        fullroute = source.title() + ",bus," + firstbreakingcity.title() + ",train," + secondbreakingcity.title() + ",train," + destination.title()
+                        for trainroute in withbustraininit["train"]:
+                            trainroute["full"][0]["route"] = fullroute
+                        combinedjson["train"].extend(withbustraininit["train"])
 
-            # merge train data from firstbreakingcity - secondbreakingcity - destination
-            breakingstationtodestinationtrainjson = self.combinedata(firsttosecondbrkstationtrainjson, secondbrkstationtodesttrainjson)
-            if len(breakingstationtodestinationtrainjson["train"]) > 0:
-                # only train journey not possible, fetch bus data and try to create journey
-                buscontroller = busapi.BusController()
-                sourcetobreakingstationbusjson = buscontroller.getresults(source, firstbreakingcity, journeydate, numberofadults)
-                if len(sourcetobreakingstationbusjson["bus"]) > 0:
-                    # merge bus data (end) and train data from source -(bus) - breakingcities -(train) - destination
-                    combinedjson["train"].extend(self.combinebusandtraininit(sourcetobreakingstationbusjson, breakingstationtodestinationtrainjson)["train"])
-
-            logger.info("Return success for Call to Fetch breaking journey route from [%s] to [%s] via [%s]", source, destination, firstbreakingcity)
-            return combinedjson["train"]
-        else:
-            logger.warning("No journey possible between [%s] and [%s] via [%s] & [%s], return empty list", source, destination, firstbreakingcity, secondbreakingcity)
-            return combinedjson["train"]
+        logger.info("Return success for Call to Fetch breaking journey route from [%s] to [%s] via [%s]", source, destination, firstbreakingcity)
+        return combinedjson["train"]
 
     def getlistoftwobreakingcityset(self, breakingcitieslist):
         """

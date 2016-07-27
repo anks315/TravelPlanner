@@ -1,37 +1,19 @@
 from neo4jrestclient.client import GraphDatabase
 from entity import TrainOption, TrainStation, FareData
-import time
-import calendar
-import TravelPlanner.trainUtil
-import logging
-import urllib
-import json
-import trainConstants
-import datetime
-import loggerUtil
+import TravelPlanner.trainUtil, trainConstants, dateTimeUtility
 from datetime import timedelta
 from sets import Set
-import copy
-import dateTimeUtility
+import datetime, loggerUtil, time, calendar, copy, json, urllib
 
-
-def demo():
-    pass
 
 # pool = Pool(processes=5)
-citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai",}
+citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai"}
 
 
 DATABASE_CONNECTION = GraphDatabase("http://ec2-54-254-171-20.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
 #DATABASE_CONNECTION = GraphDatabase("http://localhost:7474/", username="neo4j", password="rkdaimpwd")
 
 #DATABASE_CONNECTION = GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
-
-# def testquery():
-#     source = 'JAIPUR'
-#     other = 'AMBALA'
-#     results = DATABASE_CONNECTION.query("""MATCH (a:TRAINSTATION {CITY : '"""+source+"""'})-[r:BPL]->(b:TRAIN) RETURN a as a ,b as b ,r as r union MATCH (c:TRAINSTATION {CITY : '"""+other+"""'})-[e:NDLS]->(d:TRAIN) RETURN c as a,d as b ,e as r""")
-#     print results
 
 
 def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeydate, destinationcity, trainrouteid, priceclass='3A', numberofadults=1, nextday=False, directtrainset=Set()):
@@ -59,7 +41,7 @@ def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeyda
         return trains
 
     if len(results.elements) == 0:
-        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity, destinationstationset)
+        logger.info("No Train Routes between source[%s] and destination city[%s]", sourcecity, destinationcity)
         return trains
 
     gettrains(results, journeydate, sourcecity, destinationcity, priceclass, numberofadults, trains, logger, directtrainset)
@@ -437,7 +419,7 @@ def istrainrunningoncurrentdate(train, journeydate, sourcecity, logger):
     if day == 'THURSDAY':
         day = 'THRUSDAY'
     if (day in train[1]['data'].keys() and  train[1]['data'][day] == 'N') or (day=='THRUSDAY' and 'THURSDAY' in train[1]['data'].keys() and  train[1]['data']['THURSDAY'] == 'N'):
-        logger.warning("Skipping train [%s], since it doesn't run from [%s] on [%s]", trainnumber, sourcecity, journeydate)
+        logger.info("Skipping train [%s], since it doesn't run from [%s] on [%s]", trainnumber, sourcecity, journeydate)
         return False
     return True
 
