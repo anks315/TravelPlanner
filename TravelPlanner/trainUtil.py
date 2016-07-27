@@ -42,7 +42,10 @@ def getcityfromstation(possiblecityname, logger):
     :param logger: logger
     :return: city name in DB corresponding to possiblecity
     """
-    pattern = re.compile("[A-Z]*[ ]?[A-Z]*[ ]?" + re.sub("[AIE]", "[AIE]", possiblecityname) + "[ ]?")
+    citynamepattern = possiblecityname
+    citynamepattern = re.sub('^(SIVA|SHIVA)', '(SIVA|SHIVA)', citynamepattern)
+    citynamepattern = re.sub('L', '(LL|L)', citynamepattern)
+    pattern = re.compile("[A-Z]*[ ]?[A-Z]*[ ]?" + re.sub('[AIEY]', '[AIEY]', citynamepattern) + "[ ]?")
     logger.debug("Pattern converted from cityname [%s] is pattern [%s]", possiblecityname, str(pattern))
 
     for trainstation in trainstationsmap.values():

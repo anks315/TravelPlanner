@@ -120,3 +120,15 @@ def convertstringtotime():
 
 matched = bool(re.compile("[A-Z]*[ ]?[A-Z]*[ ]?" + re.sub("[AIE]", "[AIE]", "NAMPALLY") + "[ ]?[A-Z ]*").match( "HYDERABAD DECAN NAMPALLY"))
 print matched
+v = 'tsivakasi'
+v = re.sub('^(siva|shiva)', "(siva|shiva)", v)
+print v
+v = re.sub("[aie]", "[aie]", v)
+print v
+matched = bool(re.compile("[A-Z]*[ ]?[A-Z]*[ ]?" + v + "[ ]?[A-Z ]*").match( "sivakasi"))
+print matched
+n = 'nampally'
+n = re.sub("(siva)", "(siva|shiva)", n)
+n = re.sub('l', '(ll|l)', n)
+n = re.sub('[aiye]', '[aiye]', n)
+print n
