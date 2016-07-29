@@ -59,14 +59,14 @@ function showTrainJourneyList(transportList){
 			travelSplitterParts = ''
 			for (var q = 1; q < routeArr.length-1;q++ ){
 				if(q==routeArr.length-3){
-					var end = "&#8855;"
+					var end = "&#9873;"
 				}else{
 					var end = "(+)"
 				}
 				travelSplitterParts = travelSplitterParts + "<td bgcolor='#dcdcdc'style ='padding: 7px;' width='"+customWidth+"%' style='text-align:center'><div class='carrierLabel'>"+routeArr[q]+"</div></td><td style ='padding: 7px;' bgcolor='#dcdcdc' width='4%'><b><font color = '#dfa158' style='white-space: nowrap;'>"+end+"</font></b></td>";
 				q=q+1
 			}
-			travelSplitter = travelSplitter + "<table width='100%' style = 'text-align:center;' cellpadding='5'><tr><td bgcolor='#dcdcdc' width='1%' style ='padding: 7px;'><b><font color = '#dfa158' style='white-space: nowrap;'>&#8855;</font></b></td>"+travelSplitterParts+"</tr></table>"
+			travelSplitter = travelSplitter + "<table width='100%' style = 'text-align:center;' cellpadding='5'><tr><td bgcolor='#dcdcdc' width='1%' style ='padding: 7px;'><b><font color = '#dfa158' style='white-space: nowrap;'>&#9873;</font></b></td>"+travelSplitterParts+"</tr></table>"
 		} else {
 			travelSplitter = "<table width='100%' style = 'text-align:left;'><tr><td bgcolor='#dcdcdc' style ='padding: 7px;'><div><div class='carrierLabel'>&nbsp;&nbsp;" + routeArr[1] +"</div></td></tr></table>"
 		}
@@ -109,16 +109,47 @@ function showTrainJourneyList(transportList){
 	}
 	
 		$(".dropdown-menu li a").click(function(){
-			
+			var loader = $(this).attr('loader');
+			 $('#'+loader).hide()
 			  var selText = $(this).text();
 			  var price = $(this).attr('price');
 			  $(this).parents('.btn-group').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
 			  var selectedPrice = document.getElementById($(this).attr("trainClassId"))
+			  var availiablityCallId = document.getElementById($(this).attr("availiablityCallId"))
+			  var availiablityId = document.getElementById($(this).attr("availiablityId"))
+			  $(availiablityId).hide();
+			  $(availiablityCallId).show();
 			  selectedPrice.innerHTML = "&#8377 "+price+"/-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 			  selectedPrice.setAttribute('price',price);
 			  var className = selectedPrice.getAttribute('trainclass');
+			  availiablityCallId.setAttribute('trainClass',selText)
 			  changePrice(className);
 			
+		});
+		$(".availabilityCall").click(function(){
+			  
+			  var source = $(this).attr('source');
+			  var destination = $(this).attr('destination');
+			  var trainClass = $(this).attr('trainClass');
+			  var trainNumber = $(this).attr('trainNumber');
+			  var id = $(this).attr('id');
+			  var loader = $(this).attr('loader');
+			  $("#"+id).hide();
+			  $('#'+loader).show()
+			  var availabilityDataId = $(this).attr("availiablityid")
+			  $.getJSON('http://localhost:8000/train/availability?source='+source+'&destination='+destination+'&trainClass='+trainClass+'&trainNumber='+trainNumber+'&journeyDate='+journeyDate+'&quota=GN', function(data, err) {
+					var availList = data.availability;
+					if(availList.length==0){
+						var availData = "Not Available"
+					} else {
+						var availData = availList[0].status
+					}
+					
+					$('#'+loader).hide()
+					var availabilityData = document.getElementById(availabilityDataId)
+					availabilityData.innerHTML=availData;
+					$("#"+availabilityDataId).show();
+			  });
 		});
 			
 		$("#trainBox").fadeIn();

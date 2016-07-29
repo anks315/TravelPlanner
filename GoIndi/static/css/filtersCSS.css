@@ -11,7 +11,14 @@
 	color:#f6931f; 
 	font-size:90%;
 }
-
+.availabilityFont { 
+	 
+	color:red;
+}
+.availabilityColor { 
+	 
+	font-size:100%;
+}
 .filterLabel { 
 	border:0; 
 	font-weight:bold;

@@ -15,6 +15,10 @@ var flightDirect = 0
 var flightBiggest = 0
 var flightBigToNear = 0
 var flightNearToBig = 0
+var flightRetrieved=0
+var trainRetrieved=0
+var busRetrieved=0
+var journeyDate
 
 function showPlanner(plannerContainer){
 		var flightClass = "<div class='btn-group'><a class='btn btn-default dropdown-toggle'  data-toggle='dropdown' href='#'>"+flightClassSelected+"&nbsp<span class='caret'></span></a><ul class='dropdown-menu'><li><a href='#' value='economy' type='flightClass'>Economy&nbsp</a></li><li><a href='#' value='Business' type='flightClass'>Business&nbsp</a></li></ul></div>"
@@ -81,6 +85,7 @@ function showPlanner(plannerContainer){
 				var toStation = document.getElementById('to').value.split(",")[0];
 				var depDateArr = document.getElementById('departureBox').value.split("/");
 				var depDate = depDateArr[1]+"-"+depDateArr[0]+"-"+depDateArr[2];
+				journeyDate = depDate
 					document.getElementById("routeMenuList").innerHTML=""
 					
 					 routeMap = new Object()
@@ -94,6 +99,10 @@ function showPlanner(plannerContainer){
 					 flightBiggest = 0
 					 flightBigToNear = 0
 					 flightNearToBig = 0
+					 flightRetrieved=0
+					 trainRetrieved=0
+					 busRetrieved=0
+					 $("#loading").show();
 					 flightRouteAdded=new Object()
 					 trainRouteAdded=new Object()
 					 $("#summaryBox").show()
@@ -205,6 +214,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 	var toStation = document.getElementById('to').value.split(",")[0];
 	var depDateArr = document.getElementById('departureBox').value.split("/");
 	var depDate = depDateArr[1]+"-"+depDateArr[0]+"-"+depDateArr[2]
+	journeyDate = depDate
 	//change in the search click as well if changed here
 	makeAsyncCalls(fromStation,toStation,depDate,flightClassSelected,trainClassSelected,persons);
 	initAutocomplete();
@@ -242,8 +252,11 @@ function getUrlVars() {
 					  }
 					  flightFilters();
 					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
-						setSummary(flightList,"flight","price")
-												
+								flightRetrieved = 1
+								setSummary(flightList,"flight","price")
+								if(	$( "#flightDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
+																		$("#loading").hide();
+																	}								
 					  }
 					}
 				});
@@ -262,9 +275,13 @@ function getUrlVars() {
 						setSummary(flightList,"flight","price")
 					  }
 					  flightFilters();
+
 					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
-						setSummary(flightList,"flight","price")
-												
+								flightRetrieved = 1
+								setSummary(flightList,"flight","price")
+								if(	$( "#flightDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
+																		$("#loading").hide();
+																	}								
 					  }
 					}
 				});
@@ -285,8 +302,11 @@ function getUrlVars() {
 					  }
 					  flightFilters();
 					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
-						setSummary(flightList,"flight","price")
-												
+								flightRetrieved = 1
+								setSummary(flightList,"flight","price")
+								if(	$( "#flightDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
+																		$("#loading").hide();
+																	}								
 					  }
 				  }
 				});
@@ -309,8 +329,11 @@ function getUrlVars() {
 					  }
 					  flightFilters();
 					  if(flightDirect == 1&&flightBiggest==1&&flightBigToNear==1&&flightNearToBig==1){
-						setSummary(flightList,"flight","price")
-												
+								flightRetrieved = 1
+								setSummary(flightList,"flight","price")
+								if(	$( "#flightDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
+																		$("#loading").hide();
+																	}								
 					  }
 				  }
 				});			
@@ -327,6 +350,10 @@ function getUrlVars() {
 					  routeFilter(trainList,"train")
 						trainFilters();
 					}
+					trainRetrieved=1
+												if(	$( "#trainDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
+										$("#loading").hide();
+									}
 				  
 				});
 	
@@ -345,6 +372,10 @@ function getUrlVars() {
 					
 						busFilters();
 					}
+					busRetrieved=1
+				  if(	$( "#busDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
+										$("#loading").hide();
+									}
 				  
 				});
  }
