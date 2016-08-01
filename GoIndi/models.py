@@ -1,6 +1,6 @@
 from neo4jrestclient.client import GraphDatabase
 from entity import TrainOption, TrainStation, FareData
-import TravelPlanner.trainUtil, trainConstants, dateTimeUtility
+import TravelPlanner.startuputil, trainConstants, dateTimeUtility
 from datetime import timedelta
 from sets import Set
 import datetime, loggerUtil, time, calendar, copy, json, urllib
@@ -378,7 +378,7 @@ def getbreakingcity(possiblecity, logger):
     :return: breaking city name
     """
     logger.info("Fetching matching city from breaking city/station[%s]", possiblecity)
-    return TravelPlanner.trainUtil.getcityfromstation(possiblecity, logger)
+    return TravelPlanner.startuputil.getcityfromstation(possiblecity, logger)
 
     # q = """MATCH (a:TRAINSTATION) where a.NAME = '""" + possiblecity + """' OR a.NAME STARTS WITH '""" + possiblecity + """ ' OR a.NAME ENDS WITH ' """ + possiblecity + """' OR a.CITY = '""" + possiblecity + """' OR a.CITY STARTS WITH '""" + possiblecity + """ ' OR a.CITY ENDS WITH ' """ + possiblecity + """' return a"""
     # logger.debug("Fetch matching city query [%s]", q)
@@ -624,7 +624,7 @@ def parseandreturnroute(trainroutes, logger, journeydate, trainid):
 
     for trainroute in trainroutes:
         traincounter += 1
-        futures.append(TravelPlanner.trainUtil.trainfareexecutor.submit(gettrainroute, trainroute, trainid, traincounter, journeydate, logger))
+        futures.append(TravelPlanner.startuputil.trainfareexecutor.submit(gettrainroute, trainroute, trainid, traincounter, journeydate, logger))
 
     for future in futures:
         if future and future.result():

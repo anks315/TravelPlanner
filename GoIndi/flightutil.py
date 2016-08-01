@@ -1,7 +1,7 @@
 __author__ = 'Hello'
 
 import urllib2, json, datetime, copy
-import distanceutil, trainapiNeo4j, busapi, dateTimeUtility, minMaxUtil, miscUtility, models, TravelPlanner.trainUtil
+import distanceutil, trainapineo4j, busapi, dateTimeUtility, minMaxUtil, miscUtility, models, TravelPlanner.startuputil
 from entity import Airports, NearestAirports, FlightRequest
 import threading
 
@@ -31,8 +31,8 @@ def getnearestairports(source, destination):
         response.close()
         sourcelat = sourcelatlong["results"][0]["geometry"]["location"]["lat"]
         sourcelong = sourcelatlong["results"][0]["geometry"]["location"]["lng"]
-        sourceairport = TravelPlanner.trainUtil.gettraincity(stationtocitymap[distanceutil.findnearestairport(sourcelat,sourcelong)]).title()
-        bigsourceairport = TravelPlanner.trainUtil.gettraincity(stationtocitymap[distanceutil.findnearestbigairport(sourcelat,sourcelong)]).title()
+        sourceairport = TravelPlanner.startuputil.gettraincity(stationtocitymap[distanceutil.findnearestairport(sourcelat,sourcelong)]).title()
+        bigsourceairport = TravelPlanner.startuputil.gettraincity(stationtocitymap[distanceutil.findnearestbigairport(sourcelat,sourcelong)]).title()
         sourceairports = NearestAirports()
         sourceairports.near = sourceairport
         sourceairports.big = bigsourceairport
@@ -48,8 +48,8 @@ def getnearestairports(source, destination):
         destlatlong = json.loads(response2.read())
         destlat = destlatlong["results"][0]["geometry"]["location"]["lat"]
         destlong = destlatlong["results"][0]["geometry"]["location"]["lng"]
-        destairport = TravelPlanner.trainUtil.gettraincity(stationtocitymap[distanceutil.findnearestairport(destlat, destlong)]).title()
-        bigdestinationairport = TravelPlanner.trainUtil.gettraincity(stationtocitymap[distanceutil.findnearestbigairport(destlat, destlong)]).title()
+        destairport = TravelPlanner.startuputil.gettraincity(stationtocitymap[distanceutil.findnearestairport(destlat, destlong)]).title()
+        bigdestinationairport = TravelPlanner.startuputil.gettraincity(stationtocitymap[distanceutil.findnearestbigairport(destlat, destlong)]).title()
         destinationairports = NearestAirports()
         destinationairports.near = destairport
         destinationairports.big = bigdestinationairport
@@ -94,7 +94,7 @@ def getothermodes(source, destination, journeydate, logger, trainclass='3A', num
     """
 
     resultjsondata = { "train" : [], "bus" : []}
-    traincontrollerneo = trainapiNeo4j.TrainController()
+    traincontrollerneo = trainapineo4j.TrainController()
     nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y')
     nexttonextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=2)).strftime('%d-%m-%Y')
 
