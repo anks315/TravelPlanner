@@ -44,7 +44,8 @@ def getcityfromstation(possiblecityname, logger):
     """
     citynamepattern = possiblecityname
     citynamepattern = re.sub('^(SIVA|SHIVA)', '(SIVA|SHIVA)', citynamepattern)
-    citynamepattern = re.sub('L', '(LL|L)', citynamepattern)
+    citynamepattern = re.sub('^(GARH|GADH)|(GARH|GADH)$', '(GARH|GADH)', citynamepattern)
+    citynamepattern = re.sub('(LL|L)', '(LL|L)', citynamepattern)
     pattern = re.compile("[A-Z]*[ ]?[A-Z]*[ ]?" + re.sub('[AIEY]', '[AIEY]', citynamepattern) + "[ ]?")
     logger.debug("Pattern converted from cityname [%s] is pattern [%s]", possiblecityname, str(pattern))
 
@@ -54,7 +55,7 @@ def getcityfromstation(possiblecityname, logger):
         if bool(pattern.match(stationname)) or bool(pattern.match(cityname)):
             return trainstation.city
 
-    logger.warning("No Breaking city present for [%s]", possiblecityname)
+    logger.info("No Breaking city present for [%s]", possiblecityname)
     return str()
 
 

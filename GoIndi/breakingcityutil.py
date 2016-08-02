@@ -1,11 +1,11 @@
-__author__ = 'Ankit Kumar'
-
 from GoIndi.entity import BreakingStations
+# noinspection PyDeprecation
 import sets
 from GoIndi import constants, loggerUtil, models
 import TravelPlanner.startuputil
 
 logger = loggerUtil.getlogger("BreakingCityUtil")
+__author__ = 'Ankit Kumar'
 
 
 def getlistoftwobreakingcityset(breakingcitieslist):
@@ -21,6 +21,17 @@ def getlistoftwobreakingcityset(breakingcitieslist):
             brkstations.first = breakingcities[0]
             brkstations.second = breakingcities[1]
             addtobreakingcitylist(brkstations, breakingcitylist)
+        elif len(breakingcities) >= 3:
+            if breakingcities[1] in constants.bigcities:
+                brkstations = BreakingStations()
+                brkstations.first = breakingcities[0]
+                brkstations.second = breakingcities[1]
+                addtobreakingcitylist(brkstations, breakingcitylist)
+            if breakingcities[len(breakingcities) - 1] in constants.bigcities:
+                brkstations = BreakingStations()
+                brkstations.first = breakingcities[0]
+                brkstations.second = breakingcities[len(breakingcities) - 1]
+                addtobreakingcitylist(brkstations, breakingcitylist)
     return breakingcitylist
 
 
@@ -40,6 +51,7 @@ def addtobreakingcitylist(breakingstations, breakingcitylist):
         breakingcitylist.append(breakingstations)
 
 
+# noinspection PyDeprecation
 def getbreakingcityset(breakingcitieslist):
 
     """
