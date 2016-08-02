@@ -1,7 +1,7 @@
 from GoIndi.entity import BreakingStations
 # noinspection PyDeprecation
 import sets
-from GoIndi import constants, loggerUtil, models
+from GoIndi import constant, loggerUtil, models
 import TravelPlanner.startuputil
 
 logger = loggerUtil.getlogger("BreakingCityUtil")
@@ -22,12 +22,12 @@ def getlistoftwobreakingcityset(breakingcitieslist):
             brkstations.second = breakingcities[1]
             addtobreakingcitylist(brkstations, breakingcitylist)
         elif len(breakingcities) >= 3:
-            if breakingcities[1] in constants.bigcities:
+            if breakingcities[1] in constant.bigcities:
                 brkstations = BreakingStations()
                 brkstations.first = breakingcities[0]
                 brkstations.second = breakingcities[1]
                 addtobreakingcitylist(brkstations, breakingcitylist)
-            if breakingcities[len(breakingcities) - 1] in constants.bigcities:
+            if breakingcities[len(breakingcities) - 1] in constant.bigcities:
                 brkstations = BreakingStations()
                 brkstations.first = breakingcities[0]
                 brkstations.second = breakingcities[len(breakingcities) - 1]
@@ -73,7 +73,7 @@ def getbreakingcityset(breakingcitieslist):
             breakingcityset.add(breakingcities.pop())
         else:
             for breakingcity in breakingcities:
-                if breakingcity.upper() in constants.bigcities:
+                if breakingcity.upper() in constant.bigcities:
                     breakingcityset.add(breakingcity)
     return breakingcityset
 
