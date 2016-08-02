@@ -1,36 +1,18 @@
 from neo4jrestclient.client import GraphDatabase
 from entity import TrainOption, TrainStation, FareData
-import time
-import calendar
-import TravelPlanner.trainUtil
-import logging
-import urllib
-import json
-import trainConstants
-import datetime
-import loggerUtil
+import TravelPlanner.startuputil, trainConstants, dateTimeUtility
 from datetime import timedelta
 from sets import Set
-import copy
-import dateTimeUtility
+import datetime, loggerUtil, time, calendar, copy, json, urllib
 
-
-def demo():
-    pass
 
 # pool = Pool(processes=5)
-citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai",}
+citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai"}
 
 
 DATABASE_CONNECTION= GraphDatabase("http://ec2-54-254-171-20.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
 
-#DATABASE_CONNECTION=GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
-
-def testquery():
-    source = 'JAIPUR'
-    other = 'AMBALA'
-    results = DATABASE_CONNECTION.query("""MATCH (a:TRAINSTATION {CITY : '"""+source+"""'})-[r:BPL]->(b:TRAIN) RETURN a as station ,b as train ,r as route union MATCH (c:TRAINSTATION {CITY : '"""+other+"""'})-[e:NDLS]->(d:TRAIN) RETURN c as station,d as train ,e as route""")
-    print results
+#DATABASE_CONNECTION = GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
 
 
 def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeydate, destinationcity, trainrouteid, priceclass='3A', numberofadults=1, nextday=False, directtrainset=Set()):
@@ -48,7 +30,7 @@ def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeyda
     :return: array of trains and their data
     """
     trains = []
-    logger.debug("Fetching train routes between source[%s] and destination stations[%s] on [%s]", sourcecity,destinationstationset, journeydate)
+    logger.debug("Fetching train routes between source[%s] and destination stations[%s] on [%s]", sourcecity, destinationstationset, journeydate)
     q = """MATCH (a:TRAINSTATION {CITY : '""" + sourcecity + """'})-[r:""" + '|'.join(destinationstationset) + """]->(b:TRAIN) RETURN a,b,r"""
 
     try:
@@ -58,27 +40,123 @@ def gettrainsbetweenstation(sourcecity, destinationstationset, logger, journeyda
         return trains
 
     if len(results.elements) == 0:
-        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity,destinationstationset)
+        logger.info("No Train Routes between source[%s] and destination city[%s]", sourcecity, destinationcity)
         return trains
 
-    gettrains(results,journeydate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains, directtrainset)
+    gettrains(results, journeydate, sourcecity, destinationcity, priceclass, numberofadults, trains, logger, directtrainset)
 
     routes = parseandreturnroute(trains, logger, journeydate, trainrouteid)
 
     if nextday:
         nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
         trains = [] # set train result empty
-        gettrains(results,nextdate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains, directtrainset)
+        gettrains(results, nextdate, sourcecity, destinationcity, priceclass, numberofadults, trains, logger, directtrainset)
         routes.extend(parseandreturnroute(trains, logger, nextdate, trainrouteid))
         nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=2)).strftime('%d-%m-%Y')
         trains = []
-        gettrains(results,nextdate,sourcecity,logger,destinationcity,priceclass,numberofadults,trains, directtrainset)
+        gettrains(results, nextdate, sourcecity, destinationcity, priceclass, numberofadults, trains, logger, directtrainset)
         routes.extend(parseandreturnroute(trains, logger, nextdate, trainrouteid))
 
     return routes
 
 
-def gettrains(results, journeydate, sourcecity, logger, destinationcity, priceclass, numberofadults, trains, directtrainset):
+def gettrainsbetweenstationviabreaking(sourcecity, breakingstationset, breakingcity, destinationstationset, logger, journeydate, destinationcity, trainrouteid, priceclass='3A', numberofadults=1, directtrainset=Set()):
+
+    """
+    To get train between 2 stations
+    :param sourcecity: source of journey
+    :param breakingstationset: list of all available railway stations in breaking city
+    :param breakingcity: breaking city in journey
+    :param destinationstationset: set of destination city's railway station codes
+    :param logger: to log information
+    :param journeydate: date of journey
+    :param destinationcity: destination city
+    :param priceclass: preferred class for journey
+    :param directtrainset: set of direct train numbers from source to destination, used for filtering out all direct trains in breaking journey
+    :return: array of trains and their data
+    """
+    trains = []
+    logger.debug("Fetching train routes between source[%s] and destination stations[%s] on [%s]", sourcecity, destinationstationset, journeydate)
+    q = """MATCH (a:TRAINSTATION {CITY : '""" + sourcecity + """'})-[c:""" + '|'.join(breakingstationset) + """]->(b:TRAIN) RETURN a as a, b as b, c as r union MATCH (p:TRAINSTATION {CITY : '""" + breakingcity + """'})-[r:""" + '|'.join(destinationstationset) + """]->(q:TRAIN) RETURN p as a, q as b, r as r"""
+
+    try:
+        results = DATABASE_CONNECTION.query(q)
+    except Exception as e:
+        logger.error("Error getting trains between source [%s] and destination [%s] via breaking station [%s], reason [%s]", sourcecity, destinationcity, breakingcity, e.message)
+        return trains
+
+    if len(results.elements) == 0:
+        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity, destinationstationset)
+        return trains
+
+    gettrains(results, journeydate, sourcecity, breakingcity, priceclass, numberofadults, trains, logger, directtrainset)
+    gettrains(results, journeydate, breakingcity, destinationcity, priceclass, numberofadults, trains, logger, directtrainset)
+
+    routes = parseandreturnroute(trains, logger, journeydate, trainrouteid)
+
+    nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
+    trains = [] # set train result empty
+    gettrains(results, nextdate, breakingcity, destinationcity, priceclass, numberofadults, trains, logger, directtrainset)
+    routes.extend(parseandreturnroute(trains, logger, nextdate, trainrouteid))
+    nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=2)).strftime('%d-%m-%Y')
+    trains = []
+    gettrains(results, nextdate, breakingcity, destinationcity, priceclass, numberofadults, trains, logger, directtrainset)
+    routes.extend(parseandreturnroute(trains, logger, nextdate, trainrouteid))
+    return routes
+
+
+def gettrainsbetweenmultiplestation(sourcecity, firstbreakingstationset, logger, journeydate, firstbreakingcity, secondbreakingstationset, secondbreakingcity, destinationstationset, destinationcity, trainrouteid, priceclass='3A', numberofadults=1, directtrainset=Set()):
+
+    """
+    To get train between 2 stations
+    :param sourcecity: source of journey
+    :param firstbreakingstationset: set of first breaking city's railway station codes
+    :param logger: to log information
+    :param journeydate: date of journey
+    :param firstbreakingcity: destination city
+    :param firstbreakingcity: first breaking city of the journey
+    :param secondbreakingstationset: list of all available railway stations in second breaking station city
+    :param secondbreakingcity: second breaking city of the journey
+    :param destinationstationset: list of all available railway stations in first breaking station city
+    :param destinationcity: destination city of the journey
+    :param priceclass: preferred class for journey
+    :param directtrainset: set of direct train numbers from source to destination, used for filtering out all direct trains in breaking journey
+    :return: array of trains and their data
+    """
+    trains = []
+    logger.debug("Fetching train routes between source[%s] and destination stations[%s] on [%s]", sourcecity, firstbreakingstationset, journeydate)
+    q = """MATCH (a:TRAINSTATION {CITY : '""" + sourcecity + """'})-[c:""" + '|'.join(firstbreakingstationset) + """]->(b:TRAIN) RETURN a as a, b as b, c as r union MATCH (p:TRAINSTATION {CITY : '""" + firstbreakingcity + """'})-[r:""" + '|'.join(secondbreakingstationset) + """]->(q:TRAIN) RETURN p as a, q as b, r as r union MATCH (s:TRAINSTATION {CITY : '""" + secondbreakingcity + """'})-[u:""" + '|'.join(destinationstationset) + """]->(t:TRAIN) RETURN s as a, t as b, u as r"""
+
+    try:
+        results = DATABASE_CONNECTION.query(q)
+    except Exception as e:
+        logger.error("Error getting trains between source [%s] and destination [%s] via [%s] & [%s], reason [%s]", sourcecity, destinationcity, firstbreakingcity, secondbreakingcity, e.message)
+        return trains
+
+    if len(results.elements) == 0:
+        logger.warning("No Train Routes between source[%s] and destination stations[%s]", sourcecity, firstbreakingstationset)
+        return trains
+
+    gettrains(results, journeydate, sourcecity, firstbreakingcity, priceclass, numberofadults, trains, logger, directtrainset)
+    gettrains(results, journeydate, firstbreakingcity, secondbreakingcity, priceclass, numberofadults, trains, logger, directtrainset)
+    gettrains(results, journeydate, secondbreakingcity, destinationcity, priceclass, numberofadults, trains, logger, directtrainset)
+
+    routes = parseandreturnroute(trains, logger, journeydate, trainrouteid)
+
+    nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=1)).strftime('%d-%m-%Y')
+    trains = [] # set train result empty
+    gettrains(results, nextdate, firstbreakingcity, secondbreakingcity, priceclass, numberofadults, trains, logger, directtrainset)
+    gettrains(results, nextdate, secondbreakingcity, destinationcity, priceclass, numberofadults, trains, logger, directtrainset)
+    routes.extend(parseandreturnroute(trains, logger, nextdate, trainrouteid))
+    nextdate = (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + timedelta(days=2)).strftime('%d-%m-%Y')
+    trains = []
+    gettrains(results, nextdate, firstbreakingcity, secondbreakingcity, priceclass, numberofadults, trains, logger, directtrainset)
+    gettrains(results, nextdate, secondbreakingcity, destinationcity, priceclass, numberofadults, trains, logger, directtrainset)
+    routes.extend(parseandreturnroute(trains, logger, nextdate, trainrouteid))
+    return routes
+
+
+def gettrains(results, journeydate, sourcecity, destinationcity, priceclass, numberofadults, trains, logger, directtrainset):
 
     """
     To populate array of trains which have price and are running from source on journey date
@@ -97,7 +175,7 @@ def gettrains(results, journeydate, sourcecity, logger, destinationcity, pricecl
     trainnumberset = Set()
     trainnumberset = trainnumberset.union(directtrainset)
     for i in range(len(results.elements)):
-        if istrainrunningoncurrentdate(results.elements[i], journeydate, sourcecity, logger) and isnonduplicatetrain(trainnumberset, results.elements[i][1]['data']['NUMBER']):
+        if istrainrunningoncurrentdate(results.elements[i], journeydate, sourcecity, logger) and isnonduplicatetrain(trainnumberset, results.elements[i][1]['data']['NUMBER']) and str(results.elements[i][0]['data']['CITY']) == sourcecity:
             trainoption = TrainOption()
             trainoption.trainName = results.elements[i][1]['data']['NAME']
             trainoption.trainNumber = results.elements[i][1]['data']['NUMBER']
@@ -114,12 +192,11 @@ def gettrains(results, journeydate, sourcecity, logger, destinationcity, pricecl
             trainoption.destArrivalDay = getdayabbrevationfromdatestr(trainoption.destArrivalDate, 0)
             trainoption.prices = {"1A": 0, "2A": 0, "3A": 0, "3E": 0, "FC": 0, "CC": 0, "SL": 0, "2S": 0, "GN": 0} #empty dictionary
             trainoption.price = 0
-            trainoption.priceClass=priceclass
-            trainoption.numadults=numberofadults
+            trainoption.priceClass = priceclass
+            trainoption.numadults = numberofadults
 
             if 'FARE_'+priceclass in results.elements[i][2]['data']:
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,int(results.elements[i][2]['data']['FARE_'+priceclass]),priceclass,numberofadults)
-
 
             if 'FARE_3A' in results.elements[i][2]['data']:
                 setdefaultpriceifnotpresent(trainoption,trainoption.price,trainoption.prices["3A"],"3A",numberofadults)
@@ -300,7 +377,7 @@ def getbreakingcity(possiblecity, logger):
     :return: breaking city name
     """
     logger.info("Fetching matching city from breaking city/station[%s]", possiblecity)
-    return TravelPlanner.trainUtil.getcityfromstation(possiblecity, logger)
+    return TravelPlanner.startuputil.getcityfromstation(possiblecity, logger)
 
     # q = """MATCH (a:TRAINSTATION) where a.NAME = '""" + possiblecity + """' OR a.NAME STARTS WITH '""" + possiblecity + """ ' OR a.NAME ENDS WITH ' """ + possiblecity + """' OR a.CITY = '""" + possiblecity + """' OR a.CITY STARTS WITH '""" + possiblecity + """ ' OR a.CITY ENDS WITH ' """ + possiblecity + """' return a"""
     # logger.debug("Fetch matching city query [%s]", q)
@@ -342,7 +419,7 @@ def istrainrunningoncurrentdate(train, journeydate, sourcecity, logger):
         day = 'THRUSDAY'
 
     if (day in train[1]['data'].keys() and  train[1]['data'][day] == 'N') or (day=='THRUSDAY' and 'THURSDAY' in train[1]['data'].keys() and  train[1]['data']['THURSDAY'] == 'N'):
-        logger.warning("Skipping train [%s], since it doesn't run from [%s] on [%s]", trainnumber, sourcecity, journeydate)
+        logger.info("Skipping train [%s], since it doesn't run from [%s] on [%s]", trainnumber, sourcecity, journeydate)
         return False
     return True
 
@@ -547,12 +624,13 @@ def parseandreturnroute(trainroutes, logger, journeydate, trainid):
 
     for trainroute in trainroutes:
         traincounter += 1
-        futures.append(TravelPlanner.trainUtil.trainfareexecutor.submit(gettrainroute, trainroute, trainid, traincounter, journeydate, logger))
+        futures.append(TravelPlanner.startuputil.trainfareexecutor.submit(gettrainroute, trainroute, trainid, traincounter, journeydate, logger))
 
     for future in futures:
-        if future and future.result(timeout=5):
+        if future and future.result():
             routes.append(future.result())
     return routes
+
 
 def gettrainroute(trainroute, trainid, traincounter, journeydate, logger):
 

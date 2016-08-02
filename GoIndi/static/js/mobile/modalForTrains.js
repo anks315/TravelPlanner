@@ -45,7 +45,7 @@ function changePrice(trainClass){
 	getTotalPrice(className)
 }
 function getTrainPart(train,id){
-	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td valign='center' style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke'><img src='/static/images/"+train.mode+"2.png'>&nbsp;&nbsp;"+train.source+"&nbsp;&#8594;&nbsp"+train.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success bookingTrain'>Book</button>&nbsp;&nbsp;</td></tr></table><table width='100%'><tr><td width=50%>"
+	var details =  "<table width='100%' class='table shadowTable' style='color:grey' ><tr><td valign='center' style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke'><img src='/static/images/"+train.mode+"2.png'>&nbsp;&nbsp;"+train.source+"&nbsp;&#8594;&nbsp"+train.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' data-role='none' class='btn btn-success bookingTrain'>Book</button>&nbsp;&nbsp;</td></tr></table><table width='100%'><tr><td width=50%>"
 	var first = 1;
 	for ( var j = 0; j < train.subParts.length;j++ ){
 		if(train.subParts.length==1){
@@ -67,14 +67,14 @@ function getTrainPart(train,id){
 			var classList = ''
 			for (var prop in transportDetails.prices) {
 				if(transportDetails.prices[prop]!=0){
-					classList =classList+"<li><a href='#' price='"+transportDetails.prices[prop]+"' trainClassId='"+j+"trainClass"+train.id+"'>"+prop+"</a></li><li>"
+					classList =classList+"<li><a href='#' price='"+transportDetails.prices[prop]+"' trainClassId='"+j+"trainClass"+train.id+"' availiablityCallId='"+j+"availabilityCall"+train.id+"' availiablityId='"+j+"availabilityData"+train.id+"' loader='loader"+j+train.id+"'>"+prop+"</a></li><li>"
 				}
 			}
 			
 			var classSelector = "<font color='grey'>Class: </font><div class='btn-group'><a class='btn dropdown-toggle trainModalClass'  data-toggle='dropdown' href='#'>"+transportDetails.priceClass+"<span class='caret'></span></a><ul class='dropdown-menu'>"+classList+"</ul></div><br/>"
 
 			//details of the transportation mode
-			details = details + "<tr><td><table width='100%'><td width='5%'><table><tr><td style='white-space: nowrap;'>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div class='journeyLine' style='height:"+journeyLineWidth+"px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;<b class='detailsMode'>"+transportCarrier+"</b><div class='detailsDuration'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Duration : </b>"+transportDetails.duration+" hrs</div></td></tr></table></td><td width='95%' style='text-align:right'>"+classSelector+"<div class = 'detailsPrice sameLine trainClass"+train.id+"' id='"+j+"trainClass"+train.id+"' price="+transportDetails.price+" trainClass='trainClass"+train.id+"'>&#8377 "+transportDetails.price+"/-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td></tr></table></td></tr>";
+			details = details + "<tr><td><table width='100%'><td width='5%'><table><tr><td style='white-space: nowrap;'>&nbsp;&nbsp;&nbsp;&nbsp;</td><td><div class='journeyLine' style='height:"+journeyLineWidth+"px'></div></td><td style='white-space: nowrap;text-align:left;'>&nbsp;&nbsp;<b class='detailsMode'>"+transportCarrier+"</b><div class='detailsDuration'>&nbsp;&nbsp;&nbsp;<b class='detailsLabel'>Duration : </b>"+transportDetails.duration+" hrs</div></td></tr></table></td><td width='95%' style='text-align:right'>"+classSelector+"<div class = 'detailsPrice sameLine trainClass"+train.id+"' id='"+j+"trainClass"+train.id+"' price="+transportDetails.price+" trainClass='trainClass"+train.id+"'>&#8377 "+transportDetails.price+"/-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><br/><table style='width: auto;float:right;'><tr><td><div class=''id='"+j+"availability"+train.id+"' ><a href='#' class = 'availabilityCall' id='"+j+"availabilityCall"+train.id+"' availiablityId='"+j+"availabilityData"+train.id+"' source='"+transportDetails.sourceStation+"' destination='"+transportDetails.destinationStation+"' trainNumber='"+transportDetails.trainNumber+"' trainClass='"+transportDetails.priceClass+"' loader='loader"+j+train.id+"' class='availabilityFont'>Show Availability</a><div id='"+j+"availabilityData"+train.id+"' class='availabilityFont availabilityColor'></div></div><div id = 'loader"+j+train.id+"' hidden>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;&nbsp;&nbsp;<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate' ></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;&nbsp;&nbsp;</div></td></tr></table></td></tr></table></td></tr>";
 			
 			if(j==train.subParts.length-1){
 				//details of last station
@@ -88,12 +88,12 @@ function getTrainPart(train,id){
 	
 	}
 
-	details=details+"<td width=10% style='text-align:center' ><input type='radio' value = '"+train.price+"' class = '"+id+"' name='radio"+train.id+"' id='radio"+train.id+"' checked hidden></input></tr></table>";
+	details=details+"<td width=10% style='text-align:center' ><input type='radio' value = '"+train.price+"' class = '"+id+"' name='radio"+train.id+"' data-role='none' id='radio"+train.id+"' checked hidden></input></tr></table>";
 	return details;
 	
 }
 function getBusPart(bus, id){
-	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+bus.mode+"2.png'>&nbsp;&nbsp;"+bus.source+"&nbsp;&#8594;&nbsp"+bus.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success booking'id='book"+bus.id+"''>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
+	var details =  "<table width='100%' class='table shadowTable' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+bus.mode+"2.png'>&nbsp;&nbsp;"+bus.source+"&nbsp;&#8594;&nbsp"+bus.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' data-role='none' class='btn btn-success booking' id='book"+bus.id+"''>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
 	var first = 1;
 	for ( var j = 0; j < bus.subParts.length;j++ ){
 			var isChecked = '';

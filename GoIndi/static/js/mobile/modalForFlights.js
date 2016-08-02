@@ -39,7 +39,7 @@ function getTotalPrice(id){
 }
 
 function getFlightPart(flight,id){
-	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td valign='center' style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke'><img src='/static/images/"+flight.mode+"2.png'>&nbsp;&nbsp;"+flight.source+"&nbsp;&#8594;&nbsp"+flight.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success booking' id='book"+flight.id+"'>Book</button>&nbsp;&nbsp;</td></tr></table><table width='100%'><tr><td width=50%>"
+	var details =  "<table width='100%' class='table shadowTable' style='color:grey' ><tr><td valign='center' style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke'><img src='/static/images/"+flight.mode+"2.png'>&nbsp;&nbsp;"+flight.source+"&nbsp;&#8594;&nbsp"+flight.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' data-role='none' class='btn btn-success booking' id='book"+flight.id+"'>Book</button>&nbsp;&nbsp;</td></tr></table><table width='100%'><tr><td width=50%>"
 	var first = 1;
 	for ( var j = 0; j < flight.subParts.length;j++ ){
 			var transportDetails = flight.subParts[j];
@@ -88,7 +88,7 @@ function getFlightPart(flight,id){
 			//var agent = "<img src='"+bookingOption.AgentsImg+"'></img>"
 		}
 		
-		pricesWid = pricesWid + "<tr><td><div class='agent'>"+agent+"</div></td></tr><tr><td>" +"<input type='radio' value = '"+bookingOption.Price+"' bookingLink='"+bookingOption.DeeplinkUrl+"' class = '"+id+"' name='radio"+flight.id+"' "+isCheckedPrice+">&nbsp;&nbsp;<div class = 'detailsPrice sameLine'>&#8377 "+bookingOption.Price+"/-</div></td></tr>"
+		pricesWid = pricesWid + "<tr><td><div class='agent'>"+agent+"</div></td></tr><tr><td>" +"<input type='radio' data-role='none' value = '"+bookingOption.Price+"' bookingLink='"+bookingOption.DeeplinkUrl+"' class = '"+id+"' name='radio"+flight.id+"' "+isCheckedPrice+">&nbsp;&nbsp;<div class = 'detailsPrice sameLine'>&#8377 "+bookingOption.Price+"/-</div></td></tr>"
 	}
 	pricesWid = pricesWid + "</table>";
 	details=details+"<td width=50% style='text-align:center' >"+pricesWid+"</td></tr></table>";
@@ -98,7 +98,7 @@ function getFlightPart(flight,id){
 	
 }
 function getOtherPart(other, id){
-	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+other.mode+"2.png'>&nbsp;&nbsp;"+other.source+"&nbsp;&#8594;&nbsp"+other.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success booking'id='book"+other.id+"''>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
+	var details =  "<table width='100%' class='table shadowTable' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+other.mode+"2.png'>&nbsp;&nbsp;"+other.source+"&nbsp;&#8594;&nbsp"+other.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button'data-role='none' class='btn btn-success booking'id='book"+other.id+"''>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
 	var first = 1;
 	for ( var j = 0; j < other.subParts.length;j++ ){
 			var isChecked = '';
@@ -110,7 +110,7 @@ function getOtherPart(other, id){
 			var priceList = transportDetails.price;
 			var priceArr = priceList.split(",");
 			var price = priceArr[0]
-				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td width='40%'>&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+other.id+"' "+isChecked+" value = '"+price+"' bookingLink='"+transportDetails.bookingLink+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+", "+transportDetails.departureDay+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+", "+transportDetails.arrivalDay+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr><tr><td colspan = '4' style='text-align:center' class='detailsDuration' bgcolor='#C5EFFD'>Waiting Time : "+transportDetails.waitingTime+" Hrs</td></tr>";
+				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td width='40%'>&nbsp;&nbsp;<input type='radio' data-role='none' class ='"+id+"' name='radio"+other.id+"' "+isChecked+" value = '"+price+"' bookingLink='"+transportDetails.bookingLink+"' carrierType='bus'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.busType+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+", "+transportDetails.departureDay+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+", "+transportDetails.arrivalDay+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr><tr><td colspan = '4' style='text-align:center' class='detailsDuration' bgcolor='#C5EFFD'>Waiting Time : "+transportDetails.waitingTime+" Hrs</td></tr>";
 		
 	}
 	details = details+"</table>";
@@ -120,7 +120,7 @@ function getOtherPart(other, id){
 }
 
 function getTrainOptionsPart(train, id){
-	var details =  "<table width='100%' class='table' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+train.mode+"2.png'>&nbsp;&nbsp;"+train.source+"&nbsp;&#8594;&nbsp"+train.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' class='btn btn-success booking'id='book"+train.id+"'>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
+	var details =  "<table width='100%' class='table shadowTable' style='color:grey' ><tr><td style='text-align:left' class = 'detailsCity'bgcolor='WhiteSmoke' valign='center'><img src='/static/images/"+train.mode+"2.png'>&nbsp;&nbsp;"+train.source+"&nbsp;&#8594;&nbsp"+train.destination+"</td><td style='text-align:right;padding: 0px' bgcolor='WhiteSmoke'><button type='button' data-role='none' class='btn btn-success booking'id='book"+train.id+"'>Book</button>&nbsp;&nbsp;</td></tr></table><table width = '100%' style ='text-allign:left;color:grey'><tr><th ></th><th class='detailsLabel'>Departs</th><th class='detailsLabel'>Arrives</th><th>Price</th></tr>"
 	var first = 1;
 	for ( var j = 0; j < train.subParts.length;j++ ){
 			var isChecked = '';
@@ -132,10 +132,11 @@ function getTrainOptionsPart(train, id){
 			var price = transportDetails.price;
 			
 
-				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td width='40%'>&nbsp;&nbsp;<input type='radio' class ='"+id+"' name='radio"+train.id+"' "+isChecked+" value = '"+price+"' bookingLink='http://irctc.co.in'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.trainNumber+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+", "+transportDetails.departureDay+"<br/>"+transportDetails.source+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+", "+transportDetails.arrivalDay+"<br/>"+transportDetails.destination+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr><tr><td colspan = '4' style='text-align:center' class='detailsDuration' bgcolor='#C5EFFD'>Waiting Time : "+transportDetails.waitingTime+" Hrs</td></tr>";
+				details = details + "<tr><td colspan = '4'><hr/></td></tr><tr><td width='40%'>&nbsp;&nbsp;<input type='radio'  data-role='none' class ='"+id+"' name='radio"+train.id+"' "+isChecked+" value = '"+price+"' bookingLink='http://irctc.co.in'  source='"+transportDetails.sourceStation+"' destination='"+transportDetails.destinationStation+"' trainNumber='"+transportDetails.trainNumber+"' trainClass='"+transportDetails.priceClass+"' availiablityCallId='availabilityCall"+train.id+"' availiablityId='availabilityData"+train.id+"' carrierType='train' loader = 'loader"+train.id+"'>&nbsp;&nbsp;<font color = '#056273'>"+transportDetails.carrierName+"</font><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color = 'grey' size='1'>("+transportDetails.trainNumber+")</font></td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.departure)+", "+transportDetails.departureDay+"<br/>"+transportDetails.sourceStation+"</td><td class='detailsDuration'>"+getIn12HrFormat(transportDetails.arrival)+", "+transportDetails.arrivalDay+"<br/>"+transportDetails.destinationStation+"</td><td class='detailsPrice'>&#8377 "+price+"/-</td></tr><tr><td colspan = '4' style='text-align:center' class='detailsDuration' bgcolor='#C5EFFD'>Waiting Time : "+transportDetails.waitingTime+" Hrs</td></tr>";
 			
 	}
-	details = details+"</table>";
+	var transportDetails = train.subParts[0];
+	details = details+"</table><br/><table class='table' style='width: auto;'><tr><td><div id='availability"+train.id+"' ><a href='#' class = 'availabilityCall' id='availabilityCall"+train.id+"' availiablityId='availabilityData"+train.id+"' source='"+transportDetails.sourceStation+"' destination='"+transportDetails.destinationStation+"' trainNumber='"+transportDetails.trainNumber+"' trainClass='"+transportDetails.priceClass+"' loader = 'loader"+train.id+"'class='availabilityFont'>Show Availability</a><div id='availabilityData"+train.id+"' class='availabilityFont availabilityColor'></div><div id='loader"+train.id+"' hidden>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></div></td></tr></table>";
 	var length =  radionames.length
 	radionames[length] = "radio"+train.id
 	return details;

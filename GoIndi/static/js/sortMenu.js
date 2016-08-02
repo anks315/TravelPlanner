@@ -27,6 +27,11 @@ function showSortMenuMain(){
 				$(".flightRouteMenu").hide();
 				$(".trainRouteMenu").hide();
 				$(".busRouteMenu").show();
+				if(busRetrieved==1){
+					$("#loading").hide();
+				}else{
+					$("#loading").show();
+				}
 		});
 	$( "#trainDataHead" ).click(function() {
 				var route = document.getElementById("resultsWid").getAttribute('route');
@@ -40,6 +45,12 @@ function showSortMenuMain(){
 				$(".flightRouteMenu").hide();
 				$(".busRouteMenu").hide();
 				$(".trainRouteMenu").show();
+				if(trainRetrieved==1){
+					$("#loading").hide();
+				}else{
+					$("#loading").show();
+				}
+				
 		});
 	$( "#flightDataHead" ).click(function() {
 				var route = document.getElementById("resultsWid").getAttribute('route');
@@ -52,6 +63,11 @@ function showSortMenuMain(){
 				$(".busRouteMenu").hide();
 				$(".trainRouteMenu").hide();
 				$(".flightRouteMenu").show();
+				if(flightRetrieved==1){
+					$("#loading").hide();
+				}else{
+					$("#loading").show();
+				}
 		});
 	$( "#allDataHead" ).click(function() {
 				var route = document.getElementById("resultsWid").getAttribute('route');
@@ -64,6 +80,11 @@ function showSortMenuMain(){
 				$(".busRouteMenu").show();
 				$(".trainRouteMenu").show();
 				$(".flightRouteMenu").show();
+				if(flightRetrieved==1){
+					$("#loading").hide();
+				}else{
+					$("#loading").show();
+				}
 		});
 		
 	$( "#priceSort" ).click(function() {

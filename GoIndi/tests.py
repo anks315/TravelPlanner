@@ -4,7 +4,7 @@
 # import dateTimeUtility
 # import models
 # import trainDBscript
-import datetime
+import datetime, re
 import glob, os, trainavailabilityapi
 # trainDBscript.fetchnonexitingfaredata()
 #models.testquery()
@@ -116,4 +116,19 @@ def convertstringtotime():
     print t.time().strftime('%H:%M')
 
 # convertstringtotime()
-trainavailabilityapi.TrainAvailabilityController().getavailablity('12013', 'NDLS', 'ASR', '11-07-2016', 'CC')
+#trainavailabilityapi.TrainAvailabilityController().getavailablity('12013', 'NDLS', 'ASR', '24-07-2016', 'CC')
+
+matched = bool(re.compile("[A-Z]*[ ]?[A-Z]*[ ]?" + re.sub("[AIE]", "[AIE]", "NAMPALLY") + "[ ]?[A-Z ]*").match( "HYDERABAD DECAN NAMPALLY"))
+print matched
+v = 'tsivakasi'
+v = re.sub('^(siva|shiva)', "(siva|shiva)", v)
+print v
+v = re.sub("[aie]", "[aie]", v)
+print v
+matched = bool(re.compile("[A-Z]*[ ]?[A-Z]*[ ]?" + v + "[ ]?[A-Z ]*").match( "sivakasi"))
+print matched
+n = 'nampally'
+n = re.sub("(siva)", "(siva|shiva)", n)
+n = re.sub('l', '(ll|l)', n)
+n = re.sub('[aiye]', '[aiye]', n)
+print n

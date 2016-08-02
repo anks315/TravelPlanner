@@ -92,3 +92,12 @@ class FlightRequest:
     trainclass = '3A'
     flightclass = 'economy'
     numberofadults = 1
+
+
+class BreakingStations:
+    """
+    Entity for breaking station.
+    """
+    first = ""
+    second = ""
+

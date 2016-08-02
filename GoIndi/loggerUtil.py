@@ -2,7 +2,7 @@ import logging
 import datetime
 
 
-def getlogger(loggerkey, loggerlevel=logging.DEBUG):
+def getlogger(loggerkey, loggerlevel=logging.WARNING):
 
     logger = logging.getLogger("TravelPlanner."+loggerkey)
     today = datetime.date.today().strftime("%Y-%m-%d")

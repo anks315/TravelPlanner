@@ -18,6 +18,7 @@ var flightNearToBig = 0
 var flightRetrieved=0
 var trainRetrieved=0
 var busRetrieved=0
+var journeyDate
 
 
 function showPlanner(plannerContainer){
@@ -85,6 +86,7 @@ function showPlanner(plannerContainer){
 				var toStation = document.getElementById('to').value.split(",")[0];
 				var depDateArr = document.getElementById('departureBox').value.split("/");
 				var depDate = depDateArr[1]+"-"+depDateArr[0]+"-"+depDateArr[2];
+				journeyDate = depDate
 					document.getElementById("routeMenuList").innerHTML=""
 					
 					 routeMap = new Object()
@@ -210,6 +212,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 	var toStation = document.getElementById('to').value.split(",")[0];
 	var depDateArr = document.getElementById('departureBox').value.split("/");
 	var depDate = depDateArr[1]+"-"+depDateArr[0]+"-"+depDateArr[2]
+	journeyDate = depDate
 	//change in the search click as well if changed here
 	makeAsyncCalls(fromStation,toStation,depDate,flightClassSelected,trainClassSelected,persons);
 	initAutocomplete();

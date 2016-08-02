@@ -7,11 +7,11 @@ import concurrent.futures
 import dateTimeUtility
 import miscUtility, flightutil
 import distanceutil
-import trainapiNeo4j
+import trainapineo4j
 import minMaxUtil
-import logging, copy
+import copy
 import loggerUtil, models
-import TravelPlanner.trainUtil
+import TravelPlanner.startuputil
 
 
 logger = loggerUtil.getlogger("FlightApi")
@@ -25,8 +25,8 @@ class FlightController:
         logger.debug("[START]-Get Results From FlightApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",sourcecity,destinationcity,journeydate)
         with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
 
-            source = TravelPlanner.trainUtil.gettraincity(sourcecity).title()
-            destination = TravelPlanner.trainUtil.gettraincity(destinationcity).title()
+            source = TravelPlanner.startuputil.gettraincity(sourcecity).title()
+            destination = TravelPlanner.startuputil.gettraincity(destinationcity).title()
             # get nearest airport and nearest big airport to our source city
             url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + source
             url = url.replace(' ', '%20')
@@ -159,7 +159,7 @@ class FlightController:
 
     def getothermodes(self, source, destination, journeydate, trainclass='3A', numberofadults=1):
 
-        traincontrollerneo = trainapiNeo4j.TrainController()
+        traincontrollerneo = trainapineo4j.TrainController()
         logger.debug("[START] Calling TrainApi From Flight Api for Source:[%s] and Destination[%s],journeyDate[%s]",source,destination,journeydate)
         resultjsondata = traincontrollerneo.getroutes(source, destination, journeydate, priceclass=trainclass, numberofadults=numberofadults)["train"]
         if not resultjsondata:

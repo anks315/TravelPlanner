@@ -5,8 +5,7 @@ import requests
 from requests.auth import HTTPDigestAuth
 import dateTimeUtility
 import loggerUtil, models
-import logging
-import TravelPlanner.trainUtil
+import TravelPlanner.startuputil
 
 logger = loggerUtil.getlogger("BusApi")
 
@@ -18,8 +17,8 @@ class BusController:
 
         response = {"bus": []}
         try:
-            source = TravelPlanner.trainUtil.getbuscity(source)
-            destination = TravelPlanner.trainUtil.getbuscity(destination)
+            source = TravelPlanner.startuputil.getbuscity(source)
+            destination = TravelPlanner.startuputil.getbuscity(destination)
             logger.debug("[START]-Get Results From BusApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeydate)
             jdlist = journeydate.split("-")
             newformatjourneydate = jdlist[2]+"-"+jdlist[1]+"-"+jdlist[0]

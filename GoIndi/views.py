@@ -3,16 +3,11 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 import json
-import trainapi
-import flightapi, flightdirectandnearairportapi, flightfrombigairportapi, flightnearbigapi, flightbignearapi
-import distanceutil, flightutil
-import busapi
-import trainapiNeo4j, trainavailabilityapi
-import TravelPlanner.trainUtil as startup
+import flightapi, flightdirectandnearairportapi, flightfrombigairportapi, flightnearbigapi, flightbignearapi, flightutil, busapi, trainapineo4j, trainavailabilityapi
+import TravelPlanner.startuputil as startup
 
 # bus, train, flight controller to get results
-traincontroller = trainapi.TrainController()
-traincontrollerneo = trainapiNeo4j.TrainController()
+traincontrollerneo = trainapineo4j.TrainController()
 trainavailabilitycontroller = trainavailabilityapi.TrainAvailabilityController()
 flightcontroller = flightapi.FlightController()
 buscontroller = busapi.BusController()
