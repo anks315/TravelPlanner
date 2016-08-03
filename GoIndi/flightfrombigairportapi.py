@@ -1,10 +1,8 @@
 __author__ = 'Hello'
 
 
-import loggerUtil, logging, flightutil, flightSkyScanner,datetime
-import miscUtility
+import loggerUtil, flightutil, flightSkyScanner,datetime, miscUtility, TravelPlanner.startuputil
 import concurrent, copy
-import TravelPlanner
 
 logger = loggerUtil.getlogger("FlightFromBigAirportApi")
 
@@ -21,8 +19,8 @@ class FlightFromBigAirportController:
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
 
-            source = TravelPlanner.trainUtil.gettraincity(sourcecity).title()
-            destination = TravelPlanner.trainUtil.gettraincity(destinationcity).title()
+            source = TravelPlanner.startuputil.gettraincity(sourcecity).title()
+            destination = TravelPlanner.startuputil.gettraincity(destinationcity).title()
 
             airports = flightutil.getnearestairports(source, destination)
             sourcenear = airports.sourceairports.near
