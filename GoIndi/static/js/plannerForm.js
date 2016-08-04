@@ -236,7 +236,9 @@ function getUrlVars() {
   
  function makeAsyncCalls(fromStation,toStation,depDate,flightClassSelected,trainClassSelected,persons) {
 
+
 	 $.getJSON('http://eazzer-flight.ap-southeast-1.elasticbeanstalk.com/flight/direct?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+
 
 				  flightDirect = 1
 				  if (err != "success") {
@@ -261,7 +263,9 @@ function getUrlVars() {
 					}
 				});
 
+
 	$.getJSON('http://eazzer-flightmixed.ap-southeast-1.elasticbeanstalk.com/flight/biggest?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+
 				  flightBiggest = 1
 				  if (err != "success") {
 					  
@@ -287,8 +291,10 @@ function getUrlVars() {
 				});
 
 
-	$.getJSON('http://flightn2b.ap-southeast-1.elasticbeanstalk.com/flight/bigtonear?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
-				  flightBigToNear =1
+
+	$.getJSON('http://flightb2n.ap-southeast-1.elasticbeanstalk.com/flight/bigtonear?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+
+			  flightBigToNear =1
 				  if (err != "success") {
 					  
 				  } else {
@@ -311,6 +317,7 @@ function getUrlVars() {
 					  }
 				  }
 				});
+
 
 	$.getJSON('http://flightn2b.ap-southeast-1.elasticbeanstalk.com/flight/neartobig?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 
@@ -338,8 +345,9 @@ function getUrlVars() {
 					  }
 				  }
 				});			
+
 	$.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
-					
+
 				  if (err != "success") {
 					  trainList=[]
 				  } else {
