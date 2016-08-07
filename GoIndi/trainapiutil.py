@@ -74,6 +74,7 @@ def convertspartstofulljson(part_1, part_2):
     route = {"full": {}, "parts": []}
     try:
         duration = dateTimeUtility.gettotalduration(part_2["full"][0]["arrival"],part_1["full"][0]["departure"],part_2["full"][0]["arrivalDate"],part_1["full"][0]["departureDate"])
+        waitingTime = dateTimeUtility.getWaitingTime(part_1["full"][0]["arrival"],part_2["full"][0]["departure"],part_1["full"][0]["arrivalDate"],part_2["full"][0]["departureDate"])
         price = part_1["full"][0]["price"] + part_2["full"][0]["price"]
         part = {"carrierName": "Train","duration": duration, "id": part_1["full"][0]["id"] + "_" +part_2["full"][0]["id"] + str(1), "mode": "train", "site": "IRCTC", "source": part_1["full"][0]["source"],
                 "destination": part_2["full"][0]["destination"], "arrival": part_2["full"][0]["arrival"], "departure": part_1["full"][0]["departure"], "departureDate": part_1["full"][0]["departureDate"],
@@ -90,7 +91,7 @@ def convertspartstofulljson(part_1, part_2):
                 "price": price, "priceClass": part_1["full"][0]["priceClass"], "subParts": []}
         part["subParts"].append(copy.deepcopy(part_1["parts"][0]["subParts"][0]))
         part["subParts"][0]["id"] = part["id"] + str(1)
-
+        part["subParts"][0]["waitingTime"] = waitingTime
         part["subParts"].append(copy.deepcopy(part_2["parts"][0]["subParts"][0]))
         part["subParts"][1]["id"] = part["id"] + str(2)
         route["parts"].append(part)
@@ -120,6 +121,12 @@ def convertmultipleparttofulljourney(part_1, part_2, part_3):
     try:
         duration = dateTimeUtility.gettotalduration(part_3["full"][0]["arrival"],part_1["full"][0]["departure"],part_3["full"][0]["arrivalDate"],part_1["full"][0]["departureDate"])
         price = part_1["full"][0]["price"] + part_2["full"][0]["price"] + part_3["full"][0]["price"]
+        waitingTime1 = dateTimeUtility.getWaitingTime(part_1["full"][0]["arrival"], part_2["full"][0]["departure"],
+                                                     part_1["full"][0]["arrivalDate"],
+                                                     part_2["full"][0]["departureDate"])
+        waitingTime2 = dateTimeUtility.getWaitingTime(part_2["full"][0]["arrival"], part_3["full"][0]["departure"],
+                                                      part_2["full"][0]["arrivalDate"],
+                                                      part_3["full"][0]["departureDate"])
         part = {"carrierName": "Train","duration": duration, "id": part_1["full"][0]["id"] + "_" + part_2["full"][0]["id"] + part_3["full"][0]["id"] + str(1), "mode": "train", "site": "IRCTC", "source": part_1["full"][0]["source"],
                 "destination": part_3["full"][0]["destination"], "arrival": part_3["full"][0]["arrival"], "departure": part_1["full"][0]["departure"], "departureDate": part_1["full"][0]["departureDate"],
                 "arrivalDate": part_3["full"][0]["arrivalDate"], "route" : part_1["full"][0]["source"] + ",train," + part_2["full"][0]["source"] + ",train," + part_2["full"][0]["destination"] + ",train," + part_3["full"][0]["destination"],
@@ -135,9 +142,11 @@ def convertmultipleparttofulljourney(part_1, part_2, part_3):
                 "price": price, "priceClass": part_1["full"][0]["priceClass"], "subParts": []}
         part["subParts"].append(copy.deepcopy(part_1["parts"][0]["subParts"][0]))
         part["subParts"][0]["id"] = part["id"] + str(1)
+        part["subParts"][0]["waitingTime"] = waitingTime1
 
         part["subParts"].append(copy.deepcopy(part_2["parts"][0]["subParts"][0]))
         part["subParts"][1]["id"] = part["id"] + str(2)
+        part["subParts"][1]["waitingTime"] = waitingTime2
 
         part["subParts"].append(copy.deepcopy(part_3["parts"][0]["subParts"][0]))
         part["subParts"][1]["id"] = part["id"] + str(3)

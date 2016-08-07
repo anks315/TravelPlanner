@@ -82,7 +82,7 @@ function getTrainPart(train,id){
 			} else {
 				//datails of intermediate station
 				k=j+1;
-				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"("+transportDetails.destinationStation+")&nbsp;&nbsp;</td><td><table><tr><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(transportDetails.arrival)+", "+transportDetails.arrivalDay+"</td></tr><tr><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(train.subParts[j+1].departure)+", "+train.subParts[j+1].departureDay+"</td></tr></table></td></tr></table></td></tr></td>"
+				details = details + "<tr><td><table width='100%'><tr><td width='20%' class = 'detailsStation'>"+transportDetails.destination+"("+transportDetails.destinationStation+")&nbsp;&nbsp;</td><td><table><tr><td class = 'detailsTime'>  Arr : "+getIn12HrFormat(transportDetails.arrival)+", "+transportDetails.arrivalDay+"</td></tr><tr><td class = 'detailsTime'>  Waiting Time : "+transportDetails.waitingTime+" Hrs</td></tr><tr><td class = 'detailsTime'>  Dep : "+getIn12HrFormat(train.subParts[j+1].departure)+", "+train.subParts[j+1].departureDay+"</td></tr></table></td></tr></table></td></tr></td>"
 			}
 			
 	
