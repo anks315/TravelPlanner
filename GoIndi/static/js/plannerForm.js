@@ -236,7 +236,7 @@ function getUrlVars() {
   
  function makeAsyncCalls(fromStation,toStation,depDate,flightClassSelected,trainClassSelected,persons) {
 
-	 $.getJSON('http://localhost:9000/flight/direct?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	 $.getJSON('http://localhost:8000/flight/direct?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 
 				  flightDirect = 1
 				  if (err != "success") {
@@ -261,7 +261,7 @@ function getUrlVars() {
 					}
 				});
 
-	$.getJSON('http://localhost:9000/flight/biggest?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('http://localhost:8000/flight/biggest?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  flightBiggest = 1
 				  if (err != "success") {
 					  
@@ -286,7 +286,7 @@ function getUrlVars() {
 					}
 				});
 
-	$.getJSON('http://localhost:9000/flight/bigtonear?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('http://localhost:8000/flight/bigtonear?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 				  flightBigToNear =1
 				  if (err != "success") {
 					  
@@ -311,7 +311,7 @@ function getUrlVars() {
 				  }
 				});
 
-	$.getJSON('http://localhost:9000/flight/neartobig?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('http://localhost:8000/flight/neartobig?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 
 				  flightNearToBig=1
 				  if (err != "success") {
@@ -337,7 +337,7 @@ function getUrlVars() {
 					  }
 				  }
 				});			
-	$.getJSON('http://localhost:9000/train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	$.getJSON('http://localhost:8000/train?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 					
 				  if (err != "success") {
 					  trainList=[]
@@ -357,7 +357,7 @@ function getUrlVars() {
 				  
 				});
 	
-	 $.getJSON('http://localhost:9000/bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&adults="+persons, function(data, err) {
+	 $.getJSON('http://localhost:8000/bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&adults="+persons, function(data, err) {
 				  if (err != "success") {
 					  busList=[]
 				  } else {

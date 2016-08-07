@@ -5,6 +5,17 @@
    height:150px;   /* Height of the footer */
    background:#262626;
 }
+.navbar-brand {
+  padding: 0px;
+}
+.navbar-brand>img {
+  height: 100%;
+  padding:0px;
+  padding-top:10px;
+  padding-left:25px;
+  padding-right:10px;
+  width: auto;
+}
 .shadowTable { box-shadow: 1px 1px 1px #999; }
 .filterValue { 
 	border:0; 
