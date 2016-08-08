@@ -166,7 +166,7 @@ function showFlightJourneyList(transportList){
 							  var loader = $(this).attr('loader');
 							 $('#'+loader).show()
 							  var availabilityDataId = $(this).attr("availiablityid")
-							  $.getJSON('http://localhost:8000/train/availability?source='+source+'&destination='+destination+'&trainClass='+trainClass+'&trainNumber='+trainNumber+'&journeyDate='+journeyDate+'&quota=GN', function(data, err) {
+							  $.getJSON('train/availability?source='+source+'&destination='+destination+'&trainClass='+trainClass+'&trainNumber='+trainNumber+'&journeyDate='+journeyDate+'&quota=GN', function(data, err) {
 									var availList = data.availability;
 									if(availList.length==0){
 										var availData = "Not Available"

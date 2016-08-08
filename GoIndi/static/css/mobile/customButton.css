@@ -27,6 +27,11 @@ table {
 	border : 0;
     padding: 0;
 }
+.noPaddingContainer{
+ padding-left: 0px !important;
+ padding-top: 0px !important;
+ padding-right: 0px !important;	
+}
 .glyphicon-refresh-animate {
     -animation: spin .7s infinite linear;
     -ms-animation: spin .7s infinite linear;

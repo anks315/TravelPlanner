@@ -13,7 +13,10 @@
 .ui-btn-c {
     background-color: #c6c6c6;
 }
-
+.noPaddingContainer{
+ padding-left: 0px !important;
+ padding-right: 0px !important;	
+}
 table {
 	border : 0;
     padding: 0;
