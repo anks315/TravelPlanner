@@ -1,3 +1,4 @@
+
 var placeFrom = "EMPTY"
 var placeTo = "EMPTY"
 var IsFromChange = true
@@ -362,7 +363,7 @@ function getUrlVars() {
 					  busList=[]
 				  } else {
 					  busList = data.bus
-				  } setSummary(busList,"bus","price")
+				  } 
 					if(busList.length!=0){
 					  for(var t=0;t<busList.length;t++){
 						  busList[t]["full"][0]["route"]=fromStation+",bus,"+toStation
@@ -372,6 +373,7 @@ function getUrlVars() {
 					
 						busFilters();
 					}
+					setSummary(busList,"bus","price")
 					busRetrieved=1
 				  if(	$( "#busDataHead" ).hasClass("active")||($( "#allDataHead" ).hasClass("active")&& flightRetrieved==1 && trainRetrieved==1 && busRetrieved==1)){
 										$("#loading").hide();

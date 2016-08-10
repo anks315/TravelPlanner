@@ -7,8 +7,12 @@ function showFlightJourneyList(transportList){
 	}
 	if($( "#priceSort" ).hasClass("active")){
 		SortListByPrice(transportList);
-	} else {
+	} else if ($( "#durationSort" ).hasClass("active")){
 		SortListByDuration(transportList);
+	}else if ($( "#arrivalSort" ).hasClass("active")){
+		SortListByArrival(transportList);
+	}else if ($( "#departureSort" ).hasClass("active")){
+		SortListByDeparture(transportList);
 	}
 	
 	if($( "#priceSort" ).hasClass("active")){

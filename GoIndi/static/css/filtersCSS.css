@@ -5,6 +5,9 @@
    height:150px;   /* Height of the footer */
    background:#262626;
 }
+.removedDeco {
+    text-decoration: none !important;
+}
 .navbar-brand {
   padding: 0px;
 }
@@ -131,6 +134,12 @@ hr { margin: 0.1em auto;
   box-shadow: 0 10px 10px -10px #8c8c8c inset;
   }
   
+.labelMeta{
+	font-size: 70%;
+	font-weight:bold;
+	color:grey
+}
+  
 .journeyPriceSumLabel{
 	font-size: 70%;
 	font-weight:bold;
@@ -141,8 +150,14 @@ hr { margin: 0.1em auto;
 	zoom: 1;
 }
 
-.summaryBar{
-	background-color:#f8b362;
+.summaryBarbus{
+	background-color:#C5786D;
+}
+.summaryBartrain{
+	background-color:#90a98b;
+}
+.summaryBarflight{
+	background-color:#deb887;
 }
 .summaryNA{
 	background-color:grey;
