@@ -5,8 +5,12 @@ function showBusJourneyList(busList){
 	}
 	if($( "#priceSort" ).hasClass("active")){
 		SortListByPrice(busList);
-	} else {
+	} else if ($( "#durationSort" ).hasClass("active")){
 		SortListByDuration(busList);
+	}else if ($( "#arrivalSort" ).hasClass("active")){
+		SortListByArrival(busList);
+	}else if ($( "#departureSort" ).hasClass("active")){
+		SortListByDeparture(busList);
 	}
 	
 	var output = "<div id='busBox' hidden><table width='100%'><tr>";

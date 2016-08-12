@@ -36,3 +36,57 @@ function SortListByDuration(list){
 				}
 				list.sort(SortByDuration);
 }
+function SortListByArrival(list){
+			if(list.length==0){
+				return
+			}
+				function SortByArrival(a,b){
+					var aArrival = a.full[0].arrival
+					var bArrival = b.full[0].arrival
+					var aHr = aArrival.split(":")[0];
+					var aMin = aArrival.split(":")[1];
+					var bHr = bArrival.split(":")[0];
+					var bMin = bArrival.split(":")[1];
+					result = 0
+					if((aHr*1)<(bHr*1)){
+						result = -1
+					}else if((aHr*1)>(bHr*1)){
+						result = 1
+					}else{
+						if((aMin*1)<(bMin*1)){
+						result = -1
+						}else if((aMin*1)>(bMin*1)){
+							result = 1
+						}
+					}
+					return result;
+				}
+				list.sort(SortByArrival);
+}
+function SortListByDeparture(list){
+			if(list.length==0){
+				return
+			}
+				function SortByDeparture(a,b){
+					var aDeparture = a.full[0].departure
+					var bDeparture = b.full[0].departure
+					var aHr = aDeparture.split(":")[0];
+					var aMin = aDeparture.split(":")[1];
+					var bHr = bDeparture.split(":")[0];
+					var bMin = bDeparture.split(":")[1];
+					result = 0
+					if((aHr*1)<(bHr*1)){
+						result = -1
+					}else if((aHr*1)>(bHr*1)){
+						result = 1
+					}else{
+						if((aMin*1)<(bMin*1)){
+						result = -1
+						}else if((aMin*1)>(bMin*1)){
+							result = 1
+						}
+					}
+					return result;
+				}
+				list.sort(SortByDeparture);
+}

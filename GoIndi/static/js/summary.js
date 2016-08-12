@@ -47,11 +47,33 @@ function setSummary(list,mode,basedOn){
 		busDurSum = list[0]
 		currentDur = busDurSum
 	}
+	SortListByDeparture(list);
+	if(mode=="flight"){
+		flightDepSum = list[0]
+		currentDep = flightDepSum
+	}else if(mode=="train") {
+		trainDepSum = list[0]
+		currentDep = trainDepSum
+	}else{
+		busDepSum = list[0]
+		currentDep = busDepSum
+	}
+	SortListByArrival(list);
+	if(mode=="flight"){
+		flightArrSum = list[0]
+		currentArr = flightArrSum
+	}else if(mode=="train") {
+		trainArrSum = list[0]
+		currentArr = trainArrSum
+	}else{
+		busArrSum = list[0]
+		currentArr = busArrSum
+	}
 	setSummaryDiv(currentPrice,mode);
 	
 }
 function setNotApplicable(mode,basedOn){
-	var output = "<table width='100%' style ='text-align:center' ><tr><td width='100%' style ='padding: 0px;' class = 'summaryNA'>&nbsp;<font color = 'white'>Not Available</font></td></tr></table><br/>";
+	var output = "<table width='100%' style ='text-align:center' class='shadowTable'><tr><td width='100%' style ='padding: 0px;' class = 'summaryNA'>&nbsp;<font color = 'white'>Not Available</font></td></tr></table><br/>";
 	document.getElementById(""+mode+"SumWid").innerHTML = output
 }
 function resetSummary(mode,basedOn){
@@ -64,7 +86,7 @@ function resetSummary(mode,basedOn){
 		}else{
 			setSummaryDiv(busDurSum,mode);
 		}
-	} else {
+	} else if(basedOn=="price"){
 		if(mode=="flight"){
 			setSummaryDiv(flightPriceSum,mode);
 		}else if(mode=="train") {
@@ -72,13 +94,29 @@ function resetSummary(mode,basedOn){
 		}else{
 			setSummaryDiv(busPriceSum,mode);
 		}
+	}else if(basedOn=="arrival"){
+		if(mode=="flight"){
+			setSummaryDiv(flightArrSum,mode);
+		}else if(mode=="train") {
+			setSummaryDiv(trainArrSum,mode);
+		}else{
+			setSummaryDiv(busArrSum,mode);
+		}
+	}else if(basedOn=="departure"){
+		if(mode=="flight"){
+			setSummaryDiv(flightDepSum,mode);
+		}else if(mode=="train") {
+			setSummaryDiv(trainDepSum,mode);
+		}else{
+			setSummaryDiv(busDepSum,mode);
+		}
 	}
 	
 }
 
 function setSummaryDiv(current,mode){
 	if(mode=="bus"){
-		var route = current.full[0].source + "," + current.full[0].mode + "," + current.full[0].destination
+		var route = busRouteList[0]
 		var price = current.full[0].price.split(",")[0]
 	} else {
 		var route = current.full[0].route
@@ -93,19 +131,25 @@ function setSummaryDiv(current,mode){
 	} else {
 		var percent = 1
 	}
-	var internals = "<td width='"+percent+"%' style ='padding: 0px;text-align:left' class = 'summaryBar'>&nbsp;<font color = 'white' style='white-space: nowrap;'>"+routeArr[0]+"</font></td>"
+	var internals = "<td width='"+percent+"%' style ='padding: 0px;text-align:left' class = 'summaryBar"+mode+"'>&nbsp;<font color = 'white' style='white-space: nowrap;'>"+routeArr[0]+"</font></td>"
 	for (var j = 1 ; j < routeLen; j++){
 		
-		internals = internals + "<td style ='padding: 0px' class = 'summaryBar'><img  src='/static/images/"+routeArr[j]+"3.png'></td>"
+		internals = internals + "<td style ='padding: 0px' class = 'summaryBar"+mode+"'><img  src='/static/images/"+routeArr[j]+"3.png'></td>"
 		j++;
 		if(j!=routeLen-1){
-			internals = internals + "<td style ='padding: 0px' class = 'summaryBar'><font color = 'white' style='white-space: nowrap;'>"+routeArr[j]+"</font</td>"
+			internals = internals + "<td style ='padding: 0px' class = 'summaryBar"+mode+"'><font color = 'white' style='white-space: nowrap;'>"+routeArr[j]+"</font</td>"
 		} else {
-			internals = internals + "<td width='"+percent+"%' style ='padding: 0px;text-align:right' class = 'summaryBar'><font color = 'white' style='white-space: nowrap;'>"+routeArr[j]+"</font>&nbsp;</td>"
+			internals = internals + "<td width='"+percent+"%' style ='padding: 0px;text-align:right' class = 'summaryBar"+mode+"'><font color = 'white' style='white-space: nowrap;'>"+routeArr[j]+"</font>&nbsp;</td>"
 		}
 	}
-	var output = "<table width='100%' style ='text-align:center' ><tr>"+internals+"</tr></table><br/>"
+	route = route.replace(/,/g , "");
+	route = route.replace(/ /g , "");
+	var output = "<a href='#' class= 'summaryClick removedDeco' route='"+route+"'><table width='100%' style ='text-align:center' class='shadowTable' ><tr>"+internals+"</tr></table><br/></a>"
 	document.getElementById(""+mode+"SumWid").innerHTML = output
 	document.getElementById(""+mode+"SumPrice").innerHTML = "<b><font color='green'>&#8377 "+price+"/-</font></b>"
 	document.getElementById(""+mode+"SumDur").innerHTML = "<b><font color='grey'>"+current.full[0].duration+" Hrs</font></b>"
+	$(".summaryClick").click(function() {
+			var route = $(this).attr('route')
+			$("#"+route).trigger('click');
+	});
 }

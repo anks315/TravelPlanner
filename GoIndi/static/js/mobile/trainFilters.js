@@ -37,7 +37,7 @@ function trainFilters(){
 				routeContent=routeContent+"<div class='routeLabel sameLine'>"+routeArr[j]+"</div>"
 			}
 			
-			routeContent="<table width=100%><tr><td><div class='divContainer'>"+routeContent+"</div><table width='100%'><tr><td style='text-align:left'><span class='label label-success'>&#8377 "+minPrice+"/-</span></td><td style='text-align:right'><span class='label label-default'>"+minDuration+" Hrs</span></td></tr></table></td><td width='5%'>&nbsp;<span class='glyphicon glyphicon-play'></span></td></tr></table>"
+			routeContent="<table width=100%><tr><td><div class='divContainer'>"+routeContent+"</div><table width='100%'><tr><td style='text-align:left'><span class='label label-success'>min price - &#8377 "+minPrice+"/-</span></td><td style='text-align:right'><span class='label label-default'>min dur - "+minDuration+" Hrs</span></td></tr></table></td><td width='5%'>&nbsp;<span class='glyphicon glyphicon-play'></span></td></tr></table>"
 			
 			
 			var routeOption="<a href='#pagetwo' data-transition='slide' id='"+route+"' route='"+trainRouteList[k]+"' class='list-group-item list-group-item-success trainRouteMenu'   data-parent='#RouteMenu'>"+routeContent+"</a>"
