@@ -85,7 +85,7 @@ background-size:100%;
      {% load url from future %}
         {% if user and not user.is_anonymous %}
        <li><a>Hello {{ user.get_full_name|default:user.username }}!</a></li>
-       <li><a href="{% url 'auth:logout' %}?next={{ request.path }}"class="loginbutton">Logout</a></li>{% else %}
+       <li><a href="{% url 'auth:logout' %}?next={{ request.path }}"class="loginbutton" data-toggle='modal' data-target="#loginWindow">Logout</a></li>{% else %}
 	<li><button type='button' class="loginbutton" data-toggle='modal' data-target="#loginWindow">Login</button></li>
        {% endif %}
       </ul></div>
