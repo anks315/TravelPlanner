@@ -3,7 +3,7 @@
 function showSummary(){
 	
 	
-	 var output = "<div class='panel panel-default'><div class='panel-body'><br/><table width = '100%' style='text-align:center;'><tr><td valign='top' width = '5%'><div id = busSum></div></td><td width = '70%'><div id = busSumWid ></div></td><td valign='top'><div id = busSumPrice></div></td><td valign='top'><div id = busSumDur></div></td></tr><tr><td width = '5%' valign='top'><div id = trainSum></div></td><td width = '70%'><div id = trainSumWid ></div></td><td valign='top'><div id = trainSumPrice></div></td><td valign='top'><div id = trainSumDur></div></td></tr><tr><td width = '5%' valign='top'><div id = flightSum  ></div></td><td width = '70%'><div id = flightSumWid></div></td><td valign='top'><div id = flightSumPrice></div></td><td valign='top'><div id = flightSumDur></div></td></tr></table></div></div>";
+	 var output = "<div class='panel panel-default'><div class='panel-body'><table width = '100%' style='text-align:center;'><tr style='color:#056273;'><td width = '5%'></td><td width = '70%' style='text-align:left;'><h4><i><div id='sumHeading' class='sameLine'>Cheapest</div>&nbsp;Route Summary</h4></i></td><td><h4><i>Price</h4></i></td><td><h4><i>Duration</h4></i></td></tr><tr><td valign='top' width = '5%'><div id = busSum></div></td><td width = '70%'><div id = busSumWid ></div></td><td valign='top'><div id = busSumPrice></div></td><td valign='top'><div id = busSumDur></div></td></tr><tr><td width = '5%' valign='top'><div id = trainSum></div></td><td width = '70%'><div id = trainSumWid ></div></td><td valign='top'><div id = trainSumPrice></div></td><td valign='top'><div id = trainSumDur></div></td></tr><tr><td width = '5%' valign='top'><div id = flightSum  ></div></td><td width = '70%'><div id = flightSumWid></div></td><td valign='top'><div id = flightSumPrice></div></td><td valign='top'><div id = flightSumDur></div></td></tr></table></div></div>";
 	 
 	 document.getElementById("summary").innerHTML = output;
 	 var progressBarWarning = "<div class='progress'><div class='progress-bar progress-bar-warning progress-bar-striped active' role='progressbar' aria-valuenow='45' aria-valuemin='0' aria-valuemax='100' style='width: 100%'><span class='sr-only'>100% Complete</span></div></div>"
@@ -79,6 +79,7 @@ function setNotApplicable(mode,basedOn){
 function resetSummary(mode,basedOn){
 
 	if(basedOn=="duration"){
+		document.getElementById("sumHeading").innerHTML = "Fastest"
 		if(mode=="flight"){
 			setSummaryDiv(flightDurSum,mode);
 		}else if(mode=="train") {
@@ -87,6 +88,7 @@ function resetSummary(mode,basedOn){
 			setSummaryDiv(busDurSum,mode);
 		}
 	} else if(basedOn=="price"){
+		document.getElementById("sumHeading").innerHTML = "Cheapest"
 		if(mode=="flight"){
 			setSummaryDiv(flightPriceSum,mode);
 		}else if(mode=="train") {
@@ -95,6 +97,7 @@ function resetSummary(mode,basedOn){
 			setSummaryDiv(busPriceSum,mode);
 		}
 	}else if(basedOn=="arrival"){
+		document.getElementById("sumHeading").innerHTML = "Earliest Arrival"
 		if(mode=="flight"){
 			setSummaryDiv(flightArrSum,mode);
 		}else if(mode=="train") {
@@ -103,6 +106,7 @@ function resetSummary(mode,basedOn){
 			setSummaryDiv(busArrSum,mode);
 		}
 	}else if(basedOn=="departure"){
+		document.getElementById("sumHeading").innerHTML = "Earliest Departure"
 		if(mode=="flight"){
 			setSummaryDiv(flightDepSum,mode);
 		}else if(mode=="train") {

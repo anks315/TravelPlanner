@@ -48,32 +48,15 @@ function busFilters(){
 					createbusFilter(visibleList)
 			});
 
-	//<br/>"+busTypeFilter+"<br/>
+	filterbusTypeList=new Object()
 	
-
-	
-	
-	/*for (i = 0; i < busFilterList.length; i++) {
-			var busType = busFilterList[i].full[0].busType;
-			if(busType in filterbusTypeList){
-			}else{
-				filterbusTypeList[busType] = true;
-			}
-	}
-	$('#busTypeFilter').on('change', 'input[type="checkbox"]', function () {
-				filterbusTypeList=new Object();
-                $('#busTypeFilter').find('input:checked').each(function () {
-					filterbusTypeList[$(this).attr('rel')]="true"
-                });
-				busFilter();
-            });*/
 						
 }
 function createbusFilter(busFilterList){
 	var route=busFilterList[0]["full"][0]["route"]
 			route = route.replace(/,/g , "");
 			route = route.replace(/ /g , "");
-	var filtersForOption = "<table width='100%'><tr><td width='5%'></td><td><p><label for='busAmount' class='filterLabel'>Price range:</label><div id='busAmount' class='filterValue'></div></p><div id='busPriceRange'></div><br/><p><label for='busTime' class='filterLabel'>Travel time range:</label><div id='busTime' class='filterValue'></div></p><div id='busDurationRange'></div><br/><p><label for='busDeparture' class='filterLabel'>Departure time range:</label><div id='busDeparture' class='filterValue'></div></p><div id='busDepartureTimeRange'></div><br/><p><label for='busArrival' class='filterLabel'>Arrival time range:</label><div id='busArrival' class='filterValue'></div></p><div id='busArrivalTimeRange'></div><br/></td><td width='5%'></td></tr></table>"
+	var filtersForOption = "<table width='100%'><tr><td width='5%'></td><td><p><label for='busAmount' class='filterLabel'>Price range:</label><div id='busAmount' class='filterValue'></div></p><div id='busPriceRange'></div><br/><p><label for='busTime' class='filterLabel'>Travel time range:</label><div id='busTime' class='filterValue'></div></p><div id='busDurationRange'></div><br/><p><label for='busDeparture' class='filterLabel'>Departure time range:</label><div id='busDeparture' class='filterValue'></div></p><div id='busDepartureTimeRange'></div><br/><p><label for='busArrival' class='filterLabel'>Arrival time range:</label><div id='busArrival' class='filterValue'></div></p><div id='busArrivalTimeRange'></div><br/></td><td width='5%'></td></tr><tr><td width='5%'></td><td colspan=2 style='color:grey;'><div id='busTypeFilter'><label for='busAmount' class='filterLabel'>Bus Type:</label><br/><input type='checkbox' data-role='none' value='A/C,Seater' checked>&nbsp;A/C-Seater<br/><input type='checkbox' data-role='none' value='A/C,Sleeper' checked>&nbsp;A/C-Sleeper<br/><input type='checkbox' data-role='none' value='Non,Seater' checked>&nbsp;Non A/C-Seater<br/><input type='checkbox' data-role='none' value='Non,Sleeper' checked>&nbsp;Non A/C-Sleeper</div></td></tr></table>"
 	
 	document.getElementById("selectedFilter").innerHTML = filtersForOption
 		
@@ -173,6 +156,13 @@ function createbusFilter(busFilterList){
 		busFilter();
       }
     });
+	$('#busTypeFilter').on('change', 'input[type="checkbox"]', function () {
+				filterbusTypeList=new Object();
+                $('#busTypeFilter').find('input:checkbox:not(:checked)').each(function () {
+					filterbusTypeList[$(this).attr('value')]="true"
+                });
+				busFilter();
+            })
 	filterbusMinArrival=0;
 	filterbusMaxArrival=1440;
     document.getElementById("busArrival").innerHTML = "12:00 AM - 12:00 PM";
@@ -191,8 +181,26 @@ function busFilter(){
 		departureArr = visibleList[i].full[0].departure.split(":");
 		departureVal = departureArr[0]*60 + 1*departureArr[1]
 		if((visibleList[i].full[0].price.split(",")[0] <=filterbusPrice)&&(durationVal <= filterbusDuration)&&(arrivalVal <= filterbusMaxArrival)&&(arrivalVal >= filterbusMinArrival)&&(departureVal <= filterbusMaxDeparture)&&(departureVal >= filterbusMinDeparture)){
-			newVisibleList[j]=visibleList[i];
-			j++;
+			 var skip=false
+			for(key in filterbusTypeList){
+				if(key == 'A/C,Sleeper' && busType.indexOf('A/C') != -1 && (busType.indexOf('Sleeper') != -1 ||
+				busType.indexOf('sleeper') != -1) && busType.indexOf('Non') == -1){
+					skip=true
+				} else if(key == 'A/C,Seater' && busType.indexOf('A/C') != -1 && (busType.indexOf('Seater') != -1 ||
+				busType.indexOf('seater') != -1 )&& busType.indexOf('Non') == -1){
+					skip=true
+				} else if(key == 'Non,Sleeper' && busType.indexOf('A/C') != -1 && (busType.indexOf('Sleeper') != -1 ||
+				busType.indexOf('sleeper') != -1) && busType.indexOf('Non') != -1){
+					skip=true
+				} else if(key == 'Non,Sleater' && busType.indexOf('A/C') != -1 && (busType.indexOf('Seater') != -1 ||
+				busType.indexOf('seater') != -1) && busType.indexOf('Non') == -1){
+					skip=true
+				}
+			}
+			if(skip == false){
+				newVisibleList[j]=visibleList[i];
+				j++;
+			}
 		}
 		}
 		showBusJourneyList(newVisibleList);
