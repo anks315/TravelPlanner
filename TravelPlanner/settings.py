@@ -11,20 +11,34 @@ ADMINS = (
 MANAGERS = ADMINS
 
 
-
-DATABASES = {
+if 'RDS_DB_NAME' in os.environ:
+    DATABASES = {
         'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
-    }
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
     }
 
 
+else:
+    DATABASES = {
+
+
+
+        'default': {
+            'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'TravelPlanner',                      # Or path to database file if using sqlite3.
+            # The following settings are not used with sqlite3:
+            'USER': 'travelplanner',
+            'PASSWORD': 'ankurjain',
+            'HOST': 'localhost',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+            'PORT': '3306',                      # Set to empty string for default.
+        }
+    }
 
 NEO4J_DATABASES = {
     'default' : {
@@ -40,8 +54,8 @@ SOCIAL_AUTH_FACEBOOK_KEY = '322927088045281'
 
 SOCIAL_AUTH_FACEBOOK_SECRET = '912123f2365af427983ff9afeab36e15'
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '142762703979-ccsi6j6gnbne7vclbasc4c7aldhdqddt.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'encSr0-71YYKt8dZ8jLwxA-i'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '142762703979-fqbfg1l1eqns9d5qgp3itvkok56j11o1.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'eqN5wgb_9AFToh4AjuLK58bw'
 
 SOCIAL_AUTH_TWITTER_KEY= 'XfaCFzUu5YfnVGkdpRKZFgg0f'
 SOCIAL_AUTH_TWITTER_SECRET='WVk70yUwPN69AuCSl8IL0rmXYlhQzE08YxpZwi9LJFxe9cSBGj'
