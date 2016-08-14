@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from django.contrib import admin
+admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
@@ -30,4 +30,9 @@ urlpatterns = patterns('',
     url(r'bus$', 'GoIndi.views.busapi'),
     url(r'test$', 'GoIndi.views.test'),
     url(r'init$', 'GoIndi.views.traininit'),
+    url(r'initcity$', 'GoIndi.views.cityinit'),
+    url(r'^admin/', include(admin.site.urls)),
+    url('', include('social.apps.django_app.urls', namespace='social')),
+    url('', include('django.contrib.auth.urls', namespace='auth')),
+
 )

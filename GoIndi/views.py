@@ -5,6 +5,7 @@ from django.template import RequestContext
 import json
 import flightapi, flightdirectandnearairportapi, flightfrombigairportapi, flightnearbigapi, flightbignearapi, flightutil, busapi, trainapineo4j, trainavailabilityapi
 import TravelPlanner.startuputil as startup
+import trie
 
 # bus, train, flight controller to get results
 traincontrollerneo = trainapineo4j.TrainController()
@@ -22,7 +23,10 @@ def home(request):
      #models.isCityExist("ADRA")
      #getApiResults()
      #print(distanceutil.findnearestbigairport(32.7218,74.8577))
-     return render_to_response('index.html',{},context_instance = RequestContext(request))
+     context = RequestContext(request,
+                           {'request': request,
+                            'user': request.user})
+     return render_to_response('planning.html',{},context_instance = context)
 
 
 def main(request):
@@ -46,8 +50,15 @@ def traininit(request):
      startup.loadtraindata()
      return render_to_response('index.html',{},context_instance = RequestContext(request))
 
+def cityinit(request):
+    trie.initialize()
+    return render_to_response('index.html',{},context_instance = RequestContext(request))
 
 def test(request):
+     prefix = request.GET['prefix']
+     listtoreturn= trie.TRIE.autocomplete(str(prefix).title())
+     jsoncity = {'cities':list(listtoreturn)}
+     return HttpResponse(json.dumps(jsoncity), content_type='application/json')
 
      return render_to_response('index.html',{},context_instance = RequestContext(request))
 

@@ -1,4 +1,4 @@
-Django==1.4.22
+Django==1.4.5
 argparse==1.2.1
 decorator==4.0.9
 distribute==0.6.24
@@ -13,3 +13,5 @@ six==1.10.0
 skyscanner==1.1.0
 wsgiref==0.1.2
 django-cors-headers==1.1.0
+python-social-auth==0.2.20
+MySQL-python==1.2.5

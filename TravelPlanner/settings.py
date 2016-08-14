@@ -10,17 +10,35 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+
+if 'RDS_DB_NAME' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
     }
-}
+
+
+else:
+    DATABASES = {
+
+
+
+        'default': {
+            'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'TravelPlanner',                      # Or path to database file if using sqlite3.
+            # The following settings are not used with sqlite3:
+            'USER': 'travelplanner',
+            'PASSWORD': 'ankurjain',
+            'HOST': 'localhost',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+            'PORT': '3306',                      # Set to empty string for default.
+        }
+    }
 
 NEO4J_DATABASES = {
     'default' : {
@@ -29,6 +47,18 @@ NEO4J_DATABASES = {
         'ENDPOINT':'/db/data'
     }
 }
+
+LOGIN_REDIRECT_URL = '/'
+
+SOCIAL_AUTH_FACEBOOK_KEY = '322927088045281'
+
+SOCIAL_AUTH_FACEBOOK_SECRET = '912123f2365af427983ff9afeab36e15'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '142762703979-fqbfg1l1eqns9d5qgp3itvkok56j11o1.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'eqN5wgb_9AFToh4AjuLK58bw'
+
+SOCIAL_AUTH_TWITTER_KEY= 'XfaCFzUu5YfnVGkdpRKZFgg0f'
+SOCIAL_AUTH_TWITTER_SECRET='WVk70yUwPN69AuCSl8IL0rmXYlhQzE08YxpZwi9LJFxe9cSBGj'
 
 DATABASE_ROUTERS = ['neo4django.utils.Neo4djangoIntegrationRouter']
 # Hosts/domain names that are valid for this site; required if DEBUG is False
@@ -117,6 +147,25 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+   'django.contrib.auth.context_processors.auth',
+   'django.core.context_processors.debug',
+   'django.core.context_processors.i18n',
+   'django.core.context_processors.media',
+   'django.core.context_processors.static',
+   'django.core.context_processors.tz',
+   'django.contrib.messages.context_processors.messages',
+   'social.apps.django_app.context_processors.backends',
+   'social.apps.django_app.context_processors.login_redirect',
+)
+
+AUTHENTICATION_BACKENDS = (
+   'social.backends.facebook.FacebookOAuth2',
+   'social.backends.google.GoogleOAuth2',
+   'social.backends.twitter.TwitterOAuth',
+   'django.contrib.auth.backends.ModelBackend',
+)
+
 CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'TravelPlanner.urls'
@@ -130,13 +179,16 @@ TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), '..', 'templates').repl
 
 INSTALLED_APPS = (
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'GoIndi',
-    'corsheaders'		
+    'corsheaders',
+    'social.apps.django_app.default',
+
    # Uncomment the next line to enable the admin:
     # Uncomment the next line to enable admin documentation:
 )

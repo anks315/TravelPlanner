@@ -1,0 +1,212 @@
+#mainFooter {
+   position:absolute;
+   bottom:0;
+   width:100%;
+   height:150px;   /* Height of the footer */
+   background:#262626;
+}
+.navbar-brand {
+  padding: 0px;
+}
+.navbar-brand>img {
+  height: 100%;
+  padding:0px;
+  padding-top:10px;
+  padding-left:25px;
+  padding-right:10px;
+  width: auto;
+}
+.shadowTable { box-shadow: 1px 1px 1px #999; }
+.filterValue { 
+	border:0; 
+	color:#f6931f; 
+	font-size:90%;
+}
+.availabilityFont { 
+	 
+	color:red;
+}
+.availabilityColor { 
+	 
+	font-size:100%;
+}
+
+.filterLabel { 
+	border:0; 
+	font-weight:bold;
+	color:grey; 
+}
+
+.carrierLabel { 
+	border:0; 
+	font-weight:bold;
+	color:#056273; 
+}
+.modal-header
+ {
+
+     background-color: #f9B668 !important;
+ }
+.checkboxLabel { 
+	border:0; 
+	color:gray; 
+	font-size:80%; 
+}
+
+.divisionFlightHover{
+	border-bottom-color:white !important;
+	background-color:#067084;
+	
+}
+.divisionFlightNotSelected{
+	background-color:#83c6d2;
+}
+.divisionFlightSelected{
+	background-color:#067084;
+}
+
+.divisionTrainHover{
+	border-bottom-color:white !important;
+	background-color:#067084;
+	
+}
+
+.divisionTrainNotSelected{
+	background-color:#83c6d2;
+}
+.divisionTrainSelected{
+	background-color:#067084;
+}
+.divisionOtherHover{
+	border-bottom-color:white !important;
+	background-color:#067084;
+	
+}
+.divisionOtherNotSelected{
+	background-color:#83c6d2;
+}
+.divisionOtherSelected{
+	background-color:#067084;
+}
+.divisionEnabled{
+}
+.nopadding {
+   padding: 2px !important;
+   margin: 0 !important;
+}
+.nopaddingatall {
+   padding: 0px !important;
+   margin: 0 !important;
+}
+.modal-wide .modal-dialog {
+  width: 90% !important; /* or whatever you wish */
+}
+.summaryBox {
+	background-color: WhiteSmoke; 
+}
+td a {
+    display:block;
+    width:100%;
+}
+.journeyPrice{
+	color: green;
+	font-size: 130%
+}
+
+.journeyDuration{
+	color: grey;
+	font-weight:bold;
+	font-size: 110%
+}
+.removedDeco {
+    text-decoration: none !important;
+}
+
+
+.journeyPriceLabel{
+	font-size: 90%;
+	font-weight:bold;
+}
+.routeLabel{
+	font-size: 100%;
+}
+hr { margin: 0.1em auto; 
+  height: 10px;
+  }
+  
+.journeyPriceSumLabel{
+	font-size: 70%;
+	font-weight:bold;
+	color:grey
+}
+.sameLine{
+	display: inline-block;
+	zoom: 1;
+}
+
+.summaryBar{
+	background-color:#f8b362;
+}
+.summaryNA{
+	background-color:grey;
+}
+.mainLabel{
+	font-weight:normal;
+	font-size: 90%;
+}
+.journeyLine{
+	border-left:7px solid #f6931f;
+	border-left-style:solid;
+}
+.agent{
+	font-weight:bold;
+	color:#056273; 
+}
+.bs-example{
+	font-family: sans-serif;
+	position: relative;
+	margin: 100px;
+}
+.typeahead, .tt-query, .tt-hint {
+	border: 2px solid #CCCCCC;
+	border-radius: 8px;
+	font-size: 24px;
+	height: 30px;
+	line-height: 30px;
+	outline: medium none;
+	padding: 8px 12px;
+	width: 396px;
+}
+.typeahead {
+	background-color: #FFFFFF;
+}
+.typeahead:focus {
+	border: 2px solid #0097CF;
+}
+.tt-query {
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+.tt-hint {
+	color: #999999;
+}
+.tt-dropdown-menu {
+	background-color: #FFFFFF;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-radius: 8px;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+	margin-top: 12px;
+	padding: 8px 0;
+	width: 422px;
+}
+.tt-suggestion {
+	font-size: 24px;
+	line-height: 24px;
+	padding: 3px 20px;
+}
+.tt-suggestion.tt-is-under-cursor {
+	background-color: #0097CF;
+	color: #FFFFFF;
+}
+.tt-suggestion p {
+	margin: 0;
+}

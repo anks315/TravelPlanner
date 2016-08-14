@@ -1,0 +1,209 @@
+
+
+body{
+	font-size:12px;
+}
+.ui-icon-filter {
+  background: url(/static/images/filter.png) 50% 50% no-repeat;
+  background-size: 32px 32px;
+  border-radius:0px!important;
+  -moz-border-radius:0px!important;
+  -webkit-border-radius:0px!important;
+  -ms-border-radius:0px!important;
+  -o-border-radius:0px!important;
+}
+.ui-bar-f {
+    background-color: white;
+}
+.ui-btn-c {
+	color:white;
+    background-color: #c6c6c6;
+}
+.ui-btn-d {
+	color:white;
+}
+
+table {
+	border : 0;
+    padding: 0;
+}
+.noPaddingContainer{
+ padding-left: 0px !important;
+ padding-top: 0px !important;
+ padding-right: 0px !important;	
+}
+.glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -ms-animation: spin .7s infinite linear;
+    -webkit-animation: spinw .7s infinite linear;
+    -moz-animation: spinm .7s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+  
+@-webkit-keyframes spinw {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@-moz-keyframes spinm {
+    from { -moz-transform: rotate(0deg);}
+    to { -moz-transform: rotate(360deg);}
+}
+.ui-datepicker-header {
+	background:#ffffff;
+}
+.tabLoading{
+	font-size : 180%;
+	color : grey;
+}
+.booking-details {
+	font-size : 160%;
+}
+.booking-details-price {
+	color : green;
+}
+.booking-details-duration {
+	color : blue;
+}
+.journeySpecifics{
+	font-size : 90%;
+	color:grey;
+	font-weight:normal;
+}
+.journeySpecificsArrow{
+	font-size : 200%;
+}
+.journeySpecificsDuration{
+	font-size : 105%;
+	color:#6499be;
+}
+
+.detailsCity{
+	font-size : 110%;
+	
+}
+.detailsStation{
+	font-size : 100%;
+	
+}
+.detailsTime{
+	font-size : 80%;
+}
+.detailsMode{
+	font-size : 110%;
+	color: blue;
+}
+.detailsLabel{
+	font-size : 90%;
+	color:grey;
+}
+.detailsPrice{
+	font-size : 105%;
+	color:green;
+}
+.detailsDuration{
+	font-size : 80%;
+	color:grey;
+}
+.slider-selection {
+	background-color: #f6931f;
+}
+.ui-slider-horizontal {
+
+  position: relative;
+  height: 6px;
+
+}
+
+.ui-slider-handle {
+
+  position: absolute;
+
+  margin: -3px 0 0 -9px;
+  z-index:3;
+  -webkit-border-radius: 100%;
+  border-radius: 100%;
+  background: #fff;
+
+  border: 0;
+
+  height: 18px;
+
+  width: 18px;
+
+  outline: none;
+}
+.btn-group > .btn:hover,
+.btn-group > .btn:focus,
+.btn-group > .btn.active {
+z-index: 1; 
+}
+#persons{
+	z-index: 1; 
+}
+.barView {
+	line-height : 40% ;
+}
+
+.btn-arrow-right,
+.btn-arrow-left {
+    position: relative;
+    padding-left: 18px;
+    padding-right: 18px;
+}
+.btn-arrow-right {
+}
+.btn-arrow-left {
+    padding-right: 36px;
+}
+.btn-arrow-right:after,
+.btn-arrow-left:after { /* make two squares (before and after), looking similar to the button */
+    content:"";
+    position: absolute;
+    top: 5px; /* move it down because of rounded corners */
+    width: 22px; /* same as height */
+    height: 22px; /* button_outer_height / sqrt(2) */
+    background: inherit; /* use parent background */
+    border: inherit; /* use parent border */
+    border-left-color: transparent; /* hide left border */
+    border-bottom-color: transparent; /* hide bottom border */
+    border-radius: 0px 4px 0px 0px; /* round arrow corner, the shorthand property doesn't accept "inherit" so it is set to 4px */
+    -webkit-border-radius: 0px 4px 0px 0px;
+    -moz-border-radius: 0px 4px 0px 0px;
+}
+.btn-arrow-right:after {
+    transform: rotate(45deg); /* rotate right arrow squares 45 deg to point right */
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+}
+.btn-arrow-left:after {
+    transform: rotate(225deg); /* rotate left arrow squares 225 deg to point left */
+    -webkit-transform: rotate(225deg);
+    -moz-transform: rotate(225deg);
+    -o-transform: rotate(225deg);
+    -ms-transform: rotate(225deg);
+}
+
+.btn-arrow-right:after,
+.btn-arrow-left:after { /* align the "after" square to the right */
+    right: -11px;
+}
+.btn-arrow-right:after,
+.btn-arrow-left:before { /* bring arrow pointers to front */
+    z-index: 1;
+}
+.btn-arrow-right:before,
+.btn-arrow-left:after { /* hide arrow tails background */
+    background-color: white;
+}
+
+.divContainer {
+  display: flex;
+  justify-content: space-between;
+}
