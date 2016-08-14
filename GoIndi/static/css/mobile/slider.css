@@ -19,7 +19,7 @@
 .ui-slider.ui-slider-horizontal .ui-slider-track {
   height: 5px !important;
   width: 100%;
-  margin-top: -5px;
+  margin-top: -2px;
   top: 50%;
   left: 0;
 }
@@ -30,7 +30,7 @@
 }
 .ui-slider.ui-slider-horizontal .ui-slider-handle {
   margin-left: -10px;
-  margin-top: -5px;
+  margin-top: -2px;
 }
 .ui-slider.ui-slider-horizontal .ui-slider-handle.triangle {
   border-width: 0 10px 10px 10px;
