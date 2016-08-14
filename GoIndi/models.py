@@ -10,7 +10,7 @@ import datetime, loggerUtil, time, calendar, copy, json, urllib
 citytoplacesyncmap = {"Badnera": "Amravati", "Amravati" : "Badnera", "Ankleshwar" :"Bharuch", "Basin Bridge" : "Chennai"}
 
 
-DATABASE_CONNECTION= GraphDatabase("http://ec2-54-254-171-20.ap-southeast-1.compute.amazonaws.com/", username="neo4j", password="ankurjain")
+DATABASE_CONNECTION= GraphDatabase("http://ec2-54-254-171-20.ap-southeast-1.compute.amazonaws.com:7474/", username="neo4j", password="ankurjain")
 #DATABASE_CONNECTION= GraphDatabase("http://localhost:7474/", username="neo4j", password="ankurjain")
 
 #DATABASE_CONNECTION = GraphDatabase("http://travelplanner.sb02.stations.graphenedb.com:24789/db/data/", username="TravelPlanner", password="qKmStJDRuLfqET4ZHpQu")
