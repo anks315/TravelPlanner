@@ -7,7 +7,7 @@ function showFlightJourneyList(transportList){
 	}
 	if($( "#priceSort" ).hasClass("active")){
 		SortListByPrice(transportList);
-	} else if ($( "#durationSort" ).hasClass("active")){
+	}else if ($( "#durationSort" ).hasClass("active")){
 		SortListByDuration(transportList);
 	}else if ($( "#arrivalSort" ).hasClass("active")){
 		SortListByArrival(transportList);

@@ -41,7 +41,7 @@ function busFilters(){
 	if (!($("#allDataHead").hasClass("active")||$("#busDataHead").hasClass("active"))){
 					 $(".busRouteMenu").hide()
 				}
-
+	
 			$("#filter"+route).on('shown.bs.collapse', function () {
 					$("#summaryBox").hide()
 					document.getElementById("resultsWid").innerHTML = loading;
@@ -63,31 +63,31 @@ function busFilters(){
                 });
 				busFilter();
             })
-
+						
 }
 function createbusFilter(busFilterList){
-
+		
 	busLeastPrice = busFilterList[0].full[0].price.split(",")[0];
 	busLeastDuration = busFilterList[0].full[0].duration;
 	var leastDurArr = busLeastDuration.split(":");
 	busLeastDuration = leastDurArr[1]*1+leastDurArr[0]*60;
 	maxPrice = busLeastPrice;
 	var maxDuration = busLeastDuration;
-	for (i = 1; i < busFilterList.length; i++) {
+	for (i = 1; i < busFilterList.length; i++) { 
 		var PriceList = busFilterList[i].full[0].price.split(",");
 		var firstPrice = PriceList[0];
 		var lastPrice = PriceList[PriceList.length-2];
 		var duration = busFilterList[i].full[0].duration;
 		var durArr = duration.split(":");
 		duration = durArr[1]*1+durArr[0]*60;
-
+		
 		if((firstPrice*1) < (busLeastPrice*1)){
 			busLeastPrice = firstPrice;
 		}
 		if((lastPrice*1) > (maxPrice*1)){
 			maxPrice = lastPrice;
 		}
-
+		
 		if((duration*1) < (busLeastDuration*1)){
 			busLeastDuration = duration;
 		}
@@ -103,7 +103,7 @@ function createbusFilter(busFilterList){
       max: priceOffset,
       slide: function( event, ui ) {
         document.getElementById("busAmount").innerHTML = "&#8377; " + busLeastPrice + " - &#8377; " + (busLeastPrice*1+ui.value*1);
-
+		
       },
 	  change: function( event, ui ) {
         filterbusPrice=busLeastPrice*1+ui.value*1;
@@ -113,7 +113,7 @@ function createbusFilter(busFilterList){
 	filterbusPrice=maxPrice;
     document.getElementById("busAmount").innerHTML = "&#8377; " + busLeastPrice +
       " - &#8377; " + maxPrice ;
-
+	  
 	var durationOffset = maxDuration-busLeastDuration;
 	$( "#busDurationRange" ).slider({
       range: "min",
@@ -130,7 +130,7 @@ function createbusFilter(busFilterList){
     });
 	filterbusDuration=maxDuration
     document.getElementById("busTime").innerHTML = ((busLeastDuration-(busLeastDuration%60))/60)+":"+(busLeastDuration%60)+" hrs - " + ((maxDuration-(maxDuration%60))/60) + ":" + minutes((maxDuration%60)/100) + " hrs";
-
+	
 	$( "#busDepartureTimeRange" ).slider({
       range: true,
       values: [0,1440],
@@ -148,7 +148,7 @@ function createbusFilter(busFilterList){
 	filterbusMinDeparture=0;
 	filterbusMaxDeparture=1440;
     document.getElementById("busDeparture").innerHTML = "12:00 AM - 12:00 PM";
-
+	
 	$( "#busArrivalTimeRange" ).slider({
       range: true,
       values: [0,1440],
@@ -172,7 +172,7 @@ function createbusFilter(busFilterList){
 function busFilter(){
 	var j=0;
 	 newVisibleList = new Array();
-		for (i = 0; i < visibleList.length; i++) {
+		for (i = 0; i < visibleList.length; i++) { 
 		busType = visibleList[i].full[0].busType;
 		durationArr = visibleList[i].full[0].duration.split(":");
 		durationVal = durationArr[0]*60 + 1*durationArr[1];
