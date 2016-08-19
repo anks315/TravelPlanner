@@ -26,7 +26,7 @@ def home(request):
      context = RequestContext(request,
                            {'request': request,
                             'user': request.user})
-     return render_to_response('planning.html',{},context_instance = context)
+     return render_to_response('index.html',{},context_instance = context)
 
 
 def main(request):
