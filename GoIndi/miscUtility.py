@@ -1,5 +1,5 @@
 
-def limitResults(results, type, limit=20):
+def limitResults(results, type, limit=40):
 
     """
     To limit no. of result in a list

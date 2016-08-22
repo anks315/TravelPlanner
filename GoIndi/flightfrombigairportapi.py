@@ -54,7 +54,7 @@ class FlightFromBigAirportController:
 
             directflightfuture = executor.submit(flightSkyScanner.getApiResults, sourcebig, destinationbig, journeydate, "flightbig", flightclass, numberofadults)
             directflight = directflightfuture.result()
-            directflight = miscUtility.limitResults(directflight, "flight", limit=10)
+            directflight = miscUtility.limitResults(directflight, "flight", limit=20)
 
             if len(directflight["flight"]) == 0:
                 logger.warning("No flight available between sourcenear [%s] and destinationnear [%s] on [%s]", sourcenear, destinationnear, journeydate)
@@ -64,7 +64,7 @@ class FlightFromBigAirportController:
                 othermodessminit = othermodesinitfuture.result()
                 othermodessmend = othermodesendfuture.result()
                 directflightnextday = directflightnextdayfuture.result()
-                directflightnextday = miscUtility.limitResults(directflightnextday, "flight", limit=10)
+                directflightnextday = miscUtility.limitResults(directflightnextday, "flight", limit=20)
                 directflight['flight'].extend(directflightnextday['flight'])
                 directflight = flightutil.getmixandmatchresult(othermodessminit, othermodessmend, copy.deepcopy(directflight), logger)
             elif source != sourcebig:

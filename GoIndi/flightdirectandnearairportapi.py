@@ -54,13 +54,13 @@ class FlightDirectAndNearAirportController:
                 othermodessminit = othermodesinitfuture.result()
                 othermodessmend = othermodesendfuture.result()
                 directflightnextday = directflightnextdayfuture.result()
-                directflightnextday = miscUtility.limitResults(directflightnextday, "flight", limit=10)
+                directflightnextday = miscUtility.limitResults(directflightnextday, "flight", limit=20)
                 directflight['flight'].extend(directflightnextday['flight'])
                 directflight = flightutil.getmixandmatchresult(othermodessminit, othermodessmend, copy.deepcopy(directflight), logger)
             elif source != sourcenear:
                 othermodessminit = othermodesinitfuture.result()
                 directflightnextday = directflightnextdayfuture.result()
-                directflightnextday = miscUtility.limitResults(directflightnextday, "flight", limit=10)
+                directflightnextday = miscUtility.limitResults(directflightnextday, "flight", limit=20)
                 directflight['flight'].extend(directflightnextday['flight'])
                 directflight = flightutil.getmixandmatchendresult(othermodessminit, copy.deepcopy(directflight), logger)
             elif destination != destinationnear:
