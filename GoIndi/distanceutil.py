@@ -1569,7 +1569,7 @@ airportlist = [
     },
     {
         'City': 'Zero',
-        'Kind': 'Small',
+        'Kind': 'Medium',
         'Name': None,
         'RailwayStation': 'Dibrugarh',
         'IATA': 'ZER',
@@ -2925,7 +2925,7 @@ airportlist = [
     },
     {
         'City': 'Shillong',
-        'Kind': 'Small',
+        'Kind': 'Medium',
         'Name': None,
         'RailwayStation': 'Guwahati',
         'IATA': 'SHL',
