@@ -34,7 +34,7 @@ class FlightDirectAndNearAirportController:
             #     return {"flight": []}
 
             logger.debug("Fetching direct flights possible between sourcenear [%s] and destinationnear [%s] on [%s]", sourcenear, destinationnear, journeydate)
-            limit = 10
+            limit = 40
             if source != sourcenear:
                 othermodesinitfuture = executor.submit(flightutil.getothermodes, sourcecity, sourcenear, journeydate, logger, trainclass, numberofadults)
                 directflightnextdayfuture = executor.submit(flightSkyScanner.getApiResults, sourcenear, destinationnear, (datetime.datetime.strptime(journeydate, '%d-%m-%Y') + datetime.timedelta(days=1)).strftime('%d-%m-%Y'), "flightnearnext", flightclass, numberofadults)
