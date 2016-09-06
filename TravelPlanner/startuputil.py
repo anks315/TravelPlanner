@@ -1,6 +1,7 @@
 __author__ = 'Ankit Kumar'
 
 import GoIndi.models
+import GoIndi.CreateXml
 from sets import Set
 import concurrent.futures, re
 
@@ -79,3 +80,6 @@ def gettraincity(cityname):
     if cityname.upper() in citytotrainmap.keys():
         return citytotrainmap[cityname.upper()]
     return cityname
+
+def loadTravelYaariCityMap():
+    GoIndi.CreateXml.getcities()

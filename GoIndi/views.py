@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 import json
-import flightapi, flightdirectandnearairportapi, flightfrombigairportapi, flightnearbigapi, flightbignearapi, flightutil, busapi, trainapineo4j, trainavailabilityapi
+import flightapi, flightdirectandnearairportapi, flightfrombigairportapi, flightnearbigapi, flightbignearapi, flightutil, busapi, trainapineo4j, trainavailabilityapi, CreateXml
 import TravelPlanner.startuputil as startup
 import trie
 
@@ -70,6 +70,17 @@ def flightapi(request):
     flightrequest = flightutil.getflightrequestparams(request)
     resultjsondata = flightcontroller.getresults(flightrequest.sourcecity, flightrequest.destinationcity, flightrequest.journeydate, flightrequest.trainclass, flightrequest.flightclass, flightrequest.numberofadults)
     return HttpResponse(json.dumps(resultjsondata), content_type='application/json')
+
+def arrangement(request):
+
+    journeyDate = request.GET['journeyDate']
+    source = request.GET['source']
+    destination = request.GET['destination']
+    routeScheduleId = request.GET['routeScheduleId']
+    resultjsondata = CreateXml.getArrangement(routeScheduleId,journeyDate)
+    resultjsondata['source']=source
+    resultjsondata['destination']=destination
+    return render_to_response('seatbooking.html', content_type='application/json')
 
 
 def flightdirectandnearapi(request):

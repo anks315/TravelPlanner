@@ -238,7 +238,7 @@ function getUrlVars() {
  function makeAsyncCalls(fromStation,toStation,depDate,flightClassSelected,trainClassSelected,persons) {
 
 
-	 $.getJSON('http://eazzer-flight.ap-southeast-1.elasticbeanstalk.com/flight/direct?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
+	 $.getJSON('http://localhost:8000/flight/direct?sourcecity='+fromStation+'&sourcestate=&destinationcity='+toStation+'&destinationstate=&journeyDate='+depDate+"&flightClass="+flightClassSelected+"&trainClass="+trainClassSelected+"&adults="+persons, function(data, err) {
 
 
 				  flightDirect = 1
@@ -369,7 +369,7 @@ function getUrlVars() {
 				});
 	
 
-	 $.getJSON('https://q21sw0b7ai.execute-api.ap-southeast-1.amazonaws.com/dev/bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&adults="+persons, function(data, err) {
+	 $.getJSON('http://localhost:8000/bus?source='+fromStation+'&destination='+toStation+'&journeyDate='+depDate+"&adults="+persons, function(data, err) {
 
 				  if (err != "success") {
 					  busList=[]
