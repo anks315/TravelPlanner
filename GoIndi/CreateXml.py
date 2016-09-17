@@ -24,6 +24,9 @@ import xml.etree.ElementTree as ET
 from cStringIO import StringIO
 
 url = "http://affapi.mantistechnologies.com/Service.asmx?WSDL"
+from suds.client import Client
+from suds.xsd.doctor import Import, ImportDoctor
+
 
 travelYaariCityMap = {}
 def createauthenticationrequest():
@@ -171,64 +174,38 @@ def getpickups():
 # getpickups()
 
 
-def holdseats6():
-    body = """<?xml version="1.0" encoding="utf-8"?>
-<soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
-  <soap12:Body>
-    <HoldSeatsForSchedule xmlns="http://tempuri.org/">
-      <Authentication>
-        <UserID>int</UserID>
-        <UserType>string</UserType>
-        <Key>string</Key>
-      </Authentication>
-      <RouteScheduleId>int</RouteScheduleId>
-      <JourneyDate>string</JourneyDate>
-      <PickUpID>int</PickUpID>
-      <ContactInformation>
-        <CustomerName>string</CustomerName>
-        <Email>string</Email>
-        <Phone>string</Phone>
-        <Mobile>string</Mobile>
-      </ContactInformation>
-      <Passengers>
-        <Passenger>
-          <Name>string</Name>
-          <Age>int</Age>
-          <Gender>string</Gender>
-          <SeatNo>string</SeatNo>
-          <Fare>double</Fare>
-          <SeatType>string</SeatType>
-          <IsAcSeat>boolean</IsAcSeat>
-        </Passenger>
-        <Passenger>
-          <Name>string</Name>
-          <Age>int</Age>
-          <Gender>string</Gender>
-          <SeatNo>string</SeatNo>
-          <Fare>double</Fare>
-          <SeatType>string</SeatType>
-          <IsAcSeat>boolean</IsAcSeat>
-        </Passenger>
-      </Passengers>
-    </HoldSeatsForSchedule>
-  </soap12:Body>
-</soap12:Envelope>"""%(6898, "S", "76383b34503afb0508f8364787c55800", 552261119, date, 19361568, "RD", "rishabhdaim1991@gmail.com",8800640514,8800640514, "RD", 25, "Male", 24, 227, "", "true",
-                       "", 0,0,0,0,"","","", "","",2551,"","",0, "false",0.0, 0.0,"",0.0,"", 0.0,"", 0.0,0.0, 0.0, "")
-    headers = {"POST" : "/Service.asmx HTTP/1.1",
-               "Host": "affapi.mantistechnologies.com",
-            "Content-Type": "application/soap+xml; charset=utf-8",
-               "Content-Length" : len(body)}
-
-    print body
-    print headers
-
-    response = requests.post(url,data=body, headers=headers)
-    print response.content
+def holdseats():
+    imp = Import('http://www.w3.org/XML/1998/namespace',
+                 location='http://localhost:8000/static/XMLSchema.xsd')
+    imp.filter.add('http://tempuri.org/')
+    client = Client(url, doctor=ImportDoctor(imp))
+    print client
+    authentication = client.factory.create('clsAuthenticateRequest')
+    authentication.UserID = 6898
+    authentication.UserType = "S"
+    authentication.Key = "76383b34503afb0508f8364787c55800"
+    contactInfo = client.factory.create('clsContactInformation')
+    contactInfo.CustomerName="Shekhar"
+    contactInfo.Email = "ab@xyz.com"
+    contactInfo.Phone = "99877778"
+    contactInfo.Mobile = "09999988988"
+    arrayOfPassenger = client.factory.create('ArrayOfPassenger')
+    passenger = client.factory.create('Passenger')
+    passenger.Name = 'shekhar'
+    passenger.Age = '25'
+    passenger.Gender = 'M'
+    passenger.SeatNo = 'S5'
+    passenger.Fare = '200'
+    passenger.SeatType = 'ac'
+    passenger.IsAcSeat = '1'
+    arrayOfPassenger.Passenger.append(passenger)
+    result = client.service.HoldSeatsForSchedule(authentication,123,'',123,contactInfo,arrayOfPassenger)
+    print result.content
 
 
 
 def getArrangement(routeScheduleId, journeyDateStr):
-    journeyDate = datetime.datetime.strptime(journeyDateStr, '%d-%m-%Y').strftime('%Y-%m-%d')
+    journeyDate = datetime.datetime.strptime(journeyDateStr, '%Y-%m-%d').strftime('%Y-%m-%d')
     body = """<?xml version="1.0" encoding="utf-8"?>
 <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
   <soap12:Body>
@@ -257,8 +234,8 @@ def getArrangement(routeScheduleId, journeyDateStr):
 
     seatInfo = {}
     root = searchTree.getroot()
-    seatInfo["maxRows"] = root.find('{http://tempuri.org/}MaxRows')
-    seatInfo["maxCols"] = root.find('{http://tempuri.org/}MaxColumns')
+    seatInfo["maxRows"] = searchTree.findall('.//{http://tempuri.org/}MaxRows')[0].text
+    seatInfo["maxColumns"] = searchTree.findall('.//{http://tempuri.org/}MaxColumns')[0].text
     seatList=[]
     for elem in searchTree.iter(tag='{http://tempuri.org/}clsSeat'):
         details = {}
@@ -270,6 +247,8 @@ def getArrangement(routeScheduleId, journeyDateStr):
         details['IsSleeper'] = elem.find('{http://tempuri.org/}IsSleeper').text
         details['IsAvailable'] = elem.find('{http://tempuri.org/}IsAvailable').text
         details['Fare'] = elem.find('{http://tempuri.org/}Fare').text
+        details['IsAisle'] = elem.find('{http://tempuri.org/}IsAisle').text
+
         seatList.append(details)
     seatInfo["seatList"] = seatList
     return seatInfo

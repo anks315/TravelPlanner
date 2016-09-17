@@ -80,7 +80,11 @@ def arrangement(request):
     resultjsondata = CreateXml.getArrangement(routeScheduleId,journeyDate)
     resultjsondata['source']=source
     resultjsondata['destination']=destination
-    return render_to_response('seatbooking.html', content_type='application/json')
+    resultjsondata['journeyDate'] = journeyDate
+    context = RequestContext(request,
+                             {'bookingdata': resultjsondata,
+                              })
+    return render_to_response('seatbooking.html', {},context_instance = context)
 
 
 def flightdirectandnearapi(request):

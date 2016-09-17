@@ -16,14 +16,12 @@ class BusController:
     """Class returns all stations corresponding to a city"""
 
     def getresults(self, source, destination, journeydate, numberofadults=1):
-
         response = {"bus": []}
         try:
             source = TravelPlanner.startuputil.getbuscity(source)
             destination = TravelPlanner.startuputil.getbuscity(destination)
             logger.debug("[START]-Get Results From BusApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeydate)
             travrlYaariResponse = CreateXml.getroutes(journeydate,source,destination)
-            CreateXml.getArrangement(travrlYaariResponse["apiAvailableBuses"][0]["routeScheduleId"],journeydate)
             jdlist = journeydate.split("-")
             newformatjourneydate = jdlist[2]+"-"+jdlist[1]+"-"+jdlist[0]
             url = "http://agent.etravelsmart.com/etsAPI/api/getAvailableBuses?sourceCity="+source+"&destinationCity="+destination+"&doj="+newformatjourneydate
@@ -58,9 +56,9 @@ class BusController:
                         part["id"] = "bus"+str(counter)+str("1")
                         part["routeScheduleId"]= option["routeScheduleId"]
                         if 'vendor' in option:
-                            self.populateTravelyaariSpecific(part, option)
+                            self.populateTravelyaariSpecific(part, option, newformatjourneydate, source, destination)
                         else:
-                            self.populateEtravelSmartSpecific(part, option, source, destination, newformatjourneydate)
+                            self.populateEtravelSmartSpecific(part, option, source, destination, journeydate)
                         part["departureDate"] = journeydate
                         part["departureDay"] = models.getdayabbrevationfromdatestr(journeydate)
                         part["arrivalDate"] = dateTimeUtility.calculatearrivaltimeanddate(journeydate, part["departure"], part["duration"])["arrivalDate"]
@@ -75,7 +73,7 @@ class BusController:
                         resultjsondata["bus"].append(route)
                 else:
                     logger.debug("Empty Results From BusApi for Source:[%s] and Destination:[%s],JourneyDate:[%s] ",source,destination,journeydate)
-            except:
+            except e:
                 logger.info("Parsing Error for Source:[%s] and Destination:[%s],JourneyDate:[%s]",source,destination,journeydate)
 
             return resultjsondata
@@ -117,8 +115,8 @@ class BusController:
         part["arrival"] = str(arrhr) + ':' + str(arrmin)
         part["departure"] = str(dephr) + ':' + str(depmin)
 
-    def populateTravelyaariSpecific(self,part, option):
-        part[ "bookingLink"] = "http://www.etravelsmart.com/bus"
+    def populateTravelyaariSpecific(self,part, option,journeyDate, source, destination):
+        part[ "bookingLink"] = "/bus/arrangement?journeyDate="+journeyDate+"&source="+source+"&destination="+destination+"&routeScheduleId="+option["routeScheduleId"]
         part["arrival"] = option["arrivalTime"]
         part["departure"] = option["departureTime"]
         part["duration"] = "10:00"
